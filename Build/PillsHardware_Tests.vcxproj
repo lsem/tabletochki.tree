@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9269FE24-4827-4A79-BB6B-033F68149E33}</ProjectGuid>
+    <RootNamespace>PillsHardware</RootNamespace>
+    <ProjectName>PillsHardware_Tests</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\Artifacts\$(Configuration)\</OutDir>
+    <IntDir>..\Artifacts\Intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\Artifacts\$(Configuration)\</OutDir>
+    <IntDir>..\Artifacts\Intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>TESTS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\;..\tests\gmock-1.7.0\include;..\tests\gmock-1.7.0\gtest\include;..\tests\gmock-1.7.0\gtest\;D:\Projects\tabletochki\hard\tests\gmock-1.7.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>TESTS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\;..\tests\gmock-1.7.0\include;..\tests\gmock-1.7.0\gtest\include;..\tests\gmock-1.7.0\gtest\;D:\Projects\tabletochki\hard\tests\gmock-1.7.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Firmware.cpp" />
+    <ClCompile Include="..\PacketFramer.cpp" />
+    <ClCompile Include="..\PacketUnFramer.cpp" />
+    <ClCompile Include="..\InputOutputController.cpp" />
+    <ClCompile Include="..\PacketsParser.cpp" />
+    <ClCompile Include="..\PacketsProcessor.cpp" />
+    <ClCompile Include="..\PersistentStorage.cpp" />
+    <ClCompile Include="..\SerialInterface.cpp" />
+    <ClCompile Include="..\tests\CommandListenerTests.cpp" />
+    <ClCompile Include="..\tests\gmock-1.7.0\gtest\src\gtest-all.cc" />
+    <ClCompile Include="..\tests\gmock-1.7.0\src\gmock-all.cc" />
+    <ClCompile Include="..\tests\PacketFramerTests.cpp" />
+    <ClCompile Include="..\tests\PacketsProcessorTests.cpp" />
+    <ClCompile Include="..\tests\PillsTestsRunner.cpp" />
+    <ClCompile Include="..\WatchDog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\BoardConfiguration.h" />
+    <ClInclude Include="..\CommonDefs.h" />
+    <ClInclude Include="..\Firmware.h" />
+    <ClInclude Include="..\PacketDefs.h" />
+    <ClInclude Include="..\PacketFramer.h" />
+    <ClInclude Include="..\PacketUnFramer.h" />
+    <ClInclude Include="..\coredefs.h" />
+    <ClInclude Include="..\dataconst.h" />
+    <ClInclude Include="..\InputOutputController.h" />
+    <ClInclude Include="..\PacketParserTypes.h" />
+    <ClInclude Include="..\PacketsParser.h" />
+    <ClInclude Include="..\PacketsProcessor.h" />
+    <ClInclude Include="..\PersistentStorage.h" />
+    <ClInclude Include="..\SerialInterface.h" />
+    <ClInclude Include="..\tests\TestUtils.h" />
+    <ClInclude Include="..\utils.h" />
+    <ClInclude Include="..\WatchDog.h" />
+    <ClInclude Include="CommonDefs.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="SerialLib">
+      <UniqueIdentifier>{0a940a35-e836-4b9f-a7cb-64d4fda54cb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CommandHandlers">
+      <UniqueIdentifier>{975cee88-dff9-4a70-bafa-3187c6042662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{029b58dc-267c-4102-b659-b0ba47bf2f74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThriftGeneratedService">
+      <UniqueIdentifier>{f61f340b-5408-4500-a2be-1a2ceecbfe3c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\PillsController\src\WateringServiceImplementation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PillsController\src\CommunicationChannel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PillsController\vendor\serialib\serialib.cpp">
+      <Filter>SerialLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PacketUnFramer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PillsController\src\IntervalTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PacketFramer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PillsController\src\WateringServiceHost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService.cpp">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService_constants.cpp">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService_types.cpp">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\PillsController\src\WateringServiceImplementation.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PillsController\src\CommunicationChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PillsController\src\Global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PacketUnFramer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PillsController\src\IntervalTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService.h">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService_constants.h">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService_types.h">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

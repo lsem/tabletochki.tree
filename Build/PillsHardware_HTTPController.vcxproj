@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\PacketFramer.cpp" />
+    <ClCompile Include="..\PacketUnFramer.cpp" />
+    <ClCompile Include="..\PillsController\src\CommunicationChannel.cpp" />
+    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService.cpp" />
+    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService_constants.cpp" />
+    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService_types.cpp" />
+    <ClCompile Include="..\PillsController\src\IntervalTimer.cpp" />
+    <ClCompile Include="..\PillsController\src\WateringServiceHost.cpp" />
+    <ClCompile Include="..\PillsController\src\WateringServiceImplementation.cpp" />
+    <ClCompile Include="..\PillsController\vendor\serialib\serialib.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\PacketUnFramer.h" />
+    <ClInclude Include="..\PillsController\src\CommunicationChannel.h" />
+    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService.h" />
+    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService_constants.h" />
+    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService_types.h" />
+    <ClInclude Include="..\PillsController\src\Global.h" />
+    <ClInclude Include="..\PillsController\src\IntervalTimer.h" />
+    <ClInclude Include="..\PillsController\src\WateringServiceImplementation.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{426ECAD6-AF76-4900-BEC2-217B0C4F420A}</ProjectGuid>
+    <RootNamespace>PillsHardware_HTTPController</RootNamespace>
+    <ProjectName>PillsHardware_Brain</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>$(ProjectName)_xy</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>$(ProjectName)_x</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\Projects\tabletochki\hard\PillsController\vendor\thrift-0.9.2\lib\cpp\src;D:\Projects\tabletochki\hard\PillsController\vendor\boost_1_57_0\boost_1_57_0;D:\Projects\tabletochki\hard\PillsController\vendor\serialib;D:\Projects\tabletochki\hard\PillsController\src;D:\Projects\tabletochki\hard\PillsController\src\gen-cpp;D:\Projects\tabletochki\hard\PillsController\vendor\easylogging;D:\Projects\tabletochki\hard;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;_DEBUG;_ELPP_DISABLE_DEBUG_LOGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Projects\tabletochki\hard\PillsController\vendor\thrift-0.9.2\lib\cpp\Debug;D:\Projects\tabletochki\hard\PillsController\vendor\boost_1_57_0\boost_1_57_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\Projects\tabletochki\hard\PillsController\vendor\thrift-0.9.2\lib\cpp\src;D:\Projects\tabletochki\hard\PillsController\vendor\boost_1_57_0\boost_1_57_0;D:\Projects\tabletochki\hard\PillsController\vendor\serialib;D:\Projects\tabletochki\hard\PillsController\src;D:\Projects\tabletochki\hard\PillsController\src\gen-cpp;D:\Projects\tabletochki\hard\PillsController\vendor\easylogging;D:\Projects\tabletochki\hard;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Projects\tabletochki\hard\PillsController\vendor\thrift-0.9.2\lib\cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

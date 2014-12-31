@@ -1,0 +1,9 @@
+
+
+- Support persistant configuration
+	The goal of the feature is to make it possible handling next scenario: 
+		- we set confofiguration where at pin, say, 10 default value is HIGH, 
+			then, after watchdog hard reset, after restart, board configuration is loaded and that value (HIGH) 
+			is set up. This would enable us, to support some default configuration.
+
+- Add additional validations to configuration
