@@ -4,16 +4,16 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "WateringService.h"
+#include "HardwareService.h"
 
 namespace Tabletochki {
 
 
-WateringService_configure_args::~WateringService_configure_args() throw() {
+HardwareService_configure_args::~HardwareService_configure_args() throw() {
 }
 
 
-uint32_t WateringService_configure_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_configure_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -53,10 +53,10 @@ uint32_t WateringService_configure_args::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t WateringService_configure_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_configure_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_configure_args");
+  xfer += oprot->writeStructBegin("HardwareService_configure_args");
 
   xfer += oprot->writeFieldBegin("configuration", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += this->configuration.write(oprot);
@@ -69,14 +69,14 @@ uint32_t WateringService_configure_args::write(::apache::thrift::protocol::TProt
 }
 
 
-WateringService_configure_pargs::~WateringService_configure_pargs() throw() {
+HardwareService_configure_pargs::~HardwareService_configure_pargs() throw() {
 }
 
 
-uint32_t WateringService_configure_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_configure_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_configure_pargs");
+  xfer += oprot->writeStructBegin("HardwareService_configure_pargs");
 
   xfer += oprot->writeFieldBegin("configuration", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += (*(this->configuration)).write(oprot);
@@ -89,11 +89,11 @@ uint32_t WateringService_configure_pargs::write(::apache::thrift::protocol::TPro
 }
 
 
-WateringService_configure_result::~WateringService_configure_result() throw() {
+HardwareService_configure_result::~HardwareService_configure_result() throw() {
 }
 
 
-uint32_t WateringService_configure_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_configure_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -133,11 +133,11 @@ uint32_t WateringService_configure_result::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t WateringService_configure_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_configure_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("WateringService_configure_result");
+  xfer += oprot->writeStructBegin("HardwareService_configure_result");
 
   if (this->__isset.ouch) {
     xfer += oprot->writeFieldBegin("ouch", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -150,11 +150,11 @@ uint32_t WateringService_configure_result::write(::apache::thrift::protocol::TPr
 }
 
 
-WateringService_configure_presult::~WateringService_configure_presult() throw() {
+HardwareService_configure_presult::~HardwareService_configure_presult() throw() {
 }
 
 
-uint32_t WateringService_configure_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_configure_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -195,11 +195,11 @@ uint32_t WateringService_configure_presult::read(::apache::thrift::protocol::TPr
 }
 
 
-WateringService_pour_args::~WateringService_pour_args() throw() {
+HardwareService_pour_args::~HardwareService_pour_args() throw() {
 }
 
 
-uint32_t WateringService_pour_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_pour_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -221,9 +221,9 @@ uint32_t WateringService_pour_args::read(::apache::thrift::protocol::TProtocol* 
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast17;
-          xfer += iprot->readI32(ecast17);
-          this->from = (Container::type)ecast17;
+          int32_t ecast19;
+          xfer += iprot->readI32(ecast19);
+          this->from = (Container::type)ecast19;
           this->__isset.from = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -231,9 +231,9 @@ uint32_t WateringService_pour_args::read(::apache::thrift::protocol::TProtocol* 
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast18;
-          xfer += iprot->readI32(ecast18);
-          this->to = (Container::type)ecast18;
+          int32_t ecast20;
+          xfer += iprot->readI32(ecast20);
+          this->to = (Container::type)ecast20;
           this->__isset.to = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -251,10 +251,10 @@ uint32_t WateringService_pour_args::read(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t WateringService_pour_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_pour_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_pour_args");
+  xfer += oprot->writeStructBegin("HardwareService_pour_args");
 
   xfer += oprot->writeFieldBegin("from", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((int32_t)this->from);
@@ -271,14 +271,14 @@ uint32_t WateringService_pour_args::write(::apache::thrift::protocol::TProtocol*
 }
 
 
-WateringService_pour_pargs::~WateringService_pour_pargs() throw() {
+HardwareService_pour_pargs::~HardwareService_pour_pargs() throw() {
 }
 
 
-uint32_t WateringService_pour_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_pour_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_pour_pargs");
+  xfer += oprot->writeStructBegin("HardwareService_pour_pargs");
 
   xfer += oprot->writeFieldBegin("from", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((int32_t)(*(this->from)));
@@ -295,11 +295,11 @@ uint32_t WateringService_pour_pargs::write(::apache::thrift::protocol::TProtocol
 }
 
 
-WateringService_pour_result::~WateringService_pour_result() throw() {
+HardwareService_pour_result::~HardwareService_pour_result() throw() {
 }
 
 
-uint32_t WateringService_pour_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_pour_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -339,11 +339,11 @@ uint32_t WateringService_pour_result::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t WateringService_pour_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_pour_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("WateringService_pour_result");
+  xfer += oprot->writeStructBegin("HardwareService_pour_result");
 
   if (this->__isset.ouch) {
     xfer += oprot->writeFieldBegin("ouch", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -356,11 +356,11 @@ uint32_t WateringService_pour_result::write(::apache::thrift::protocol::TProtoco
 }
 
 
-WateringService_pour_presult::~WateringService_pour_presult() throw() {
+HardwareService_pour_presult::~HardwareService_pour_presult() throw() {
 }
 
 
-uint32_t WateringService_pour_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_pour_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -401,11 +401,11 @@ uint32_t WateringService_pour_presult::read(::apache::thrift::protocol::TProtoco
 }
 
 
-WateringService_getInput_args::~WateringService_getInput_args() throw() {
+HardwareService_getInput_args::~HardwareService_getInput_args() throw() {
 }
 
 
-uint32_t WateringService_getInput_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_getInput_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -432,10 +432,10 @@ uint32_t WateringService_getInput_args::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t WateringService_getInput_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_getInput_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_getInput_args");
+  xfer += oprot->writeStructBegin("HardwareService_getInput_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -444,14 +444,14 @@ uint32_t WateringService_getInput_args::write(::apache::thrift::protocol::TProto
 }
 
 
-WateringService_getInput_pargs::~WateringService_getInput_pargs() throw() {
+HardwareService_getInput_pargs::~HardwareService_getInput_pargs() throw() {
 }
 
 
-uint32_t WateringService_getInput_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_getInput_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_getInput_pargs");
+  xfer += oprot->writeStructBegin("HardwareService_getInput_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -460,11 +460,11 @@ uint32_t WateringService_getInput_pargs::write(::apache::thrift::protocol::TProt
 }
 
 
-WateringService_getInput_result::~WateringService_getInput_result() throw() {
+HardwareService_getInput_result::~HardwareService_getInput_result() throw() {
 }
 
 
-uint32_t WateringService_getInput_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_getInput_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -512,11 +512,11 @@ uint32_t WateringService_getInput_result::read(::apache::thrift::protocol::TProt
   return xfer;
 }
 
-uint32_t WateringService_getInput_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_getInput_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("WateringService_getInput_result");
+  xfer += oprot->writeStructBegin("HardwareService_getInput_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
@@ -533,11 +533,11 @@ uint32_t WateringService_getInput_result::write(::apache::thrift::protocol::TPro
 }
 
 
-WateringService_getInput_presult::~WateringService_getInput_presult() throw() {
+HardwareService_getInput_presult::~HardwareService_getInput_presult() throw() {
 }
 
 
-uint32_t WateringService_getInput_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_getInput_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -586,11 +586,11 @@ uint32_t WateringService_getInput_presult::read(::apache::thrift::protocol::TPro
 }
 
 
-WateringService_startPump_args::~WateringService_startPump_args() throw() {
+HardwareService_startPump_args::~HardwareService_startPump_args() throw() {
 }
 
 
-uint32_t WateringService_startPump_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_startPump_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -630,10 +630,10 @@ uint32_t WateringService_startPump_args::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t WateringService_startPump_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_startPump_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_startPump_args");
+  xfer += oprot->writeStructBegin("HardwareService_startPump_args");
 
   xfer += oprot->writeFieldBegin("pumpId", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->pumpId);
@@ -646,14 +646,14 @@ uint32_t WateringService_startPump_args::write(::apache::thrift::protocol::TProt
 }
 
 
-WateringService_startPump_pargs::~WateringService_startPump_pargs() throw() {
+HardwareService_startPump_pargs::~HardwareService_startPump_pargs() throw() {
 }
 
 
-uint32_t WateringService_startPump_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_startPump_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_startPump_pargs");
+  xfer += oprot->writeStructBegin("HardwareService_startPump_pargs");
 
   xfer += oprot->writeFieldBegin("pumpId", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->pumpId)));
@@ -666,11 +666,11 @@ uint32_t WateringService_startPump_pargs::write(::apache::thrift::protocol::TPro
 }
 
 
-WateringService_startPump_result::~WateringService_startPump_result() throw() {
+HardwareService_startPump_result::~HardwareService_startPump_result() throw() {
 }
 
 
-uint32_t WateringService_startPump_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_startPump_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -710,11 +710,11 @@ uint32_t WateringService_startPump_result::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t WateringService_startPump_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_startPump_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("WateringService_startPump_result");
+  xfer += oprot->writeStructBegin("HardwareService_startPump_result");
 
   if (this->__isset.ouch) {
     xfer += oprot->writeFieldBegin("ouch", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -727,11 +727,11 @@ uint32_t WateringService_startPump_result::write(::apache::thrift::protocol::TPr
 }
 
 
-WateringService_startPump_presult::~WateringService_startPump_presult() throw() {
+HardwareService_startPump_presult::~HardwareService_startPump_presult() throw() {
 }
 
 
-uint32_t WateringService_startPump_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_startPump_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -772,11 +772,11 @@ uint32_t WateringService_startPump_presult::read(::apache::thrift::protocol::TPr
 }
 
 
-WateringService_stopPump_args::~WateringService_stopPump_args() throw() {
+HardwareService_stopPump_args::~HardwareService_stopPump_args() throw() {
 }
 
 
-uint32_t WateringService_stopPump_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_stopPump_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -816,10 +816,10 @@ uint32_t WateringService_stopPump_args::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t WateringService_stopPump_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_stopPump_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_stopPump_args");
+  xfer += oprot->writeStructBegin("HardwareService_stopPump_args");
 
   xfer += oprot->writeFieldBegin("pumpId", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->pumpId);
@@ -832,14 +832,14 @@ uint32_t WateringService_stopPump_args::write(::apache::thrift::protocol::TProto
 }
 
 
-WateringService_stopPump_pargs::~WateringService_stopPump_pargs() throw() {
+HardwareService_stopPump_pargs::~HardwareService_stopPump_pargs() throw() {
 }
 
 
-uint32_t WateringService_stopPump_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_stopPump_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("WateringService_stopPump_pargs");
+  xfer += oprot->writeStructBegin("HardwareService_stopPump_pargs");
 
   xfer += oprot->writeFieldBegin("pumpId", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->pumpId)));
@@ -852,11 +852,11 @@ uint32_t WateringService_stopPump_pargs::write(::apache::thrift::protocol::TProt
 }
 
 
-WateringService_stopPump_result::~WateringService_stopPump_result() throw() {
+HardwareService_stopPump_result::~HardwareService_stopPump_result() throw() {
 }
 
 
-uint32_t WateringService_stopPump_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_stopPump_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -904,11 +904,11 @@ uint32_t WateringService_stopPump_result::read(::apache::thrift::protocol::TProt
   return xfer;
 }
 
-uint32_t WateringService_stopPump_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_stopPump_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("WateringService_stopPump_result");
+  xfer += oprot->writeStructBegin("HardwareService_stopPump_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
@@ -925,11 +925,11 @@ uint32_t WateringService_stopPump_result::write(::apache::thrift::protocol::TPro
 }
 
 
-WateringService_stopPump_presult::~WateringService_stopPump_presult() throw() {
+HardwareService_stopPump_presult::~HardwareService_stopPump_presult() throw() {
 }
 
 
-uint32_t WateringService_stopPump_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_stopPump_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -977,18 +977,338 @@ uint32_t WateringService_stopPump_presult::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-void WateringServiceClient::configure(const Configuration& configuration)
+
+HardwareService_getServiceStatus_args::~HardwareService_getServiceStatus_args() throw() {
+}
+
+
+uint32_t HardwareService_getServiceStatus_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t HardwareService_getServiceStatus_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("HardwareService_getServiceStatus_args");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+HardwareService_getServiceStatus_pargs::~HardwareService_getServiceStatus_pargs() throw() {
+}
+
+
+uint32_t HardwareService_getServiceStatus_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("HardwareService_getServiceStatus_pargs");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+HardwareService_getServiceStatus_result::~HardwareService_getServiceStatus_result() throw() {
+}
+
+
+uint32_t HardwareService_getServiceStatus_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t HardwareService_getServiceStatus_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("HardwareService_getServiceStatus_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+HardwareService_getServiceStatus_presult::~HardwareService_getServiceStatus_presult() throw() {
+}
+
+
+uint32_t HardwareService_getServiceStatus_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+HardwareService_ping_args::~HardwareService_ping_args() throw() {
+}
+
+
+uint32_t HardwareService_ping_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->arg);
+          this->__isset.arg = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t HardwareService_ping_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("HardwareService_ping_args");
+
+  xfer += oprot->writeFieldBegin("arg", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->arg);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+HardwareService_ping_pargs::~HardwareService_ping_pargs() throw() {
+}
+
+
+uint32_t HardwareService_ping_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("HardwareService_ping_pargs");
+
+  xfer += oprot->writeFieldBegin("arg", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->arg)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+HardwareService_ping_result::~HardwareService_ping_result() throw() {
+}
+
+
+uint32_t HardwareService_ping_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t HardwareService_ping_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("HardwareService_ping_result");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+HardwareService_ping_presult::~HardwareService_ping_presult() throw() {
+}
+
+
+uint32_t HardwareService_ping_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+void HardwareServiceClient::configure(const Configuration& configuration)
 {
   send_configure(configuration);
   recv_configure();
 }
 
-void WateringServiceClient::send_configure(const Configuration& configuration)
+void HardwareServiceClient::send_configure(const Configuration& configuration)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("configure", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  WateringService_configure_pargs args;
+  HardwareService_configure_pargs args;
   args.configuration = &configuration;
   args.write(oprot_);
 
@@ -997,7 +1317,7 @@ void WateringServiceClient::send_configure(const Configuration& configuration)
   oprot_->getTransport()->flush();
 }
 
-void WateringServiceClient::recv_configure()
+void HardwareServiceClient::recv_configure()
 {
 
   int32_t rseqid = 0;
@@ -1022,7 +1342,7 @@ void WateringServiceClient::recv_configure()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  WateringService_configure_presult result;
+  HardwareService_configure_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
@@ -1033,18 +1353,18 @@ void WateringServiceClient::recv_configure()
   return;
 }
 
-void WateringServiceClient::pour(const Container::type from, const Container::type to)
+void HardwareServiceClient::pour(const Container::type from, const Container::type to)
 {
   send_pour(from, to);
   recv_pour();
 }
 
-void WateringServiceClient::send_pour(const Container::type from, const Container::type to)
+void HardwareServiceClient::send_pour(const Container::type from, const Container::type to)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("pour", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  WateringService_pour_pargs args;
+  HardwareService_pour_pargs args;
   args.from = &from;
   args.to = &to;
   args.write(oprot_);
@@ -1054,7 +1374,7 @@ void WateringServiceClient::send_pour(const Container::type from, const Containe
   oprot_->getTransport()->flush();
 }
 
-void WateringServiceClient::recv_pour()
+void HardwareServiceClient::recv_pour()
 {
 
   int32_t rseqid = 0;
@@ -1079,7 +1399,7 @@ void WateringServiceClient::recv_pour()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  WateringService_pour_presult result;
+  HardwareService_pour_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
@@ -1090,18 +1410,18 @@ void WateringServiceClient::recv_pour()
   return;
 }
 
-void WateringServiceClient::getInput(HardwareInput& _return)
+void HardwareServiceClient::getInput(HardwareInput& _return)
 {
   send_getInput();
   recv_getInput(_return);
 }
 
-void WateringServiceClient::send_getInput()
+void HardwareServiceClient::send_getInput()
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getInput", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  WateringService_getInput_pargs args;
+  HardwareService_getInput_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1109,7 +1429,7 @@ void WateringServiceClient::send_getInput()
   oprot_->getTransport()->flush();
 }
 
-void WateringServiceClient::recv_getInput(HardwareInput& _return)
+void HardwareServiceClient::recv_getInput(HardwareInput& _return)
 {
 
   int32_t rseqid = 0;
@@ -1134,7 +1454,7 @@ void WateringServiceClient::recv_getInput(HardwareInput& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  WateringService_getInput_presult result;
+  HardwareService_getInput_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -1150,18 +1470,18 @@ void WateringServiceClient::recv_getInput(HardwareInput& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getInput failed: unknown result");
 }
 
-void WateringServiceClient::startPump(const int32_t pumpId)
+void HardwareServiceClient::startPump(const int32_t pumpId)
 {
   send_startPump(pumpId);
   recv_startPump();
 }
 
-void WateringServiceClient::send_startPump(const int32_t pumpId)
+void HardwareServiceClient::send_startPump(const int32_t pumpId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("startPump", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  WateringService_startPump_pargs args;
+  HardwareService_startPump_pargs args;
   args.pumpId = &pumpId;
   args.write(oprot_);
 
@@ -1170,7 +1490,7 @@ void WateringServiceClient::send_startPump(const int32_t pumpId)
   oprot_->getTransport()->flush();
 }
 
-void WateringServiceClient::recv_startPump()
+void HardwareServiceClient::recv_startPump()
 {
 
   int32_t rseqid = 0;
@@ -1195,7 +1515,7 @@ void WateringServiceClient::recv_startPump()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  WateringService_startPump_presult result;
+  HardwareService_startPump_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
@@ -1206,18 +1526,18 @@ void WateringServiceClient::recv_startPump()
   return;
 }
 
-void WateringServiceClient::stopPump(StopPumpResult& _return, const int32_t pumpId)
+void HardwareServiceClient::stopPump(StopPumpResult& _return, const int32_t pumpId)
 {
   send_stopPump(pumpId);
   recv_stopPump(_return);
 }
 
-void WateringServiceClient::send_stopPump(const int32_t pumpId)
+void HardwareServiceClient::send_stopPump(const int32_t pumpId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("stopPump", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  WateringService_stopPump_pargs args;
+  HardwareService_stopPump_pargs args;
   args.pumpId = &pumpId;
   args.write(oprot_);
 
@@ -1226,7 +1546,7 @@ void WateringServiceClient::send_stopPump(const int32_t pumpId)
   oprot_->getTransport()->flush();
 }
 
-void WateringServiceClient::recv_stopPump(StopPumpResult& _return)
+void HardwareServiceClient::recv_stopPump(StopPumpResult& _return)
 {
 
   int32_t rseqid = 0;
@@ -1251,7 +1571,7 @@ void WateringServiceClient::recv_stopPump(StopPumpResult& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  WateringService_stopPump_presult result;
+  HardwareService_stopPump_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -1267,7 +1587,117 @@ void WateringServiceClient::recv_stopPump(StopPumpResult& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "stopPump failed: unknown result");
 }
 
-bool WateringServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
+void HardwareServiceClient::getServiceStatus(ServiceStatus& _return)
+{
+  send_getServiceStatus();
+  recv_getServiceStatus(_return);
+}
+
+void HardwareServiceClient::send_getServiceStatus()
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getServiceStatus", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  HardwareService_getServiceStatus_pargs args;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void HardwareServiceClient::recv_getServiceStatus(ServiceStatus& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getServiceStatus") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  HardwareService_getServiceStatus_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getServiceStatus failed: unknown result");
+}
+
+void HardwareServiceClient::ping(const int32_t arg)
+{
+  send_ping(arg);
+  recv_ping();
+}
+
+void HardwareServiceClient::send_ping(const int32_t arg)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("ping", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  HardwareService_ping_pargs args;
+  args.arg = &arg;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void HardwareServiceClient::recv_ping()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("ping") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  HardwareService_ping_presult result;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  return;
+}
+
+bool HardwareServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
   ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
   if (pfn == processMap_.end()) {
@@ -1286,28 +1716,28 @@ bool WateringServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtoco
   return true;
 }
 
-void WateringServiceProcessor::process_configure(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HardwareServiceProcessor::process_configure(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("WateringService.configure", callContext);
+    ctx = this->eventHandler_->getContext("HardwareService.configure", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "WateringService.configure");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.configure");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "WateringService.configure");
+    this->eventHandler_->preRead(ctx, "HardwareService.configure");
   }
 
-  WateringService_configure_args args;
+  HardwareService_configure_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "WateringService.configure", bytes);
+    this->eventHandler_->postRead(ctx, "HardwareService.configure", bytes);
   }
 
-  WateringService_configure_result result;
+  HardwareService_configure_result result;
   try {
     iface_->configure(args.configuration);
   } catch (InvalidOperation &ouch) {
@@ -1315,7 +1745,7 @@ void WateringServiceProcessor::process_configure(int32_t seqid, ::apache::thrift
     result.__isset.ouch = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "WateringService.configure");
+      this->eventHandler_->handlerError(ctx, "HardwareService.configure");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -1328,7 +1758,7 @@ void WateringServiceProcessor::process_configure(int32_t seqid, ::apache::thrift
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "WateringService.configure");
+    this->eventHandler_->preWrite(ctx, "HardwareService.configure");
   }
 
   oprot->writeMessageBegin("configure", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -1338,32 +1768,32 @@ void WateringServiceProcessor::process_configure(int32_t seqid, ::apache::thrift
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "WateringService.configure", bytes);
+    this->eventHandler_->postWrite(ctx, "HardwareService.configure", bytes);
   }
 }
 
-void WateringServiceProcessor::process_pour(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HardwareServiceProcessor::process_pour(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("WateringService.pour", callContext);
+    ctx = this->eventHandler_->getContext("HardwareService.pour", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "WateringService.pour");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.pour");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "WateringService.pour");
+    this->eventHandler_->preRead(ctx, "HardwareService.pour");
   }
 
-  WateringService_pour_args args;
+  HardwareService_pour_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "WateringService.pour", bytes);
+    this->eventHandler_->postRead(ctx, "HardwareService.pour", bytes);
   }
 
-  WateringService_pour_result result;
+  HardwareService_pour_result result;
   try {
     iface_->pour(args.from, args.to);
   } catch (InvalidOperation &ouch) {
@@ -1371,7 +1801,7 @@ void WateringServiceProcessor::process_pour(int32_t seqid, ::apache::thrift::pro
     result.__isset.ouch = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "WateringService.pour");
+      this->eventHandler_->handlerError(ctx, "HardwareService.pour");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -1384,7 +1814,7 @@ void WateringServiceProcessor::process_pour(int32_t seqid, ::apache::thrift::pro
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "WateringService.pour");
+    this->eventHandler_->preWrite(ctx, "HardwareService.pour");
   }
 
   oprot->writeMessageBegin("pour", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -1394,32 +1824,32 @@ void WateringServiceProcessor::process_pour(int32_t seqid, ::apache::thrift::pro
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "WateringService.pour", bytes);
+    this->eventHandler_->postWrite(ctx, "HardwareService.pour", bytes);
   }
 }
 
-void WateringServiceProcessor::process_getInput(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HardwareServiceProcessor::process_getInput(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("WateringService.getInput", callContext);
+    ctx = this->eventHandler_->getContext("HardwareService.getInput", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "WateringService.getInput");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.getInput");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "WateringService.getInput");
+    this->eventHandler_->preRead(ctx, "HardwareService.getInput");
   }
 
-  WateringService_getInput_args args;
+  HardwareService_getInput_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "WateringService.getInput", bytes);
+    this->eventHandler_->postRead(ctx, "HardwareService.getInput", bytes);
   }
 
-  WateringService_getInput_result result;
+  HardwareService_getInput_result result;
   try {
     iface_->getInput(result.success);
     result.__isset.success = true;
@@ -1428,7 +1858,7 @@ void WateringServiceProcessor::process_getInput(int32_t seqid, ::apache::thrift:
     result.__isset.ouch = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "WateringService.getInput");
+      this->eventHandler_->handlerError(ctx, "HardwareService.getInput");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -1441,7 +1871,7 @@ void WateringServiceProcessor::process_getInput(int32_t seqid, ::apache::thrift:
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "WateringService.getInput");
+    this->eventHandler_->preWrite(ctx, "HardwareService.getInput");
   }
 
   oprot->writeMessageBegin("getInput", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -1451,32 +1881,32 @@ void WateringServiceProcessor::process_getInput(int32_t seqid, ::apache::thrift:
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "WateringService.getInput", bytes);
+    this->eventHandler_->postWrite(ctx, "HardwareService.getInput", bytes);
   }
 }
 
-void WateringServiceProcessor::process_startPump(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HardwareServiceProcessor::process_startPump(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("WateringService.startPump", callContext);
+    ctx = this->eventHandler_->getContext("HardwareService.startPump", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "WateringService.startPump");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.startPump");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "WateringService.startPump");
+    this->eventHandler_->preRead(ctx, "HardwareService.startPump");
   }
 
-  WateringService_startPump_args args;
+  HardwareService_startPump_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "WateringService.startPump", bytes);
+    this->eventHandler_->postRead(ctx, "HardwareService.startPump", bytes);
   }
 
-  WateringService_startPump_result result;
+  HardwareService_startPump_result result;
   try {
     iface_->startPump(args.pumpId);
   } catch (InvalidOperation &ouch) {
@@ -1484,7 +1914,7 @@ void WateringServiceProcessor::process_startPump(int32_t seqid, ::apache::thrift
     result.__isset.ouch = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "WateringService.startPump");
+      this->eventHandler_->handlerError(ctx, "HardwareService.startPump");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -1497,7 +1927,7 @@ void WateringServiceProcessor::process_startPump(int32_t seqid, ::apache::thrift
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "WateringService.startPump");
+    this->eventHandler_->preWrite(ctx, "HardwareService.startPump");
   }
 
   oprot->writeMessageBegin("startPump", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -1507,32 +1937,32 @@ void WateringServiceProcessor::process_startPump(int32_t seqid, ::apache::thrift
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "WateringService.startPump", bytes);
+    this->eventHandler_->postWrite(ctx, "HardwareService.startPump", bytes);
   }
 }
 
-void WateringServiceProcessor::process_stopPump(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HardwareServiceProcessor::process_stopPump(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("WateringService.stopPump", callContext);
+    ctx = this->eventHandler_->getContext("HardwareService.stopPump", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "WateringService.stopPump");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.stopPump");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "WateringService.stopPump");
+    this->eventHandler_->preRead(ctx, "HardwareService.stopPump");
   }
 
-  WateringService_stopPump_args args;
+  HardwareService_stopPump_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "WateringService.stopPump", bytes);
+    this->eventHandler_->postRead(ctx, "HardwareService.stopPump", bytes);
   }
 
-  WateringService_stopPump_result result;
+  HardwareService_stopPump_result result;
   try {
     iface_->stopPump(result.success, args.pumpId);
     result.__isset.success = true;
@@ -1541,7 +1971,7 @@ void WateringServiceProcessor::process_stopPump(int32_t seqid, ::apache::thrift:
     result.__isset.ouch = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "WateringService.stopPump");
+      this->eventHandler_->handlerError(ctx, "HardwareService.stopPump");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -1554,7 +1984,7 @@ void WateringServiceProcessor::process_stopPump(int32_t seqid, ::apache::thrift:
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "WateringService.stopPump");
+    this->eventHandler_->preWrite(ctx, "HardwareService.stopPump");
   }
 
   oprot->writeMessageBegin("stopPump", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -1564,14 +1994,121 @@ void WateringServiceProcessor::process_stopPump(int32_t seqid, ::apache::thrift:
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "WateringService.stopPump", bytes);
+    this->eventHandler_->postWrite(ctx, "HardwareService.stopPump", bytes);
   }
 }
 
-::boost::shared_ptr< ::apache::thrift::TProcessor > WateringServiceProcessorFactory::getProcessor(const ::apache::thrift::TConnectionInfo& connInfo) {
-  ::apache::thrift::ReleaseHandler< WateringServiceIfFactory > cleanup(handlerFactory_);
-  ::boost::shared_ptr< WateringServiceIf > handler(handlerFactory_->getHandler(connInfo), cleanup);
-  ::boost::shared_ptr< ::apache::thrift::TProcessor > processor(new WateringServiceProcessor(handler));
+void HardwareServiceProcessor::process_getServiceStatus(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("HardwareService.getServiceStatus", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.getServiceStatus");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "HardwareService.getServiceStatus");
+  }
+
+  HardwareService_getServiceStatus_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "HardwareService.getServiceStatus", bytes);
+  }
+
+  HardwareService_getServiceStatus_result result;
+  try {
+    iface_->getServiceStatus(result.success);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "HardwareService.getServiceStatus");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getServiceStatus", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "HardwareService.getServiceStatus");
+  }
+
+  oprot->writeMessageBegin("getServiceStatus", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "HardwareService.getServiceStatus", bytes);
+  }
+}
+
+void HardwareServiceProcessor::process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("HardwareService.ping", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.ping");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "HardwareService.ping");
+  }
+
+  HardwareService_ping_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "HardwareService.ping", bytes);
+  }
+
+  HardwareService_ping_result result;
+  try {
+    iface_->ping(args.arg);
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "HardwareService.ping");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("ping", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "HardwareService.ping");
+  }
+
+  oprot->writeMessageBegin("ping", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "HardwareService.ping", bytes);
+  }
+}
+
+::boost::shared_ptr< ::apache::thrift::TProcessor > HardwareServiceProcessorFactory::getProcessor(const ::apache::thrift::TConnectionInfo& connInfo) {
+  ::apache::thrift::ReleaseHandler< HardwareServiceIfFactory > cleanup(handlerFactory_);
+  ::boost::shared_ptr< HardwareServiceIf > handler(handlerFactory_->getHandler(connInfo), cleanup);
+  ::boost::shared_ptr< ::apache::thrift::TProcessor > processor(new HardwareServiceProcessor(handler));
   return processor;
 }
 } // namespace

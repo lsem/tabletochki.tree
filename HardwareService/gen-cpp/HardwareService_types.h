@@ -4,8 +4,8 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#ifndef WateringService_TYPES_H
-#define WateringService_TYPES_H
+#ifndef HardwareService_TYPES_H
+#define HardwareService_TYPES_H
 
 #include <iosfwd>
 
@@ -46,6 +46,8 @@ class HardwareInput;
 class PumpConfiguration;
 
 class Configuration;
+
+class ServiceStatus;
 
 typedef struct _InvalidOperation__isset {
   _InvalidOperation__isset() : what(false), why(false) {}
@@ -267,6 +269,49 @@ class Configuration {
 };
 
 void swap(Configuration &a, Configuration &b);
+
+typedef struct _ServiceStatus__isset {
+  _ServiceStatus__isset() : statusCode(false) {}
+  bool statusCode :1;
+} _ServiceStatus__isset;
+
+class ServiceStatus {
+ public:
+
+  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
+  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+
+  ServiceStatus(const ServiceStatus&);
+  ServiceStatus& operator=(const ServiceStatus&);
+  ServiceStatus() : statusCode(0) {
+  }
+
+  virtual ~ServiceStatus() throw();
+  int32_t statusCode;
+
+  _ServiceStatus__isset __isset;
+
+  void __set_statusCode(const int32_t val);
+
+  bool operator == (const ServiceStatus & rhs) const
+  {
+    if (!(statusCode == rhs.statusCode))
+      return false;
+    return true;
+  }
+  bool operator != (const ServiceStatus &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ServiceStatus & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const ServiceStatus& obj);
+};
+
+void swap(ServiceStatus &a, ServiceStatus &b);
 
 } // namespace
 

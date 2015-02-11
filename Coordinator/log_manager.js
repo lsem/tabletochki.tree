@@ -33,7 +33,7 @@ exports.loggerFor = function (componentName) {
 
     that.info = function (message) {
         if (logLevel >= logLevels.info)
-            console.log(('['+componentName+'] ' + message).grey);
+            console.log(('['+componentName+'] ' + message).white);
     };
 
     that.trace = function (message) {

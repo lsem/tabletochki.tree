@@ -8,10 +8,10 @@ var Thrift = thrift.Thrift;
 var Q = thrift.Q;
 
 
-var ttypes = require('./WateringService_types');
+var ttypes = require('./HardwareService_types');
 //HELPER FUNCTIONS AND STRUCTURES
 
-WateringService_configure_args = function(args) {
+HardwareService_configure_args = function(args) {
   this.configuration = null;
   if (args) {
     if (args.configuration !== undefined) {
@@ -19,8 +19,8 @@ WateringService_configure_args = function(args) {
     }
   }
 };
-WateringService_configure_args.prototype = {};
-WateringService_configure_args.prototype.read = function(input) {
+HardwareService_configure_args.prototype = {};
+HardwareService_configure_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -53,8 +53,8 @@ WateringService_configure_args.prototype.read = function(input) {
   return;
 };
 
-WateringService_configure_args.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_configure_args');
+HardwareService_configure_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_configure_args');
   if (this.configuration !== null && this.configuration !== undefined) {
     output.writeFieldBegin('configuration', Thrift.Type.STRUCT, 1);
     this.configuration.write(output);
@@ -65,7 +65,7 @@ WateringService_configure_args.prototype.write = function(output) {
   return;
 };
 
-WateringService_configure_result = function(args) {
+HardwareService_configure_result = function(args) {
   this.ouch = null;
   if (args instanceof ttypes.InvalidOperation) {
     this.ouch = args;
@@ -77,8 +77,8 @@ WateringService_configure_result = function(args) {
     }
   }
 };
-WateringService_configure_result.prototype = {};
-WateringService_configure_result.prototype.read = function(input) {
+HardwareService_configure_result.prototype = {};
+HardwareService_configure_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -111,8 +111,8 @@ WateringService_configure_result.prototype.read = function(input) {
   return;
 };
 
-WateringService_configure_result.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_configure_result');
+HardwareService_configure_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_configure_result');
   if (this.ouch !== null && this.ouch !== undefined) {
     output.writeFieldBegin('ouch', Thrift.Type.STRUCT, 1);
     this.ouch.write(output);
@@ -123,7 +123,7 @@ WateringService_configure_result.prototype.write = function(output) {
   return;
 };
 
-WateringService_pour_args = function(args) {
+HardwareService_pour_args = function(args) {
   this.from = null;
   this.to = null;
   if (args) {
@@ -135,8 +135,8 @@ WateringService_pour_args = function(args) {
     }
   }
 };
-WateringService_pour_args.prototype = {};
-WateringService_pour_args.prototype.read = function(input) {
+HardwareService_pour_args.prototype = {};
+HardwareService_pour_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -172,8 +172,8 @@ WateringService_pour_args.prototype.read = function(input) {
   return;
 };
 
-WateringService_pour_args.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_pour_args');
+HardwareService_pour_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_pour_args');
   if (this.from !== null && this.from !== undefined) {
     output.writeFieldBegin('from', Thrift.Type.I32, 1);
     output.writeI32(this.from);
@@ -189,7 +189,7 @@ WateringService_pour_args.prototype.write = function(output) {
   return;
 };
 
-WateringService_pour_result = function(args) {
+HardwareService_pour_result = function(args) {
   this.ouch = null;
   if (args instanceof ttypes.InvalidOperation) {
     this.ouch = args;
@@ -201,8 +201,8 @@ WateringService_pour_result = function(args) {
     }
   }
 };
-WateringService_pour_result.prototype = {};
-WateringService_pour_result.prototype.read = function(input) {
+HardwareService_pour_result.prototype = {};
+HardwareService_pour_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -235,8 +235,8 @@ WateringService_pour_result.prototype.read = function(input) {
   return;
 };
 
-WateringService_pour_result.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_pour_result');
+HardwareService_pour_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_pour_result');
   if (this.ouch !== null && this.ouch !== undefined) {
     output.writeFieldBegin('ouch', Thrift.Type.STRUCT, 1);
     this.ouch.write(output);
@@ -247,10 +247,10 @@ WateringService_pour_result.prototype.write = function(output) {
   return;
 };
 
-WateringService_getInput_args = function(args) {
+HardwareService_getInput_args = function(args) {
 };
-WateringService_getInput_args.prototype = {};
-WateringService_getInput_args.prototype.read = function(input) {
+HardwareService_getInput_args.prototype = {};
+HardwareService_getInput_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -268,14 +268,14 @@ WateringService_getInput_args.prototype.read = function(input) {
   return;
 };
 
-WateringService_getInput_args.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_getInput_args');
+HardwareService_getInput_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_getInput_args');
   output.writeFieldStop();
   output.writeStructEnd();
   return;
 };
 
-WateringService_getInput_result = function(args) {
+HardwareService_getInput_result = function(args) {
   this.success = null;
   this.ouch = null;
   if (args instanceof ttypes.InvalidOperation) {
@@ -291,8 +291,8 @@ WateringService_getInput_result = function(args) {
     }
   }
 };
-WateringService_getInput_result.prototype = {};
-WateringService_getInput_result.prototype.read = function(input) {
+HardwareService_getInput_result.prototype = {};
+HardwareService_getInput_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -330,8 +330,8 @@ WateringService_getInput_result.prototype.read = function(input) {
   return;
 };
 
-WateringService_getInput_result.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_getInput_result');
+HardwareService_getInput_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_getInput_result');
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
     this.success.write(output);
@@ -347,7 +347,7 @@ WateringService_getInput_result.prototype.write = function(output) {
   return;
 };
 
-WateringService_startPump_args = function(args) {
+HardwareService_startPump_args = function(args) {
   this.pumpId = null;
   if (args) {
     if (args.pumpId !== undefined) {
@@ -355,8 +355,8 @@ WateringService_startPump_args = function(args) {
     }
   }
 };
-WateringService_startPump_args.prototype = {};
-WateringService_startPump_args.prototype.read = function(input) {
+HardwareService_startPump_args.prototype = {};
+HardwareService_startPump_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -388,8 +388,8 @@ WateringService_startPump_args.prototype.read = function(input) {
   return;
 };
 
-WateringService_startPump_args.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_startPump_args');
+HardwareService_startPump_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_startPump_args');
   if (this.pumpId !== null && this.pumpId !== undefined) {
     output.writeFieldBegin('pumpId', Thrift.Type.I32, 1);
     output.writeI32(this.pumpId);
@@ -400,7 +400,7 @@ WateringService_startPump_args.prototype.write = function(output) {
   return;
 };
 
-WateringService_startPump_result = function(args) {
+HardwareService_startPump_result = function(args) {
   this.ouch = null;
   if (args instanceof ttypes.InvalidOperation) {
     this.ouch = args;
@@ -412,8 +412,8 @@ WateringService_startPump_result = function(args) {
     }
   }
 };
-WateringService_startPump_result.prototype = {};
-WateringService_startPump_result.prototype.read = function(input) {
+HardwareService_startPump_result.prototype = {};
+HardwareService_startPump_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -446,8 +446,8 @@ WateringService_startPump_result.prototype.read = function(input) {
   return;
 };
 
-WateringService_startPump_result.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_startPump_result');
+HardwareService_startPump_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_startPump_result');
   if (this.ouch !== null && this.ouch !== undefined) {
     output.writeFieldBegin('ouch', Thrift.Type.STRUCT, 1);
     this.ouch.write(output);
@@ -458,7 +458,7 @@ WateringService_startPump_result.prototype.write = function(output) {
   return;
 };
 
-WateringService_stopPump_args = function(args) {
+HardwareService_stopPump_args = function(args) {
   this.pumpId = null;
   if (args) {
     if (args.pumpId !== undefined) {
@@ -466,8 +466,8 @@ WateringService_stopPump_args = function(args) {
     }
   }
 };
-WateringService_stopPump_args.prototype = {};
-WateringService_stopPump_args.prototype.read = function(input) {
+HardwareService_stopPump_args.prototype = {};
+HardwareService_stopPump_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -499,8 +499,8 @@ WateringService_stopPump_args.prototype.read = function(input) {
   return;
 };
 
-WateringService_stopPump_args.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_stopPump_args');
+HardwareService_stopPump_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_stopPump_args');
   if (this.pumpId !== null && this.pumpId !== undefined) {
     output.writeFieldBegin('pumpId', Thrift.Type.I32, 1);
     output.writeI32(this.pumpId);
@@ -511,7 +511,7 @@ WateringService_stopPump_args.prototype.write = function(output) {
   return;
 };
 
-WateringService_stopPump_result = function(args) {
+HardwareService_stopPump_result = function(args) {
   this.success = null;
   this.ouch = null;
   if (args instanceof ttypes.InvalidOperation) {
@@ -527,8 +527,8 @@ WateringService_stopPump_result = function(args) {
     }
   }
 };
-WateringService_stopPump_result.prototype = {};
-WateringService_stopPump_result.prototype.read = function(input) {
+HardwareService_stopPump_result.prototype = {};
+HardwareService_stopPump_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -566,8 +566,8 @@ WateringService_stopPump_result.prototype.read = function(input) {
   return;
 };
 
-WateringService_stopPump_result.prototype.write = function(output) {
-  output.writeStructBegin('WateringService_stopPump_result');
+HardwareService_stopPump_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_stopPump_result');
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
     this.success.write(output);
@@ -583,16 +583,179 @@ WateringService_stopPump_result.prototype.write = function(output) {
   return;
 };
 
-WateringServiceClient = exports.Client = function(output, pClass) {
+HardwareService_getServiceStatus_args = function(args) {
+};
+HardwareService_getServiceStatus_args.prototype = {};
+HardwareService_getServiceStatus_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    input.skip(ftype);
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_getServiceStatus_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_getServiceStatus_args');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+HardwareService_getServiceStatus_result = function(args) {
+  this.success = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+  }
+};
+HardwareService_getServiceStatus_result.prototype = {};
+HardwareService_getServiceStatus_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new ttypes.ServiceStatus();
+        this.success.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_getServiceStatus_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_getServiceStatus_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+HardwareService_ping_args = function(args) {
+  this.arg = null;
+  if (args) {
+    if (args.arg !== undefined) {
+      this.arg = args.arg;
+    }
+  }
+};
+HardwareService_ping_args.prototype = {};
+HardwareService_ping_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.arg = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_ping_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_ping_args');
+  if (this.arg !== null && this.arg !== undefined) {
+    output.writeFieldBegin('arg', Thrift.Type.I32, 1);
+    output.writeI32(this.arg);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+HardwareService_ping_result = function(args) {
+};
+HardwareService_ping_result.prototype = {};
+HardwareService_ping_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    input.skip(ftype);
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_ping_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_ping_result');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+HardwareServiceClient = exports.Client = function(output, pClass) {
     this.output = output;
     this.pClass = pClass;
     this._seqid = 0;
     this._reqs = {};
 };
-WateringServiceClient.prototype = {};
-WateringServiceClient.prototype.seqid = function() { return this._seqid; }
-WateringServiceClient.prototype.new_seqid = function() { return this._seqid += 1; }
-WateringServiceClient.prototype.configure = function(configuration, callback) {
+HardwareServiceClient.prototype = {};
+HardwareServiceClient.prototype.seqid = function() { return this._seqid; }
+HardwareServiceClient.prototype.new_seqid = function() { return this._seqid += 1; }
+HardwareServiceClient.prototype.configure = function(configuration, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -611,17 +774,17 @@ WateringServiceClient.prototype.configure = function(configuration, callback) {
   }
 };
 
-WateringServiceClient.prototype.send_configure = function(configuration) {
+HardwareServiceClient.prototype.send_configure = function(configuration) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('configure', Thrift.MessageType.CALL, this.seqid());
-  var args = new WateringService_configure_args();
+  var args = new HardwareService_configure_args();
   args.configuration = configuration;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-WateringServiceClient.prototype.recv_configure = function(input,mtype,rseqid) {
+HardwareServiceClient.prototype.recv_configure = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -630,7 +793,7 @@ WateringServiceClient.prototype.recv_configure = function(input,mtype,rseqid) {
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new WateringService_configure_result();
+  var result = new HardwareService_configure_result();
   result.read(input);
   input.readMessageEnd();
 
@@ -639,7 +802,7 @@ WateringServiceClient.prototype.recv_configure = function(input,mtype,rseqid) {
   }
   callback(null)
 };
-WateringServiceClient.prototype.pour = function(from, to, callback) {
+HardwareServiceClient.prototype.pour = function(from, to, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -658,10 +821,10 @@ WateringServiceClient.prototype.pour = function(from, to, callback) {
   }
 };
 
-WateringServiceClient.prototype.send_pour = function(from, to) {
+HardwareServiceClient.prototype.send_pour = function(from, to) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('pour', Thrift.MessageType.CALL, this.seqid());
-  var args = new WateringService_pour_args();
+  var args = new HardwareService_pour_args();
   args.from = from;
   args.to = to;
   args.write(output);
@@ -669,7 +832,7 @@ WateringServiceClient.prototype.send_pour = function(from, to) {
   return this.output.flush();
 };
 
-WateringServiceClient.prototype.recv_pour = function(input,mtype,rseqid) {
+HardwareServiceClient.prototype.recv_pour = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -678,7 +841,7 @@ WateringServiceClient.prototype.recv_pour = function(input,mtype,rseqid) {
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new WateringService_pour_result();
+  var result = new HardwareService_pour_result();
   result.read(input);
   input.readMessageEnd();
 
@@ -687,7 +850,7 @@ WateringServiceClient.prototype.recv_pour = function(input,mtype,rseqid) {
   }
   callback(null)
 };
-WateringServiceClient.prototype.getInput = function(callback) {
+HardwareServiceClient.prototype.getInput = function(callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -706,16 +869,16 @@ WateringServiceClient.prototype.getInput = function(callback) {
   }
 };
 
-WateringServiceClient.prototype.send_getInput = function() {
+HardwareServiceClient.prototype.send_getInput = function() {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('getInput', Thrift.MessageType.CALL, this.seqid());
-  var args = new WateringService_getInput_args();
+  var args = new HardwareService_getInput_args();
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-WateringServiceClient.prototype.recv_getInput = function(input,mtype,rseqid) {
+HardwareServiceClient.prototype.recv_getInput = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -724,7 +887,7 @@ WateringServiceClient.prototype.recv_getInput = function(input,mtype,rseqid) {
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new WateringService_getInput_result();
+  var result = new HardwareService_getInput_result();
   result.read(input);
   input.readMessageEnd();
 
@@ -736,7 +899,7 @@ WateringServiceClient.prototype.recv_getInput = function(input,mtype,rseqid) {
   }
   return callback('getInput failed: unknown result');
 };
-WateringServiceClient.prototype.startPump = function(pumpId, callback) {
+HardwareServiceClient.prototype.startPump = function(pumpId, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -755,17 +918,17 @@ WateringServiceClient.prototype.startPump = function(pumpId, callback) {
   }
 };
 
-WateringServiceClient.prototype.send_startPump = function(pumpId) {
+HardwareServiceClient.prototype.send_startPump = function(pumpId) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('startPump', Thrift.MessageType.CALL, this.seqid());
-  var args = new WateringService_startPump_args();
+  var args = new HardwareService_startPump_args();
   args.pumpId = pumpId;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-WateringServiceClient.prototype.recv_startPump = function(input,mtype,rseqid) {
+HardwareServiceClient.prototype.recv_startPump = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -774,7 +937,7 @@ WateringServiceClient.prototype.recv_startPump = function(input,mtype,rseqid) {
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new WateringService_startPump_result();
+  var result = new HardwareService_startPump_result();
   result.read(input);
   input.readMessageEnd();
 
@@ -783,7 +946,7 @@ WateringServiceClient.prototype.recv_startPump = function(input,mtype,rseqid) {
   }
   callback(null)
 };
-WateringServiceClient.prototype.stopPump = function(pumpId, callback) {
+HardwareServiceClient.prototype.stopPump = function(pumpId, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -802,17 +965,17 @@ WateringServiceClient.prototype.stopPump = function(pumpId, callback) {
   }
 };
 
-WateringServiceClient.prototype.send_stopPump = function(pumpId) {
+HardwareServiceClient.prototype.send_stopPump = function(pumpId) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('stopPump', Thrift.MessageType.CALL, this.seqid());
-  var args = new WateringService_stopPump_args();
+  var args = new HardwareService_stopPump_args();
   args.pumpId = pumpId;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-WateringServiceClient.prototype.recv_stopPump = function(input,mtype,rseqid) {
+HardwareServiceClient.prototype.recv_stopPump = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -821,7 +984,7 @@ WateringServiceClient.prototype.recv_stopPump = function(input,mtype,rseqid) {
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new WateringService_stopPump_result();
+  var result = new HardwareService_stopPump_result();
   result.read(input);
   input.readMessageEnd();
 
@@ -833,10 +996,100 @@ WateringServiceClient.prototype.recv_stopPump = function(input,mtype,rseqid) {
   }
   return callback('stopPump failed: unknown result');
 };
-WateringServiceProcessor = exports.Processor = function(handler) {
+HardwareServiceClient.prototype.getServiceStatus = function(callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_getServiceStatus();
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_getServiceStatus();
+  }
+};
+
+HardwareServiceClient.prototype.send_getServiceStatus = function() {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getServiceStatus', Thrift.MessageType.CALL, this.seqid());
+  var args = new HardwareService_getServiceStatus_args();
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+HardwareServiceClient.prototype.recv_getServiceStatus = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new HardwareService_getServiceStatus_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getServiceStatus failed: unknown result');
+};
+HardwareServiceClient.prototype.ping = function(arg, callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_ping(arg);
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_ping(arg);
+  }
+};
+
+HardwareServiceClient.prototype.send_ping = function(arg) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('ping', Thrift.MessageType.CALL, this.seqid());
+  var args = new HardwareService_ping_args();
+  args.arg = arg;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+HardwareServiceClient.prototype.recv_ping = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new HardwareService_ping_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  callback(null)
+};
+HardwareServiceProcessor = exports.Processor = function(handler) {
   this._handler = handler
 }
-WateringServiceProcessor.prototype.process = function(input, output) {
+HardwareServiceProcessor.prototype.process = function(input, output) {
   var r = input.readMessageBegin();
   if (this['process_' + r.fname]) {
     return this['process_' + r.fname].call(this, r.rseqid, input, output);
@@ -851,20 +1104,20 @@ WateringServiceProcessor.prototype.process = function(input, output) {
   }
 }
 
-WateringServiceProcessor.prototype.process_configure = function(seqid, input, output) {
-  var args = new WateringService_configure_args();
+HardwareServiceProcessor.prototype.process_configure = function(seqid, input, output) {
+  var args = new HardwareService_configure_args();
   args.read(input);
   input.readMessageEnd();
   if (this._handler.configure.length === 1) {
     Q.fcall(this._handler.configure, args.configuration)
       .then(function(result) {
-        var result = new WateringService_configure_result({success: result});
+        var result = new HardwareService_configure_result({success: result});
         output.writeMessageBegin("configure", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
-        var result = new WateringService_configure_result(err);
+        var result = new HardwareService_configure_result(err);
         output.writeMessageBegin("configure", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
@@ -872,7 +1125,7 @@ WateringServiceProcessor.prototype.process_configure = function(seqid, input, ou
       });
   } else {
     this._handler.configure(args.configuration,  function (err, result) {
-      var result = new WateringService_configure_result((err != null ? err : {success: result}));
+      var result = new HardwareService_configure_result((err != null ? err : {success: result}));
       output.writeMessageBegin("configure", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
@@ -881,20 +1134,20 @@ WateringServiceProcessor.prototype.process_configure = function(seqid, input, ou
   }
 }
 
-WateringServiceProcessor.prototype.process_pour = function(seqid, input, output) {
-  var args = new WateringService_pour_args();
+HardwareServiceProcessor.prototype.process_pour = function(seqid, input, output) {
+  var args = new HardwareService_pour_args();
   args.read(input);
   input.readMessageEnd();
   if (this._handler.pour.length === 2) {
     Q.fcall(this._handler.pour, args.from, args.to)
       .then(function(result) {
-        var result = new WateringService_pour_result({success: result});
+        var result = new HardwareService_pour_result({success: result});
         output.writeMessageBegin("pour", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
-        var result = new WateringService_pour_result(err);
+        var result = new HardwareService_pour_result(err);
         output.writeMessageBegin("pour", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
@@ -902,7 +1155,7 @@ WateringServiceProcessor.prototype.process_pour = function(seqid, input, output)
       });
   } else {
     this._handler.pour(args.from, args.to,  function (err, result) {
-      var result = new WateringService_pour_result((err != null ? err : {success: result}));
+      var result = new HardwareService_pour_result((err != null ? err : {success: result}));
       output.writeMessageBegin("pour", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
@@ -911,20 +1164,20 @@ WateringServiceProcessor.prototype.process_pour = function(seqid, input, output)
   }
 }
 
-WateringServiceProcessor.prototype.process_getInput = function(seqid, input, output) {
-  var args = new WateringService_getInput_args();
+HardwareServiceProcessor.prototype.process_getInput = function(seqid, input, output) {
+  var args = new HardwareService_getInput_args();
   args.read(input);
   input.readMessageEnd();
   if (this._handler.getInput.length === 0) {
     Q.fcall(this._handler.getInput)
       .then(function(result) {
-        var result = new WateringService_getInput_result({success: result});
+        var result = new HardwareService_getInput_result({success: result});
         output.writeMessageBegin("getInput", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
-        var result = new WateringService_getInput_result(err);
+        var result = new HardwareService_getInput_result(err);
         output.writeMessageBegin("getInput", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
@@ -932,7 +1185,7 @@ WateringServiceProcessor.prototype.process_getInput = function(seqid, input, out
       });
   } else {
     this._handler.getInput( function (err, result) {
-      var result = new WateringService_getInput_result((err != null ? err : {success: result}));
+      var result = new HardwareService_getInput_result((err != null ? err : {success: result}));
       output.writeMessageBegin("getInput", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
@@ -941,20 +1194,20 @@ WateringServiceProcessor.prototype.process_getInput = function(seqid, input, out
   }
 }
 
-WateringServiceProcessor.prototype.process_startPump = function(seqid, input, output) {
-  var args = new WateringService_startPump_args();
+HardwareServiceProcessor.prototype.process_startPump = function(seqid, input, output) {
+  var args = new HardwareService_startPump_args();
   args.read(input);
   input.readMessageEnd();
   if (this._handler.startPump.length === 1) {
     Q.fcall(this._handler.startPump, args.pumpId)
       .then(function(result) {
-        var result = new WateringService_startPump_result({success: result});
+        var result = new HardwareService_startPump_result({success: result});
         output.writeMessageBegin("startPump", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
-        var result = new WateringService_startPump_result(err);
+        var result = new HardwareService_startPump_result(err);
         output.writeMessageBegin("startPump", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
@@ -962,7 +1215,7 @@ WateringServiceProcessor.prototype.process_startPump = function(seqid, input, ou
       });
   } else {
     this._handler.startPump(args.pumpId,  function (err, result) {
-      var result = new WateringService_startPump_result((err != null ? err : {success: result}));
+      var result = new HardwareService_startPump_result((err != null ? err : {success: result}));
       output.writeMessageBegin("startPump", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
@@ -971,20 +1224,20 @@ WateringServiceProcessor.prototype.process_startPump = function(seqid, input, ou
   }
 }
 
-WateringServiceProcessor.prototype.process_stopPump = function(seqid, input, output) {
-  var args = new WateringService_stopPump_args();
+HardwareServiceProcessor.prototype.process_stopPump = function(seqid, input, output) {
+  var args = new HardwareService_stopPump_args();
   args.read(input);
   input.readMessageEnd();
   if (this._handler.stopPump.length === 1) {
     Q.fcall(this._handler.stopPump, args.pumpId)
       .then(function(result) {
-        var result = new WateringService_stopPump_result({success: result});
+        var result = new HardwareService_stopPump_result({success: result});
         output.writeMessageBegin("stopPump", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
-        var result = new WateringService_stopPump_result(err);
+        var result = new HardwareService_stopPump_result(err);
         output.writeMessageBegin("stopPump", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
@@ -992,8 +1245,68 @@ WateringServiceProcessor.prototype.process_stopPump = function(seqid, input, out
       });
   } else {
     this._handler.stopPump(args.pumpId,  function (err, result) {
-      var result = new WateringService_stopPump_result((err != null ? err : {success: result}));
+      var result = new HardwareService_stopPump_result((err != null ? err : {success: result}));
       output.writeMessageBegin("stopPump", Thrift.MessageType.REPLY, seqid);
+      result.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+}
+
+HardwareServiceProcessor.prototype.process_getServiceStatus = function(seqid, input, output) {
+  var args = new HardwareService_getServiceStatus_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.getServiceStatus.length === 0) {
+    Q.fcall(this._handler.getServiceStatus)
+      .then(function(result) {
+        var result = new HardwareService_getServiceStatus_result({success: result});
+        output.writeMessageBegin("getServiceStatus", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result = new HardwareService_getServiceStatus_result(err);
+        output.writeMessageBegin("getServiceStatus", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.getServiceStatus( function (err, result) {
+      var result = new HardwareService_getServiceStatus_result((err != null ? err : {success: result}));
+      output.writeMessageBegin("getServiceStatus", Thrift.MessageType.REPLY, seqid);
+      result.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+}
+
+HardwareServiceProcessor.prototype.process_ping = function(seqid, input, output) {
+  var args = new HardwareService_ping_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.ping.length === 1) {
+    Q.fcall(this._handler.ping, args.arg)
+      .then(function(result) {
+        var result = new HardwareService_ping_result({success: result});
+        output.writeMessageBegin("ping", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result = new HardwareService_ping_result(err);
+        output.writeMessageBegin("ping", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.ping(args.arg,  function (err, result) {
+      var result = new HardwareService_ping_result((err != null ? err : {success: result}));
+      output.writeMessageBegin("ping", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
       output.flush();

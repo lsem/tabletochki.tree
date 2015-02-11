@@ -1,12 +1,13 @@
 
+#include <iostream>
 #include "Global.h"
-#include "WateringService.h"
+#include "HardwareService.h"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 
-#include "WateringServiceImplementation.h"
+#include "HardwareService_Impl.h"
 
 #include "easylogging++.h"
 
@@ -19,9 +20,9 @@ using boost::shared_ptr;
 
 using namespace  ::Tabletochki;
 
-class WateringServiceHandler : virtual public WateringServiceIf {
+class HardwareServiceHandler : virtual public HardwareServiceIf {
 public:
-    WateringServiceHandler(std::shared_ptr<WateringServiceImplementation> implementation) {
+    HardwareServiceHandler(std::shared_ptr<HardwareServiceImplementation> implementation) {
         m_implementation = implementation;
     }
 
@@ -45,8 +46,16 @@ public:
         m_implementation->StopPump(_return, pumpId);
     }
 
+    virtual void getServiceStatus(ServiceStatus& _return) {
+        m_implementation->GetServiceStatus(_return);
+    }
+
+    virtual void ping(const int32_t arg) {
+        std::cout << "---ping!!\n";
+    }
+
 private:
-    std::shared_ptr<WateringServiceImplementation> m_implementation;
+    std::shared_ptr<HardwareServiceImplementation> m_implementation;
 };
 
 
@@ -56,12 +65,12 @@ _INITIALIZE_EASYLOGGINGPP
 int main(int argc, char **argv) {
     int port = 9090;
     
-    auto serviceImplementation = std::make_shared<WateringServiceImplementation>();
+    auto serviceImplementation = std::make_shared<HardwareServiceImplementation>();
 
     serviceImplementation->StartService();
 
-    shared_ptr<WateringServiceHandler> handler(new WateringServiceHandler(serviceImplementation));
-    shared_ptr<TProcessor> processor(new WateringServiceProcessor(handler));
+    shared_ptr<HardwareServiceHandler> handler(new HardwareServiceHandler(serviceImplementation));
+    shared_ptr<TProcessor> processor(new HardwareServiceProcessor(handler));
     shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
     shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
     shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());

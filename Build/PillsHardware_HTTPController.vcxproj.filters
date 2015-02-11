@@ -12,9 +12,6 @@
     <Filter Include="SerialLib">
       <UniqueIdentifier>{0a940a35-e836-4b9f-a7cb-64d4fda54cb4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\CommandHandlers">
-      <UniqueIdentifier>{975cee88-dff9-4a70-bafa-3187c6042662}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{029b58dc-267c-4102-b659-b0ba47bf2f74}</UniqueIdentifier>
     </Filter>
@@ -23,61 +20,76 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\PillsController\src\WateringServiceImplementation.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\HardwareService\gen-cpp\HardwareService.cpp">
+      <Filter>ThriftGeneratedService</Filter>
     </ClCompile>
-    <ClCompile Include="..\PillsController\src\CommunicationChannel.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\HardwareService\gen-cpp\HardwareService_constants.cpp">
+      <Filter>ThriftGeneratedService</Filter>
     </ClCompile>
-    <ClCompile Include="..\PillsController\vendor\serialib\serialib.cpp">
+    <ClCompile Include="..\HardwareService\gen-cpp\HardwareService_types.cpp">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\serialib\serialib.cpp">
       <Filter>SerialLib</Filter>
     </ClCompile>
-    <ClCompile Include="..\PacketUnFramer.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PillsController\src\IntervalTimer.cpp">
+    <ClCompile Include="..\HardwareService\CommunicationChannel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\PacketFramer.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PillsController\src\WateringServiceHost.cpp">
+    <ClCompile Include="..\HardwareService\HardwareService_Host.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService.cpp">
-      <Filter>ThriftGeneratedService</Filter>
+    <ClCompile Include="..\HardwareService\HardwareService_Impl.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService_constants.cpp">
-      <Filter>ThriftGeneratedService</Filter>
+    <ClCompile Include="..\Common\PacketFramer.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService_types.cpp">
-      <Filter>ThriftGeneratedService</Filter>
+    <ClCompile Include="..\Common\PacketUnFramer.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\PillsController\src\WateringServiceImplementation.h">
+    <ClInclude Include="..\HardwareService\gen-cpp\HardwareService.h">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_constants.h">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_types.h">
+      <Filter>ThriftGeneratedService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\serialib\serialib.h">
+      <Filter>SerialLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HardwareService\CommunicationChannel.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\PillsController\src\CommunicationChannel.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\HardwareService\Global.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\PillsController\src\Global.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\HardwareService\HardwareService_Impl.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\PacketUnFramer.h">
+    <ClInclude Include="..\Common\CommonDefs.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\PillsController\src\IntervalTimer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Common\CoreDefs.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService.h">
-      <Filter>ThriftGeneratedService</Filter>
+    <ClInclude Include="..\Common\DataConst.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService_constants.h">
-      <Filter>ThriftGeneratedService</Filter>
+    <ClInclude Include="..\Common\PacketDefs.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService_types.h">
-      <Filter>ThriftGeneratedService</Filter>
+    <ClInclude Include="..\Common\PacketFramer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\PacketParserTypes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\PacketUnFramer.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

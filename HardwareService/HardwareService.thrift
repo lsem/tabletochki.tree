@@ -36,10 +36,16 @@ struct Configuration {
     1: list<PumpConfiguration> pumpsConfiguration;
 }
 
+struct ServiceStatus {
+    1: i32 statusCode;
+}
+
 service HardwareService {
     void configure(1: Configuration configuration) throws (1:InvalidOperation ouch);
     void pour(1:Container from, 2:Container to) throws (1:InvalidOperation ouch);
     HardwareInput getInput() throws (1:InvalidOperation ouch);
     void startPump(1: i32  pumpId) throws (1:InvalidOperation ouch);
     StopPumpResult stopPump(1: i32  pumpId) throws (1:InvalidOperation ouch);
+    ServiceStatus getServiceStatus();
+    void ping(1: i32 arg);
 }

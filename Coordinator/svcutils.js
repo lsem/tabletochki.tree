@@ -1,29 +1,13 @@
+var _ = require('underscore');
 var fork = require('child_process').fork;
 var logger = require('./log_manager').loggerFor('SVCUtils');
-var _ = require('underscore');
-var types = require('./types');
 
 
 exports.master = {
-    raiseMessage: function (messageType, messageId, messageData) {
+    raiseMessage: function (messageType, messageData, messageId) {
         process.send({messageId: messageId, messageType: messageType, messageData: messageData});
     }
 };
-
-exports.service = function (params) {
-
-};
-
-//
-//exports.waitEvents = function(stopRequestedFn) {
-//    // Run infinitely
-//    setInterval(function(){
-//        if (stopRequestedFn()) {
-//            logger.info('requested stopListener');
-//            process.exit(0);
-//        }
-//    }, 100);
-//};
 
 exports.serviceController = function (basePath) {
 
@@ -111,7 +95,7 @@ exports.serviceController = function (basePath) {
 //        logger.info('services after: ' + JSON.stringify(that.services));
     };
 
-    that.sendEvent = function(serviceId, eventId, eventData) {
+    that.sendMessage = function(serviceId, eventId, eventData) {
         var handle = that.services[serviceId].handle;
         eventData = eventData || {};
         handle.send({eventId: eventId, eventData: eventData});

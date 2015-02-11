@@ -11,26 +11,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\PacketFramer.cpp" />
-    <ClCompile Include="..\PacketUnFramer.cpp" />
-    <ClCompile Include="..\PillsController\src\CommunicationChannel.cpp" />
-    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService.cpp" />
-    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService_constants.cpp" />
-    <ClCompile Include="..\PillsController\src\gen-cpp\WateringService_types.cpp" />
-    <ClCompile Include="..\PillsController\src\IntervalTimer.cpp" />
-    <ClCompile Include="..\PillsController\src\WateringServiceHost.cpp" />
-    <ClCompile Include="..\PillsController\src\WateringServiceImplementation.cpp" />
-    <ClCompile Include="..\PillsController\vendor\serialib\serialib.cpp" />
+    <ClCompile Include="..\Common\PacketFramer.cpp" />
+    <ClCompile Include="..\Common\PacketUnFramer.cpp" />
+    <ClCompile Include="..\HardwareService\CommunicationChannel.cpp" />
+    <ClCompile Include="..\HardwareService\gen-cpp\HardwareService.cpp" />
+    <ClCompile Include="..\HardwareService\gen-cpp\HardwareService_constants.cpp" />
+    <ClCompile Include="..\HardwareService\gen-cpp\HardwareService_types.cpp" />
+    <ClCompile Include="..\HardwareService\HardwareService_Host.cpp" />
+    <ClCompile Include="..\HardwareService\HardwareService_Impl.cpp" />
+    <ClCompile Include="..\Vendor\serialib\serialib.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\PacketUnFramer.h" />
-    <ClInclude Include="..\PillsController\src\CommunicationChannel.h" />
-    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService.h" />
-    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService_constants.h" />
-    <ClInclude Include="..\PillsController\src\gen-cpp\WateringService_types.h" />
-    <ClInclude Include="..\PillsController\src\Global.h" />
-    <ClInclude Include="..\PillsController\src\IntervalTimer.h" />
-    <ClInclude Include="..\PillsController\src\WateringServiceImplementation.h" />
+    <ClInclude Include="..\Common\CommonDefs.h" />
+    <ClInclude Include="..\Common\CoreDefs.h" />
+    <ClInclude Include="..\Common\DataConst.h" />
+    <ClInclude Include="..\Common\PacketDefs.h" />
+    <ClInclude Include="..\Common\PacketFramer.h" />
+    <ClInclude Include="..\Common\PacketParserTypes.h" />
+    <ClInclude Include="..\Common\PacketUnFramer.h" />
+    <ClInclude Include="..\HardwareService\CommunicationChannel.h" />
+    <ClInclude Include="..\HardwareService\gen-cpp\HardwareService.h" />
+    <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_constants.h" />
+    <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_types.h" />
+    <ClInclude Include="..\HardwareService\Global.h" />
+    <ClInclude Include="..\HardwareService\HardwareService_Impl.h" />
+    <ClInclude Include="..\Vendor\serialib\serialib.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{426ECAD6-AF76-4900-BEC2-217B0C4F420A}</ProjectGuid>
@@ -62,7 +67,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>$(ProjectName)_xy</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
+    <OutDir>..\Output\HardwareService\</OutDir>
+    <IntDir>..\Output\Intermediate\HardwareService\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>$(ProjectName)_x</TargetName>
@@ -72,7 +79,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Projects\tabletochki\hard\PillsController\vendor\thrift-0.9.2\lib\cpp\src;D:\Projects\tabletochki\hard\PillsController\vendor\boost_1_57_0\boost_1_57_0;D:\Projects\tabletochki\hard\PillsController\vendor\serialib;D:\Projects\tabletochki\hard\PillsController\src;D:\Projects\tabletochki\hard\PillsController\src\gen-cpp;D:\Projects\tabletochki\hard\PillsController\vendor\easylogging;D:\Projects\tabletochki\hard;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;_DEBUG;_ELPP_DISABLE_DEBUG_LOGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -88,7 +95,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Projects\tabletochki\hard\PillsController\vendor\thrift-0.9.2\lib\cpp\src;D:\Projects\tabletochki\hard\PillsController\vendor\boost_1_57_0\boost_1_57_0;D:\Projects\tabletochki\hard\PillsController\vendor\serialib;D:\Projects\tabletochki\hard\PillsController\src;D:\Projects\tabletochki\hard\PillsController\src\gen-cpp;D:\Projects\tabletochki\hard\PillsController\vendor\easylogging;D:\Projects\tabletochki\hard;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "WateringService.h"
-#include "WateringService_types.h"
+#include "HardwareService.h"
+#include "HardwareService_types.h"
 
 #include "PacketUnFramer.h"
 #include "CommunicationChannel.h"
@@ -14,6 +14,7 @@ using Tabletochki::Container;
 using Tabletochki::HardwareInput;
 using Tabletochki::StopPumpResult;
 using Tabletochki::Configuration;
+using Tabletochki::ServiceStatus;
 
 
 class ICommunicationChannel;
@@ -52,10 +53,10 @@ enum EPUMPID
 
 
 
-class WateringServiceImplementation : public IPacketUnFramerListener
+class HardwareServiceImplementation : public IPacketUnFramerListener
 {
 public:
-    WateringServiceImplementation();
+    HardwareServiceImplementation();
 
 public:
     void Configure(const Configuration& configuration);
@@ -63,6 +64,7 @@ public:
     void GetInput(HardwareInput& _return);
     void StartPump(const int32_t pumpId);
     void StopPump(StopPumpResult& _return, const int32_t pumpId);
+    void GetServiceStatus(ServiceStatus& _return);
 
 public:
     void StartBackgroundTasks();
@@ -151,4 +153,6 @@ private:
     boost::asio::deadline_timer        m_queryInputTimer;
 
     vector<std::shared_ptr<boost::asio::deadline_timer>>    m_pumpsControlTimers;
+
+    boost::chrono::steady_clock::time_point          m_pumpStartTime;
 };

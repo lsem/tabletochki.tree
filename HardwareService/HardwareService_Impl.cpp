@@ -15,7 +15,7 @@
 
 
 
-WateringServiceImplementation::WateringServiceImplementation() :
+HardwareServiceImplementation::HardwareServiceImplementation() :
     m_communicationLock(),
     m_currentTask(),
     m_communicationChannel(),
@@ -28,15 +28,16 @@ WateringServiceImplementation::WateringServiceImplementation() :
     m_endlessWork(m_timersIOService),
     m_heartBeatTimer(m_timersIOService),
     m_queryInputTimer(m_timersIOService),
-    m_pumpsControlTimers(PI__END, std::make_shared<boost::asio::deadline_timer>(m_timersIOService))
+    m_pumpsControlTimers(PI__END, std::make_shared<boost::asio::deadline_timer>(m_timersIOService)),
+    m_pumpStartTime()
 {
 }
 
-void WateringServiceImplementation::Configure(const Configuration& configuration)
+void HardwareServiceImplementation::Configure(const Configuration& configuration)
 {
 }
 
-void WateringServiceImplementation::Pour(const Container::type from, const Container::type to)
+void HardwareServiceImplementation::Pour(const Container::type from, const Container::type to)
 {
     try
     {
@@ -52,51 +53,65 @@ void WateringServiceImplementation::Pour(const Container::type from, const Conta
     }
 }
 
-void WateringServiceImplementation::GetInput(HardwareInput& _return)
+void HardwareServiceImplementation::GetInput(HardwareInput& _return)
 {
 
 }
 
-void WateringServiceImplementation::StartPump(const int32_t pumpId)
+void HardwareServiceImplementation::StartPump(const int32_t pumpId)
 {
     //DoEnablePump(pumpId);
+    LOG(ERROR) << "HardwareServiceImplementation: PUMP ENABLED !!!!";
+
+    m_pumpStartTime = boost::chrono::steady_clock::now();
 }
 
-void WateringServiceImplementation::StopPump(StopPumpResult& _return, const int32_t pumpId)
+void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const int32_t pumpId)
 {
     //DoDisablePump(pumpId);
 
     // gather statistic 
+    LOG(ERROR) << "HardwareServiceImplementation: PUMP DISABLED!!!!";
 
-    _return.workingTimeSecond = 10;
+    const boost::chrono::duration<double> pumpWorkTime = 
+            boost::chrono::steady_clock::now() - m_pumpStartTime;
+
+    _return.workingTimeSecond = (uint32_t)(pumpWorkTime.count() * 1000);
 }
 
-void WateringServiceImplementation::StartBackgroundTasks()
+void HardwareServiceImplementation::GetServiceStatus(ServiceStatus& _return)
+{
+    LOG(ERROR) << "HardwareServiceImplementation: Status requested!!!!";
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+    _return.statusCode = 0;
+}
+
+void HardwareServiceImplementation::StartBackgroundTasks()
 {
     RestartHeartBeatTask();
     RestartQueryInputTask();
 }
 
 
-void WateringServiceImplementation::RestartHeartBeatTask()
+void HardwareServiceImplementation::RestartHeartBeatTask()
 {
     m_heartBeatTimer.expires_from_now(boost::posix_time::milliseconds(Dataconst::HearBeatCommandPeriodMs));
-    m_heartBeatTimer.async_wait(std::bind(&WateringServiceImplementation::HeartBeatTask, this));
+    m_heartBeatTimer.async_wait(std::bind(&HardwareServiceImplementation::HeartBeatTask, this));
 }
 
-void WateringServiceImplementation::RestartQueryInputTask()
+void HardwareServiceImplementation::RestartQueryInputTask()
 {
     m_queryInputTimer.expires_from_now(boost::posix_time::milliseconds(Dataconst::QueryInputTaskPeriodMs));
-    m_queryInputTimer.async_wait(std::bind(&WateringServiceImplementation::QueryInputTask, this));
+    m_queryInputTimer.async_wait(std::bind(&HardwareServiceImplementation::QueryInputTask, this));
 }
 
-void WateringServiceImplementation::HeartBeatTask()
+void HardwareServiceImplementation::HeartBeatTask()
 {
     RestartHeartBeatTask();
     DoHeartBeatTask();
 }
 
-void WateringServiceImplementation::QueryInputTask()
+void HardwareServiceImplementation::QueryInputTask()
 {
     RestartQueryInputTask();
     DoQueryInputTask();
@@ -104,7 +119,7 @@ void WateringServiceImplementation::QueryInputTask()
 
 
 
-void WateringServiceImplementation::DoHeartBeatTask()
+void HardwareServiceImplementation::DoHeartBeatTask()
 {
     Packets::Command heartbeatCommand(CMD_HEARTBEAT);
     Packets::Output::StatusResponse response(nullptr);
@@ -119,12 +134,12 @@ void WateringServiceImplementation::DoHeartBeatTask()
     }
 }
 
-void WateringServiceImplementation::DoQueryStatusTask()
+void HardwareServiceImplementation::DoQueryStatusTask()
 {
     ScopedLock locked(GetCommunicationLock());
 }
 
-void WateringServiceImplementation::DoQueryInputTask()
+void HardwareServiceImplementation::DoQueryInputTask()
 {
     if (IsDeviceConnected())
     {
@@ -156,7 +171,7 @@ void WateringServiceImplementation::DoQueryInputTask()
     }
 }
 
-void WateringServiceImplementation::ConfigureIODevice()
+void HardwareServiceImplementation::ConfigureIODevice()
 {
     Packets::Templates::ConfigureIORequest<3> configureIORequest;
 
@@ -181,7 +196,7 @@ void WateringServiceImplementation::ConfigureIODevice()
     }
 }
 
-void WateringServiceImplementation::DoEnablePump()
+void HardwareServiceImplementation::DoEnablePump()
 {
     // TODO: Read IO pins from configuration
 
@@ -196,7 +211,7 @@ void WateringServiceImplementation::DoEnablePump()
     }
 }
 
-void WateringServiceImplementation::DoDisablePump()
+void HardwareServiceImplementation::DoDisablePump()
 {
     // TODO: Read IO pins from configuration
 
@@ -211,26 +226,26 @@ void WateringServiceImplementation::DoDisablePump()
     }
 }
 
-void WateringServiceImplementation::SchedulePourEnd(unsigned timeFromNow)
+void HardwareServiceImplementation::SchedulePourEnd(unsigned timeFromNow)
 {
     auto &pumpControlTimer = GetPumpControlTimer(PI_PUMP0);
 
     pumpControlTimer.expires_from_now(boost::posix_time::milliseconds(timeFromNow));
-    pumpControlTimer.async_wait(std::bind(&WateringServiceImplementation::PourEnd, this));
+    pumpControlTimer.async_wait(std::bind(&HardwareServiceImplementation::PourEnd, this));
 }
 
-void WateringServiceImplementation::PourBegin()
+void HardwareServiceImplementation::PourBegin()
 {
     DoEnablePump();
 }
 
-void WateringServiceImplementation::PourEnd()
+void HardwareServiceImplementation::PourEnd()
 {
     DoDisablePump();
 }
 
 
-bool WateringServiceImplementation::SendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
+bool HardwareServiceImplementation::SendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
 {
     const auto sizeNeeded = PacketFramer::CalculatePacketTotalSize(packetDataSize);
     auto memory = ::alloca(sizeNeeded);
@@ -248,7 +263,7 @@ bool WateringServiceImplementation::SendPacketData(void *packetData, size_t pack
     return result;
 }
 
-bool WateringServiceImplementation::DoSendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
+bool HardwareServiceImplementation::DoSendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
 {
     bool result = false;
 
@@ -310,7 +325,7 @@ bool WateringServiceImplementation::DoSendPacketData(void *packetData, size_t pa
 }
 
 /*virtual */
-void WateringServiceImplementation::PacketUnFramerListener_OnCommandParsed(const uint8_t* packetBuffer, size_t packetSize)
+void HardwareServiceImplementation::PacketUnFramerListener_OnCommandParsed(const uint8_t* packetBuffer, size_t packetSize)
 {
     if (packetSize <= sizeof(m_frameBuffer))
     {
@@ -320,7 +335,7 @@ void WateringServiceImplementation::PacketUnFramerListener_OnCommandParsed(const
 }
 
 
-bool WateringServiceImplementation::UnsafeReceivePacket(uint8_t *buffer, const size_t size,  size_t &out_size, unsigned timeoutMilliseconds)
+bool HardwareServiceImplementation::UnsafeReceivePacket(uint8_t *buffer, const size_t size,  size_t &out_size, unsigned timeoutMilliseconds)
 {
     bool anyFault = false;
     
@@ -353,27 +368,27 @@ bool WateringServiceImplementation::UnsafeReceivePacket(uint8_t *buffer, const s
     return !anyFault;
 }
 
-bool WateringServiceImplementation::UnsafeSendPacket(const uint8_t *packetData, size_t packetDataSize)
+bool HardwareServiceImplementation::UnsafeSendPacket(const uint8_t *packetData, size_t packetDataSize)
 {
     const auto communicatioChannel = GetCommunicationChannel();
     return communicatioChannel->CommunicationChannel_SerialWrite(packetData, packetDataSize);
 }
 
-bool WateringServiceImplementation::UnsafeResetCommunicationState()
+bool HardwareServiceImplementation::UnsafeResetCommunicationState()
 {
     vector<uint8_t> resetSequence(Dataconst::PacketMaxSizeBytes, 0);
     const auto communicatioChannel = GetCommunicationChannel();
     return communicatioChannel->CommunicationChannel_SerialWrite(resetSequence.data(), resetSequence.size());
 }
 
-void WateringServiceImplementation::ResetUnframerState()
+void HardwareServiceImplementation::ResetUnframerState()
 {
     m_unframerInstnace.Reset();
 }
 
 
 // TODO: move to something line SystemUtils or PlatformUtils
-string WateringServiceImplementation::GetLastSystemErrorMessage()
+string HardwareServiceImplementation::GetLastSystemErrorMessage()
 {
     DWORD errorCode = GetLastError();
     
@@ -400,30 +415,30 @@ string WateringServiceImplementation::GetLastSystemErrorMessage()
     return std::string();
 }
 
-void WateringServiceImplementation::SetDisconnectedState() 
+void HardwareServiceImplementation::SetDisconnectedState() 
 {
     m_connectionState = ConnectionState::Disconnected;
 }
 
-void WateringServiceImplementation::SetConnectedState() 
+void HardwareServiceImplementation::SetConnectedState() 
 { 
     m_connectionState = ConnectionState::Connected;
 }
 
 
-void WateringServiceImplementation::CreateTimerThreads()
+void HardwareServiceImplementation::CreateTimerThreads()
 {
     for (unsigned i = 0; i != Dataconst::TimerThreadPoolSize; ++i)
         m_timerThreads.create_thread(boost::bind(&boost::asio::io_service::run, &m_timersIOService));
 }
 
-void WateringServiceImplementation::StartService()
+void HardwareServiceImplementation::StartService()
 {
     CreateTimerThreads();
     StartBackgroundTasks();
 }
 
-void WateringServiceImplementation::ShutdownService()
+void HardwareServiceImplementation::ShutdownService()
 {
     m_timersIOService.stop();
     m_timerThreads.join_all();

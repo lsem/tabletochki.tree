@@ -4,13 +4,13 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "WateringService_constants.h"
+#include "HardwareService_constants.h"
 
 namespace Tabletochki {
 
-const WateringServiceConstants g_WateringService_constants;
+const HardwareServiceConstants g_HardwareService_constants;
 
-WateringServiceConstants::WateringServiceConstants() {
+HardwareServiceConstants::HardwareServiceConstants() {
 }
 
 } // namespace

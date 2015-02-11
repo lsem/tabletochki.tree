@@ -321,3 +321,56 @@ Configuration.prototype.write = function(output) {
   return;
 };
 
+ServiceStatus = module.exports.ServiceStatus = function(args) {
+  this.statusCode = null;
+  if (args) {
+    if (args.statusCode !== undefined) {
+      this.statusCode = args.statusCode;
+    }
+  }
+};
+ServiceStatus.prototype = {};
+ServiceStatus.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.statusCode = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+ServiceStatus.prototype.write = function(output) {
+  output.writeStructBegin('ServiceStatus');
+  if (this.statusCode !== null && this.statusCode !== undefined) {
+    output.writeFieldBegin('statusCode', Thrift.Type.I32, 1);
+    output.writeI32(this.statusCode);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+

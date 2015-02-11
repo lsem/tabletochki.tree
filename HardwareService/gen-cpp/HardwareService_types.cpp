@@ -4,7 +4,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "WateringService_types.h"
+#include "HardwareService_types.h"
 
 #include <algorithm>
 #include <ostream>
@@ -521,6 +521,96 @@ std::ostream& operator<<(std::ostream& out, const Configuration& obj) {
   using apache::thrift::to_string;
   out << "Configuration(";
   out << "pumpsConfiguration=" << to_string(obj.pumpsConfiguration);
+  out << ")";
+  return out;
+}
+
+
+ServiceStatus::~ServiceStatus() throw() {
+}
+
+
+void ServiceStatus::__set_statusCode(const int32_t val) {
+  this->statusCode = val;
+}
+
+const char* ServiceStatus::ascii_fingerprint = "E86CACEB22240450EDCBEFC3A83970E4";
+const uint8_t ServiceStatus::binary_fingerprint[16] = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+
+uint32_t ServiceStatus::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->statusCode);
+          this->__isset.statusCode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t ServiceStatus::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("ServiceStatus");
+
+  xfer += oprot->writeFieldBegin("statusCode", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->statusCode);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+void swap(ServiceStatus &a, ServiceStatus &b) {
+  using ::std::swap;
+  swap(a.statusCode, b.statusCode);
+  swap(a.__isset, b.__isset);
+}
+
+ServiceStatus::ServiceStatus(const ServiceStatus& other17) {
+  statusCode = other17.statusCode;
+  __isset = other17.__isset;
+}
+ServiceStatus& ServiceStatus::operator=(const ServiceStatus& other18) {
+  statusCode = other18.statusCode;
+  __isset = other18.__isset;
+  return *this;
+}
+std::ostream& operator<<(std::ostream& out, const ServiceStatus& obj) {
+  using apache::thrift::to_string;
+  out << "ServiceStatus(";
+  out << "statusCode=" << to_string(obj.statusCode);
   out << ")";
   return out;
 }

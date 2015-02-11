@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "body-parser": "^1.11.0",
+    "colors": "*",
+    "express": "^4.11.2",
+    "http-status-codes": "^1.0.4",
+    "node-simple-router": "*",
+    "node-thrift": "*",
+    "thrift": "*",
+    "underscore": "*"
+  },
+  "description": "Coordinator service for Tabletochki project"
+}

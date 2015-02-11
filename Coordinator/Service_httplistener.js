@@ -1,7 +1,7 @@
-var types  = require('../types');
 var http = require('http');
-var master = require('../svcutils').master;
-var logger = require('../log_manager.js').loggerFor('HttpListener');
+var types  = require('./types');
+var master = require('./svcutils').master;
+var logger = require('./log_manager.js').loggerFor('HttpListener');
 var _ = require('underscore');
 
 var commandListener = function(pollingPrams) {
@@ -60,7 +60,8 @@ var cmdListener = commandListener({
         try {
             var commandObject = JSON.parse(body);
             if (_.isObject(commandObject)) {
-                master.sendMessage(commandObject);
+                //master.sendMessage(commandObject);
+                master.raiseMessage(types.Messages.HttpListener.DonationCommited);
             }
             else {
                 logger.warning('Received body is not valid command object');
@@ -73,4 +74,4 @@ var cmdListener = commandListener({
 });
 
 cmdListener.startListener();
-//master.sendSystemMessage(types.serviceEvents.ServiceStarted);
+master.raiseMessage(types.Messages.Service.ServiceStarted);
