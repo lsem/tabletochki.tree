@@ -24,7 +24,7 @@
                 '<div class="wizard-nav-container">',
                 '<ul class="nav nav-pills nav-stacked" style="padding-bottom:30px;">',
                 '<li ng-class="{\'disabled\': !vm.steps.step1.canGo()}" ui-sref-active="active"><a ui-sref=".step1" eat-click-if="vm.steps.step1.canGo()" class="wizard-nav-link"><i class="icon-chevron-right"></i>Pumps Calibration</a></li>',
-                //'<li ng-class="{\'disabled\': !vm.steps.step2.canGo()}" ui-sref-active="active"><a ui-sref=".step2" eat-click-if="vm.steps.step2.canGo()" class="wizard-nav-link"><i class="icon-chevron-right"></i>Service Selection</a></li>',
+                '<li ng-class="{\'disabled\': !vm.steps.step2.canGo()}" ui-sref-active="active"><a ui-sref=".step2" eat-click-if="vm.steps.step2.canGo()" class="wizard-nav-link"><i class="icon-chevron-right"></i>Configuration acceptance</a></li>',
                 //'<li ng-class="{\'disabled\': !vm.steps.step3.canGo()}" ui-sref-active="active"><a ui-sref=".step3" eat-click-if="vm.steps.step3.canGo()" class="wizard-nav-link"><i class="icon-chevron-right"></i>Notification Schedule</a></li>',
                 '</ul>',
                 '</div>',
@@ -50,8 +50,8 @@
                     '<h3 class="panel-title">Pumps calibration</h3>'+
                 '</div>'+
 
-                '<div class="panel panel-default"> '+
-                    '<div class="panel-body">'+
+                '<div class="panel panel-body"> '+
+                    '<div class="well well-sm">'+
                         '<div class="btn-group btn-group-xm" role="group" aria-label="...">'+
                             '<button class="btn btn-default" ng-click="vm.steps.step1.startButtonClicked(1)" ng-class="{\'disabled\': !vm.steps.step1.startButtonEnabled(1)}"> Start Pump 1</button>' +
                             '<button class="btn btn-default" ng-click="vm.steps.step1.stopButtonClicked(1)" ng-class="{\'disabled\': !vm.steps.step1.stopButtonEnabled(1)}"> Stop Pump 1</button>' +
@@ -60,13 +60,12 @@
 
                         '<div class="input-group  input-group-sm inputGroup">'+
                             '<span class="input-group-addon" id="basic-addon1">Water pumped (ml)</span>'+
-                            '<input  name="input" ng-disabled="!vm.steps.step1.inputEnabled(1)" type="number" min="0" max="10000" required class="form-control waterAmountInput" id="exampleInputName2" ng-model="vm.steps.step1.pumpedMlCount[0]"/>' +
+                            '<input  name="input" ng-disabled="!vm.steps.step1.inputEnabled(1)" type="number" min="0" max="10000" required class="form-control waterAmountInput" id="exampleInputName2" ng-model="vm.pumpData.pump1.waterPumpedAmount"/>' +
                             '<span class="error" ng-show="AmountInputForm.input.$error.number"> Not valid number!</span>'  +
                         '</div>'+
                     '</div>  '+
 
-                '<div class="panel panel-default"> '+
-                    '<div class="panel-body">'+
+                    '<div class="well well-sm">'+
                         '<div class="btn-group btn-group-xm" role="group" aria-label="...">'+
                             '<button class="btn btn-default" ng-click="vm.steps.step1.startButtonClicked(2)" ng-class="{\'disabled\': !vm.steps.step1.startButtonEnabled(2)}"> Start Pump 2</button>' +
                             '<button class="btn btn-default" ng-click="vm.steps.step1.stopButtonClicked(2)" ng-class="{\'disabled\': !vm.steps.step1.stopButtonEnabled(2)}"> Stop Pump 2</button>' +
@@ -75,7 +74,7 @@
 
                         '<div class="input-group  input-group-sm inputGroup">'+
                             '<span class="input-group-addon" id="basic-addon1">Water pumped (ml)</span>'+
-                            '<input  name="input" ng-disabled="!vm.steps.step1.inputEnabled(1)" type="number" min="0" max="10000" required class="form-control waterAmountInput" id="exampleInputName2" ng-model="vm.steps.step1.pumpedMlCount[1]"/>' +
+                            '<input  name="input" ng-disabled="!vm.steps.step1.inputEnabled(2)" type="number" min="0" max="10000" required class="form-control waterAmountInput" id="exampleInputName2" ng-model="vm.pumpData.pump2.waterPumpedAmount"/>' +
                             '<span class="error" ng-show="AmountInputForm.input.$error.number"> Not valid number!</span>'  +
                         '</div>'+
                     '</div>  '+
@@ -86,11 +85,14 @@
             '<a role="button" ng-disabled="!vm.steps.step1.completionCheck()" eat-click-if="vm.steps.step2.canGo()" ui-sref="^.step2" type="button" class="btn btn-success" ng-click="vm.steps.step1.completedCallback()">Next</button>'
         ].join(''));
 
-        //$templateCache.put("settings/settings-step2.tmpl.html", [
-        //    '<h1>Step 2</h1>',
-        //    '<a role="button" eat-click-if="vm.steps.step1.canGo()" ui-sref="^.step1" type="button" class="btn btn-success">Previous</button>',
-        //    '<a role="button" ng-disabled="!vm.steps.step2.completionCheck()" eat-click-if="vm.steps.step3.canGo()" ui-sref="^.step3" type="button" class="btn btn-success" ng-click="vm.steps.step2.completedCallback()">Next</button>'
-        //].join(''));
+        $templateCache.put("settings/settings-step2.tmpl.html", [
+            '<h1>Configuration acceptance</h1>',
+            '<div class="well">' +
+                '<pre style="background-color: #1A1B20; color: #6B8071; border-color: #000000"> {{vm.configurationJsonDocument | json:4}} </pre>' +
+            '</div>' +
+            '<a role="button" eat-click-if="vm.steps.step1.canGo()" ui-sref="^.step1" type="button" class="btn btn-success">Previous</button>',
+            '<a role="button" ng-disabled="!vm.steps.step2.completionCheck()" eat-click-if="vm.steps.step3.canGo()" ui-sref="^.step3" type="button" class="btn btn-success" ng-click="vm.steps.step2.completedCallback()">Next</button>'
+        ].join(''));
         //
         //$templateCache.put("settings/settings-step3.tmpl.html", [
         //    '<h1>Step 3</h1>',
@@ -153,17 +155,17 @@
             },
             data: {
                 step: 1
+            }
+        }).state('wizard.step2', {
+            url: '/step2',
+            views: {
+                'step': {
+                    templateUrl: 'settings/settings-step2.tmpl.html',
+                }
+            },
+            data: {
+                step: 2
             }});
-        //}).state('wizard.step2', {
-        //    url: '/step2',
-        //    views: {
-        //        'step': {
-        //            templateUrl: 'settings/settings-step2.tmpl.html',
-        //        }
-        //    },
-        //    data: {
-        //        step: 2
-        //    }
         //}).state('wizard.step3', {
         //    url: '/step3',
         //    views: {
@@ -192,7 +194,6 @@
     angular.module('pills.settings.controller', ['pills.calibration']).controller('SettingsController', ['$scope', '$state', '$rootScope', 'CalibrationService',
         function SettingsController($scope, $state, $rootScope, CalibrationService) {
             var _this = this;
-
 
             this.settings = {
                 value1: '',
@@ -229,38 +230,37 @@
                 return;
             }
 
-            var resultId = null;
-            var _workingTime = '---';
-            var firstStepReady = false;
-
             var pumpData = {
                 pump1: {
                     workingTime: null,
                     state: 'stopped',
-                    invervalTimer: null
+                    intervalTimer: null,
+                    complete: false,
+                    waterPumpedAmount: 0
                 },
                 pump2: {
                     workingTime: null,
                     state: 'stopped',
-                    invervalTimer: null
+                    intervalTimer: null,
+                    complete: false,
+                    waterPumpedAmount: 0
+                },
+
+                select: function(pumpNumber) {
+                    return pumpData['pump' + pumpNumber];
                 }
             };
-
-            var progressInterval = null;
+            this.pumpData = pumpData;
+            this.configurationJsonDocument = {};
 
             this.steps =
             {
                 current: $state.$current.data.step || 1,
                 total: 3,
 
-
-
-
                 step1: {
-                    pumpedMlCount: [0, 0],
-
-                    inputEnabled: function() {
-                        return firstStepReady;
+                    inputEnabled: function(pumpNumber) {
+                        return pumpData.select(pumpNumber).complete;
                     },
 
                     canGo: function() {
@@ -268,11 +268,19 @@
                     },
 
                     completionCheck: function() {
-                        return (_this.steps.step1.pumpedMlCount[0] > 0) && (_this.steps.step1.pumpedMlCount[1] > 0);
+                        return (pumpData.select(1).waterPumpedAmount > 0) && (pumpData.select(2).waterPumpedAmount > 0);
                     },
 
                     completedCallback: function() {
                         _this.steps.step1.completed = true;
+                        _this.configurationJsonDocument = {
+                            pump1: {
+                                performance: pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000.0)
+                            },
+                            pump2: {
+                                performance: pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000.0)
+                            }
+                        };
                     },
 
                     startButtonClicked: function(pumpNumber) {
@@ -280,20 +288,18 @@
                             console.log('Failed starting the pump. Backend/Hardware service connection problem');
                             return;
                         }
-                        pumpData["pump"+pumpNumber].state = 'started';
-
-                        firstStepReady = false;
-                        _this.steps.step1.pumpedMlCount[pumpNumber-1] = 0;
+                        pumpData.select(pumpNumber).state = 'started';
+                        pumpData.select(pumpNumber).complete = false;
+                        pumpData.select(pumpNumber).waterPumpedAmount = 0;
 
                         var charIndex = 0;
-                        pumpData["pump"+pumpNumber].invervalTimer = setInterval(function () {
-                            $scope.$apply(function() {
-                                pumpData["pump"+pumpNumber].workingTime = ['|', '/', '-', '\\'][charIndex % 4];
-                                //console.log('_workingTime: ' + pumpData["pump"+pumpNumber].workingTime);
-                            });
+                        pumpData.select(pumpNumber).intervalTimer = setInterval(function () {
+                            $scope.$apply(function() { pumpData.select(pumpNumber).workingTime = ['|','/','\u2012','\\'][charIndex % 4]; });
                             charIndex += 1;
-                            }, 75);
+                        }, 75);
+
                         CalibrationService.startPump(pumpNumber).then(function (data) {
+                            console.log('Pump seems to be started');
                         }, function (error) {
                             _this.errorText = "Failed starting pump: " + JSON.stringify(error);
                         });
@@ -305,11 +311,13 @@
                             return;
                         }
                         CalibrationService.stopPump(pumpNumber).then(function (data) {
-                            if (pumpData["pump"+pumpNumber].invervalTimer !== null)
-                                clearInterval(pumpData["pump"+pumpNumber].invervalTimer);
-                            pumpData["pump"+pumpNumber].workingTime = data.result.workingTimeMs;
-                            pumpData["pump"+pumpNumber].state = 'stopped';
-                            firstStepReady = true;
+                            if (pumpData.select(pumpNumber).intervalTimer !== null) {
+                                clearInterval(pumpData.select(pumpNumber).intervalTimer);
+                                pumpData.select(pumpNumber).intervalTimer = null;
+                            }
+                            pumpData.select(pumpNumber).workingTime = data.result.workingTimeMs;
+                            pumpData.select(pumpNumber).state = 'stopped';
+                            pumpData.select(pumpNumber).complete = true;
 
                         }, function (error) {
                             _this.errorText = "Failed stopping pump: " + JSON.stringify(error);
@@ -319,17 +327,21 @@
                     },
 
                     stopButtonEnabled: function(pumpNumber) {
-                        return pumpData["pump"+pumpNumber].state === 'started';
+                        return pumpData.select(pumpNumber).state === 'started';
                     },
                     startButtonEnabled: function(pumpNumber) {
-                        return pumpData["pump"+pumpNumber].state === 'stopped' && CalibrationService.isConnectionOk();
+                        return pumpData.select(pumpNumber).state === 'stopped' && CalibrationService.isConnectionOk();
                     },
 
                     canGoToStrep2: function() {
                         return true;
                     },
 
-                    workingTime: function(number){return pumpData['pump' + number].workingTime === null ? '---' : pumpData['pump' + number].workingTime; },
+                    workingTime: function(pumpNumber){
+                        return pumpData.select(pumpNumber).workingTime === null
+                            ? '---'
+                            : pumpData.select(pumpNumber).workingTime;
+                    },
 
                     completed: false
                 },
