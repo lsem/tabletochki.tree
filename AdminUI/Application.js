@@ -2,17 +2,38 @@
     /// TEMPLATES
 
     angular.module("pills.templates", []).run(["$templateCache", function($templateCache) {
-        $templateCache.put("pill-services.tmpl.html", '<div watering=""></div><div another=""></div>');
+        $templateCache.put("pill-services.tmpl.html",
+            '<div watering service="vm.servicesStatuses.Svc_Watering"></div>' +
+            '<div kinect service="vm.servicesStatuses.Svc_Kinect"></div>' +
+            '<div httplistener service="vm.servicesStatuses.Svc_HttpListener"></div>' +
+            '<div adminui service="vm.servicesStatuses.Svc_AdminUI"></div>');
+
         $templateCache.put("pill-services/watering.tmpl.html", [
-            '<div class="col-lg-6"><div class="well">',
-            '<h2>Watering Service: <span ng-class="[status.css]">{{status.label}}</span></h2>',
-            '<p><a class="btn btn-info btn-lg" href="#" ng-click="onClick_Water();">Water</a></p></div></div>'
+            '<div><div class="col-lg-6"><div class="well">',
+                  '<h2>Watering Service<span ng-class="[status.css]">{{status.label}}</span></h2>',
+                  '<p><a class="btn btn-default btn-sm" ng-click="onClick_Water();">Secret Button</a></p><pre> {{service | json}} </pre></div>'+
+            '</div></div>'
         ].join(''));
 
-        $templateCache.put("pill-services/another.tmpl.html", [
-            '<div class="col-lg-6"><div class="well">',
-            '<h2>Another Service: <span ng-class="[status.css]">{{status.label}}</span></h2>',
-            '<p><a class="btn btn-info btn-lg" href="#" ng-click="onClick_doSmtg();">Do something</a></p></div></div>'
+        $templateCache.put("pill-services/httplistener.tmpl.html", [
+            '<div><div class="col-lg-6"><div class="well">',
+                '<h2>HttpListener Service<span ng-class="[status.css]">{{status.label}}</span></h2>',
+                '<p><a class="btn btn-default btn-sm">Secret Button</a></p><pre> {{service | json}} </pre></div>'+
+            '</div></div>'
+        ].join(''));
+
+        $templateCache.put("pill-services/adminui.tmpl.html", [
+            '<div><div class="col-lg-6"><div class="well">',
+                '<h2>AdminUI Service<span ng-class="[status.css]">{{status.label}}</span></h2>',
+                '<p><a class="btn btn-default btn-sm">Secret Button</a></p><pre> {{service | json}} </pre></div>'+
+            '</div></div>'
+        ].join(''));
+
+        $templateCache.put("pill-services/kinect.tmpl.html", [
+            '<div><div class="col-lg-6"><div class="well">',
+                '<h2>Kinect Service<span ng-class="[status.css]">{{status.label}}</span></h2>',
+                '<p><a class="btn btn-default btn-sm">Secret Button</a></p><pre> {{service | json}} </pre></div>'+
+            '</div></div>'
         ].join(''));
 
         $templateCache.put("settings/settings-root.tmpl.html", [
@@ -88,10 +109,11 @@
         $templateCache.put("settings/settings-step2.tmpl.html", [
             '<h1>Configuration acceptance</h1>',
             '<div class="well">' +
-                '<pre style="background-color: #1A1B20; color: #6B8071; border-color: #000000"> {{vm.configurationJsonDocument | json:4}} </pre>' +
+                '<pre> {{vm.configurationJsonDocument | json:4}} </pre>' +
             '</div>' +
-            '<a role="button" eat-click-if="vm.steps.step1.canGo()" ui-sref="^.step1" type="button" class="btn btn-success">Previous</button>',
-            '<a role="button" ng-disabled="!vm.steps.step2.completionCheck()" eat-click-if="vm.steps.step3.canGo()" ui-sref="^.step3" type="button" class="btn btn-success" ng-click="vm.steps.step2.completedCallback()">Next</button>'
+            '<a role="button" eat-click-if="vm.steps.step1.canGo()" ui-sref="^.step1" type="button" class="btn btn-default">Previous</button>',
+            '<a role="button"  type="button" class="btn btn-success">Upload</button>',
+            '<a role="button"  ui-sref="app" type="button" class="btn btn-success">Finish</button>',
         ].join(''));
         //
         //$templateCache.put("settings/settings-step3.tmpl.html", [
@@ -105,7 +127,7 @@
 
     angular.module('pills', [
         'pills.dependency', 'pills.config', 'pills.router', 'pills.controllers', 'pills.templates',
-        'pills.watering', 'pills.another', 'pills.settings', 'pills.header'
+        'pills.services', 'pills.settings', 'pills.header'
     ]);
 
     angular.module('pills.dependency', ['ui.router', 'ngResource', 'eatClickIf']);
@@ -135,7 +157,7 @@
             views: {
                 '@': {
                     templateUrl: 'pill-services.tmpl.html',
-                    controller: 'PillServicesController'
+                    controller: 'PillServicesController as vm'
                 }
             }
         }).state('wizard', {
@@ -179,8 +201,28 @@
         //});
     }]);
 
-    angular.module('pills.controllers', []).controller('PillServicesController', ['$scope', function PillServicesController($scope) {
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------------
+    // Dashboard controller
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------------
+    angular.module('pills.controllers', []).controller('PillServicesController', ['$scope', 'CalibrationService', '$interval', function PillServicesController($scope, CalibrationService, $interval) {
         var _this = this;
+
+        _this.servicesStatuses = {};
+        var intevalTimer = $interval(function() {
+            CalibrationService.clusterStatus().then(function(data) {
+                _this.servicesStatuses = data;
+            }, function(err) {
+                _this.servicesStatuses = null;
+            });
+        }, 1000);
+
+        $scope.$on(
+            "$destroy",
+            function handleDestroyEvent() {
+                $interval.cancel(intevalTimer);
+            }
+        );
+
     }]);
 
     angular.element(document).ready(function () {
@@ -256,7 +298,7 @@
             this.steps =
             {
                 current: $state.$current.data.step || 1,
-                total: 3,
+                total: 2,
 
                 step1: {
                     inputEnabled: function(pumpNumber) {
@@ -275,10 +317,10 @@
                         _this.steps.step1.completed = true;
                         _this.configurationJsonDocument = {
                             pump1: {
-                                performance: pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000.0)
+                                performance: Math.round(pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000))
                             },
                             pump2: {
-                                performance: pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000.0)
+                                performance: Math.round(pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000))
                             }
                         };
                     },
@@ -409,6 +451,10 @@
             getResult: { method: 'GET' }
         });
 
+        var clusterStatusResource = $resource(buildUrl('cluster_status'), null, {
+            clusterStatus: { method: 'GET', isArray: false }
+        });
+
 
         var currentStatus = {status: 0, hardStatus: 0};
 
@@ -425,6 +471,9 @@
         }, 500);
 
         var _public = {
+            clusterStatus: function() {
+                return clusterStatusResource.clusterStatus().$promise;
+            },
             startPump: function(pumpId) {
                 return hardwareServiceResource.startPump({pumpId: pumpId}).$promise;
             },
@@ -481,133 +530,37 @@
 
     /// WATERING
 
-    angular.module('pills.watering', ['pills.watering.resource', 'pills.watering.directive']);
-
-    function WateringApiService($q, $resource, $timeout, config){
-        var api = {};
-
-        var waterResource = $resource(buildUrl('water/:action'), null, {
-            water: { method: 'POST' },
-            status: { method: 'GET', params: { action:'status'}, isArray: false }
-        });
-
-        api.water = function water(data) {
-            var q = $q.defer();
-            $timeout(function(){ q.resolve('OK');}, 1000);
-            return q.promise;
-            //return waterResource.water({}, data).$promise;
-        };
-
-        api.getStatus = function getStatus () {
-            var q = $q.defer();
-            $timeout(function(){ q.resolve('OK');}, 1000);
-            return q.promise;
-            return waterResource.status({}).$promise;
-        };
-
-        return api;
-
-        ////////////////////////
-
-        function buildUrl(resourceUrl, domain) {
-            if (resourceUrl.lastIndexOf('/') !== resourceUrl.length - 1) {
-                resourceUrl += "/";
-            }
-
-            return (domain ? domain : config.api) + resourceUrl;
-        }
-    }
-
-    angular.module('pills.watering.resource', []).factory('WateringApiService', ['$q', '$resource', '$timeout', 'config', WateringApiService]);
-
-    angular.module('pills.watering.directive', []).directive('watering', ['WateringApiService', 'config', function (WateringApiService, config){
+    angular.module('pills.services', ['pills.watering.directive', 'pills.httplistener.directive', 'pills.adminui.directive', 'pills.kinect.directive']);
+    angular.module('pills.watering.directive', []).directive('watering', [function (){
         return {
             resrict: 'A',
             replace: true,
-            scope:{},
-            templateUrl: 'pill-services/watering.tmpl.html',
-            controller: ['$scope', function ($scope) {
-                $scope.status =  config.statuses.ready;
-                // WateringApiService.status().then(function(data){
-                // 	$scope.status = data;
-                // 	console.log('Watering...');
-                // }, function (error){
-                // 	scope.status = config.statuses.error;
-                // 	console.error('Error watering: ');
-                // 	console.error(error);
-                // });
-            }],
-            link: function (scope){
-                scope.onClick_Water = function(){
-                    scope.status = config.statuses.working;
-                    WateringApiService.water().then(function(){
-                        scope.status = config.statuses.ready;
-                        console.log('Watering...');
-                    }, function (error){
-                        scope.status = config.statuses.error;
-                        console.error('Error watering: ');
-                        console.error(error);
-                    });
-                };
-            }
+            scope: { service: '=service' },
+            templateUrl: 'pill-services/watering.tmpl.html'
         }
     }]);
-
-    /// AnotherService
-
-    angular.module('pills.another', ['pills.another.resource', 'pills.another.directive']);
-
-    function AnotherApiService($q, $resource, config){
-        var api = {};
-
-        var anotherResource = $resource(buildUrl('another/:action'), null, {
-            doSmtg: { method: 'POST' },
-            status: { method: 'GET', params: { action:'status'}, isArray: false }
-        });
-
-        api.doSmtg = function doSmtg(data) {
-            return $q.when(true);
-            //return anotherResource.water({}, data).$promise;
-        };
-
-        api.getStatus = function getStatus () {
-            return $q.when(true);
-            //return anotherResource.status({}).$promise;
-        };
-
-        return api;
-
-        ////////////////////////
-
-        function buildUrl(resourceUrl, domain) {
-            if (resourceUrl.lastIndexOf('/') !== resourceUrl.length - 1) {
-                resourceUrl += "/";
-            }
-            return (domain ? domain : config.api) + resourceUrl;
-        }
-    }
-
-    angular.module('pills.another.resource', []).factory('AnotherApiService', ['$q', '$resource', 'config', AnotherApiService]);
-
-    angular.module('pills.another.directive', []).directive('another', ['AnotherApiService', 'config', function (AnotherApiService){
+    angular.module('pills.httplistener.directive', []).directive('httplistener', [function (){
         return {
             resrict: 'A',
             replace: true,
-            scope:{},
-            templateUrl: 'pill-services/another.tmpl.html',
-            controller: ['$scope', 'config', function ($scope, config) {
-                $scope.status = config.statuses.error;
-            }],
-            link: function (scope){
-                scope.onClick_doSmtg = function(){
-                    AnotherApiService.doSmtg().then(function(){
-                        console.log('Another service Do something...');
-                    }, function (error){
-                        console.error('Error doing something: ');
-                        console.error(error);
-                    });
-                };
-            }
+            scope: { service: '=service' },
+            templateUrl: 'pill-services/httplistener.tmpl.html'
+        }
+    }]);
+    angular.module('pills.adminui.directive', []).directive('adminui', [function (){
+        return {
+            resrict: 'A',
+            replace: true,
+            scope: { service: '=service' },
+            templateUrl: 'pill-services/adminui.tmpl.html'
+        }
+    }]);
+    angular.module('pills.kinect.directive', []).directive('kinect', [function (){
+        return {
+            resrict: 'A',
+            replace: true,
+            scope: { service: '=service' },
+            templateUrl: 'pill-services/kinect.tmpl.html'
         }
     }]);
 

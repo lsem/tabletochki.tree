@@ -1,7 +1,8 @@
 var http = require('http');
 var types  = require('./types');
 var master = require('./svcutils').master;
-var logger = require('./log_manager.js').loggerFor('HttpListener');
+var logger = require('./log_manager.js').loggerFor(types.Services.HttpListener);
+var coordinator = require('./svcutils').coordinator(types.Services.HttpListener);
 var _ = require('underscore');
 
 var commandListener = function(pollingPrams) {
@@ -72,6 +73,19 @@ var cmdListener = commandListener({
         }
     }
 });
+
+
+var serviceState = {
+    health: 'green'
+
+};
+process.on('message', function(m) {
+    if (m.eventId === types.serviceEvents.GetStatus) {
+        coordinator.sendMessage(types.serviceEvents.StatusResponse, serviceState);
+    }
+});
+
+
 
 cmdListener.startListener();
 master.raiseMessage(types.Messages.Service.ServiceStarted);

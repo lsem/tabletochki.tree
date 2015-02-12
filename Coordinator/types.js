@@ -5,7 +5,19 @@ exports.serviceEvents = {
     Close: 1,
     Initialize: 2,
     Finalize: 3,
-    UserEvent: 4
+    UserEvent: 4,
+    GetStatus: 5,
+    StatusResponse: 6,
+    AggregatedServicesStatus: 7,
+    AggregatesServiceStatusResponse: 8
+};
+
+exports.Services = {
+    Watering: 'Svc_Watering',
+    Kinect: 'Svc_Kinect',
+    HttpListener: 'Svc_HttpListener',
+    AdminUI: 'Svc_AdminUI',
+    Coordinator: 'Coordinator'
 };
 
 exports.WateringEvents = {

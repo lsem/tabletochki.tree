@@ -82,6 +82,12 @@ body {
 
 }
 
+pre {
+    background-color: #1A1B20;
+    color: #6B8071;
+    border-color: #000000;
+}
+
 .inputGroup {
     width: 210px;
     margin-top: 10px;

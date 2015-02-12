@@ -6,7 +6,8 @@
 
 var types = require('./types');
 var master = require('./svcutils').master;
-var logger = require('./log_manager.js').loggerFor('AdminUIHttp');
+var coordinator = require('./svcutils').coordinator(types.Services.AdminUI);
+var logger = require('./log_manager.js').loggerFor(types.Services.AdminUI);
 var http   = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -32,6 +33,7 @@ app.use(function(req, res, next) {
 });
 // Enable automatic JSON body parsing
 app.use(bodyParser.json());
+app.use(express.static(__dirname + '/../AdminUI'));
 
 var thriftConnection = null;
 var transport = ThriftTransports.TFramedTransport();
@@ -163,11 +165,36 @@ app.get('/stop_result/:id', function(request, response) {
     response.end();
 });
 
+app.get('/cluster_status', function (request, response) {
+    if (servicesStatuses === null) {
+        response.status(httpStatus.NOT_FOUND);
+    } else {
+        response.send(servicesStatuses);
+    }
+
+    response.end();
+});
+
+var serviceState = {
+    health: 'green'
+};
+var servicesStatuses = null;
+
 process.on('message', function(m) {
-    if (m.eventId === appEvents.Close) {
-        process.removeAllListeners();
+    if (m.eventId === types.serviceEvents.GetStatus) {
+        //logger.info('sending back message to coordinator: ');
+        coordinator.sendMessage(types.serviceEvents.StatusResponse, serviceState);
+    } else if (m.eventId === types.serviceEvents.AggregatesServiceStatusResponse) {
+        logger.debug('received aggregates service status from coordinator: ' + JSON.stringify(m.eventData));
+        servicesStatuses = m.eventData;
     }
 });
+
+// Aggregated status poller
+setInterval(function () {
+    logger.debug('updateting agregated state for dashboard');
+    coordinator.sendMessage(types.serviceEvents.AggregatedServicesStatus, null);
+}, 1000);
 
 app.listen(4567);
 

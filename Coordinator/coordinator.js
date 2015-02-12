@@ -8,19 +8,13 @@
     var servicesController = require('./svcutils').serviceController(__dirname);
     var types = require('./types');
 
-    var Services = {
-        Watering: 'Svc_Watering',
-        Kinect: 'Svc_Kinect',
-        HttpListener: 'Svc_HttpListener',
-	    AdminUI: 'Svc_AdminUI'
-    };
+    var Services = types.Services;
 
     // Initialize
     servicesController.registerService(Services.Watering, 'Service_watering.js');
     servicesController.registerService(Services.Kinect, 'Service_kinect.js');
     servicesController.registerService(Services.HttpListener, 'Service_httplistener.js');
     servicesController.registerService(Services.AdminUI, 'Service_AdminUIHttp.js');
-
 
     // Global listeners
     process.addListener('SIGINT', function () {
@@ -49,6 +43,7 @@
             servicesController.startService(serviceId);
         }
     };
+
     //servicesController.onServiceApplicationEvent = function (serviceId, eventId, eventData) {
     //    if (eventId === types.Messages) {
     //        servicesController.onServiceConnected(serviceId);
@@ -86,5 +81,8 @@
     logger.info('   Configuration:						            ');
     logger.info('      Configuration Interface: xxx.yyy.zzz.qqq:999                     ');
     logger.info('-----------------------------------------------------------------------');
+
+    servicesController.startServicesStatusPolling();
+
 
 })();
