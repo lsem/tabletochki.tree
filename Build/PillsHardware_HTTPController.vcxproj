@@ -19,6 +19,8 @@
     <ClCompile Include="..\HardwareService\gen-cpp\HardwareService_types.cpp" />
     <ClCompile Include="..\HardwareService\HardwareService_Host.cpp" />
     <ClCompile Include="..\HardwareService\HardwareService_Impl.cpp" />
+    <ClCompile Include="..\HardwareService\ServiceConfiguration.cpp" />
+    <ClCompile Include="..\Vendor\json-parser-1.1.0\json.c" />
     <ClCompile Include="..\Vendor\serialib\serialib.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -29,12 +31,16 @@
     <ClInclude Include="..\Common\PacketFramer.h" />
     <ClInclude Include="..\Common\PacketParserTypes.h" />
     <ClInclude Include="..\Common\PacketUnFramer.h" />
+    <ClInclude Include="..\Common\Utils.h" />
     <ClInclude Include="..\HardwareService\CommunicationChannel.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_constants.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_types.h" />
     <ClInclude Include="..\HardwareService\Global.h" />
     <ClInclude Include="..\HardwareService\HardwareService_Impl.h" />
+    <ClInclude Include="..\HardwareService\PumpTypes.h" />
+    <ClInclude Include="..\HardwareService\ServiceConfiguration.h" />
+    <ClInclude Include="..\Vendor\json-parser-1.1.0\json.h" />
     <ClInclude Include="..\Vendor\serialib\serialib.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -79,8 +85,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;_DEBUG;_ELPP_DISABLE_DEBUG_LOGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Common;..\Vendor\json-parser-1.1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_DEBUG;_ELPP_THREAD_SAFE;_ELPP_DISABLE_DEBUG_LOGS;_ELPP_DISABLE_DEFAULT_CRASH_HANDLING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -96,7 +102,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;_ELPP_DISABLE_DEBUG_LOGS;_ELPP_DISABLE_DEFAULT_CRASH_HANDLING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

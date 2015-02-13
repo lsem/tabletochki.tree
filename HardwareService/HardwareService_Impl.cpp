@@ -1,5 +1,5 @@
 #include "Global.h"
-
+#include "CoreDefs.h"
 #include "CommonDefs.h"
 
 #include "HardwareService_Impl.h"
@@ -9,10 +9,19 @@
 #include "PacketParserTypes.h"
 #include "PacketFramer.h"
 #include "DataConst.h"
+#include "ServiceConfiguration.h"
 
 
 #include <easylogging++.h>
 
+
+const HardwareServiceImplementation::TableEntry HardwareServiceImplementation::m_tasksDescriptors[] = 
+{
+    { &HardwareServiceImplementation::HeartBeatTask,         Dataconst::HearBeatCommandPeriodMs },     // ST_HEARTBEATTIMER
+    { &HardwareServiceImplementation::StatusTask,            Dataconst::StatusTaskPeriodMs },          // ST_STATUSTIMER
+    { &HardwareServiceImplementation::InputPumpControlTask,  Dataconst::InputPipeTaskPeriodMs },       // ST_INPUTPUMPTIMER
+    { &HardwareServiceImplementation::OutputPumpControlTask, Dataconst::OutputPipeTaskPeriodMs }       // ST_OUTPUTPUMPTIMER
+};
 
 
 HardwareServiceImplementation::HardwareServiceImplementation() :
@@ -21,16 +30,15 @@ HardwareServiceImplementation::HardwareServiceImplementation() :
     m_communicationChannel(),
     m_frameBuffer(),
     m_frameBufferSize(0),
-    m_unframerInstnace(this),
+    m_unframer(this),
     m_connectionState(),
     m_timerThreads(),
     m_timersIOService(),
     m_endlessWork(m_timersIOService),
-    m_heartBeatTimer(m_timersIOService),
-    m_queryInputTimer(m_timersIOService),
-    m_pumpsControlTimers(PI__END, std::make_shared<boost::asio::deadline_timer>(m_timersIOService)),
+    m_timers(),
     m_pumpStartTime()
 {
+    CreateTasksTimers();
 }
 
 void HardwareServiceImplementation::Configure(const Configuration& configuration)
@@ -39,18 +47,18 @@ void HardwareServiceImplementation::Configure(const Configuration& configuration
 
 void HardwareServiceImplementation::Pour(const Container::type from, const Container::type to)
 {
-    try
-    {
-        PourBegin();
-        SchedulePourEnd(10000);
-    }
-    catch (const std::runtime_error &e)
-    {
-        Tabletochki::InvalidOperation exception;
-        exception.what = Tabletochki::ErrorCode::DEVICE_ALREADY_IN_USE;
-        exception.why = e.what();
-        throw exception;
-    }
+    //try
+    //{
+    //    PourBegin();
+    //    SchedulePourEnd(10000);
+    //}
+    //catch (const std::runtime_error &e)
+    //{
+    //    Tabletochki::InvalidOperation exception;
+    //    exception.what = Tabletochki::ErrorCode::DEVICE_ALREADY_IN_USE;
+    //    exception.why = e.what();
+    //    throw exception;
+    //}
 }
 
 void HardwareServiceImplementation::GetInput(HardwareInput& _return)
@@ -60,7 +68,6 @@ void HardwareServiceImplementation::GetInput(HardwareInput& _return)
 
 void HardwareServiceImplementation::StartPump(const int32_t pumpId)
 {
-    //DoEnablePump(pumpId);
     LOG(ERROR) << "HardwareServiceImplementation: PUMP ENABLED !!!!";
 
     m_pumpStartTime = boost::chrono::steady_clock::now();
@@ -68,11 +75,6 @@ void HardwareServiceImplementation::StartPump(const int32_t pumpId)
 
 void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const int32_t pumpId)
 {
-    //DoDisablePump(pumpId);
-
-    // gather statistic 
-    LOG(ERROR) << "HardwareServiceImplementation: PUMP DISABLED!!!!";
-
     const boost::chrono::duration<double> pumpWorkTime = 
             boost::chrono::steady_clock::now() - m_pumpStartTime;
 
@@ -81,42 +83,70 @@ void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const int3
 
 void HardwareServiceImplementation::GetServiceStatus(ServiceStatus& _return)
 {
-    LOG(ERROR) << "HardwareServiceImplementation: Status requested!!!!";
-    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
     _return.statusCode = 0;
 }
 
 void HardwareServiceImplementation::StartBackgroundTasks()
 {
-    RestartHeartBeatTask();
-    RestartQueryInputTask();
+    for (unsigned uiTimerIndex = 0; uiTimerIndex != ST__END; ++uiTimerIndex)
+    {
+        RestartTask(static_cast<ESERVICETIMERS> (uiTimerIndex));
+    }
 }
 
 
-void HardwareServiceImplementation::RestartHeartBeatTask()
+void HardwareServiceImplementation::CreateTasksTimers()
 {
-    m_heartBeatTimer.expires_from_now(boost::posix_time::milliseconds(Dataconst::HearBeatCommandPeriodMs));
-    m_heartBeatTimer.async_wait(std::bind(&HardwareServiceImplementation::HeartBeatTask, this));
+    for (unsigned uiTimerIndex = 0; uiTimerIndex != ST__END; ++uiTimerIndex)
+    {
+        m_timers[uiTimerIndex] = std::make_shared<DeadlineTimer>(m_timersIOService);
+    }
 }
 
-void HardwareServiceImplementation::RestartQueryInputTask()
+void HardwareServiceImplementation::DestroyTasksTimers()
 {
-    m_queryInputTimer.expires_from_now(boost::posix_time::milliseconds(Dataconst::QueryInputTaskPeriodMs));
-    m_queryInputTimer.async_wait(std::bind(&HardwareServiceImplementation::QueryInputTask, this));
+    for (unsigned uiTimerIndex = 0; uiTimerIndex != ST__END; ++uiTimerIndex)
+    {
+        m_timers[uiTimerIndex].reset();
+    }
 }
+
+void HardwareServiceImplementation::RestartTask(ESERVICETIMERS timerId)
+{
+    auto actionMethod = m_tasksDescriptors[timerId].action;
+    auto timeout = m_tasksDescriptors[timerId].timeout;
+    GetTimerObjectById(timerId).expires_from_now(boost::posix_time::milliseconds(timeout));
+    GetTimerObjectById(timerId).async_wait(std::bind(actionMethod, this));
+}
+
 
 void HardwareServiceImplementation::HeartBeatTask()
 {
-    RestartHeartBeatTask();
-    DoHeartBeatTask();
+    LOG(INFO) << "[HEARTBEAT] Activated";
+
+    RestartTask(ST_HEARTBEATTIMER);
 }
 
-void HardwareServiceImplementation::QueryInputTask()
+void HardwareServiceImplementation::StatusTask()
 {
-    RestartQueryInputTask();
-    DoQueryInputTask();
+    LOG(INFO) << "[STATUS] Activated";
+
+    RestartTask(ST_STATUSTIMER);
 }
 
+void HardwareServiceImplementation::InputPumpControlTask()
+{
+    LOG(INFO) << "[INPUT CONTROL PUMP] Activated";
+
+    RestartTask(ST_INPUTPUMPTIMER);
+}
+
+void HardwareServiceImplementation::OutputPumpControlTask()
+{
+    LOG(INFO) << "[OUTPUT CONTROL PUMP] Activated";
+
+    RestartTask(ST_OUTPUTPUMPTIMER);
+}
 
 
 void HardwareServiceImplementation::DoHeartBeatTask()
@@ -226,24 +256,6 @@ void HardwareServiceImplementation::DoDisablePump()
     }
 }
 
-void HardwareServiceImplementation::SchedulePourEnd(unsigned timeFromNow)
-{
-    auto &pumpControlTimer = GetPumpControlTimer(PI_PUMP0);
-
-    pumpControlTimer.expires_from_now(boost::posix_time::milliseconds(timeFromNow));
-    pumpControlTimer.async_wait(std::bind(&HardwareServiceImplementation::PourEnd, this));
-}
-
-void HardwareServiceImplementation::PourBegin()
-{
-    DoEnablePump();
-}
-
-void HardwareServiceImplementation::PourEnd()
-{
-    DoDisablePump();
-}
-
 
 bool HardwareServiceImplementation::SendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
 {
@@ -347,7 +359,7 @@ bool HardwareServiceImplementation::UnsafeReceivePacket(uint8_t *buffer, const s
     {
         if (commChannel->CommunicationChannel_SerialRead(&bufferCharacter, 1, timeoutMilliseconds))
         {
-            m_unframerInstnace.ProcessInputBytes((const uint8_t *) &bufferCharacter, 1);
+            m_unframer.ProcessInputBytes((const uint8_t *) &bufferCharacter, 1);
         }
         else
         {
@@ -383,7 +395,7 @@ bool HardwareServiceImplementation::UnsafeResetCommunicationState()
 
 void HardwareServiceImplementation::ResetUnframerState()
 {
-    m_unframerInstnace.Reset();
+    m_unframer.Reset();
 }
 
 

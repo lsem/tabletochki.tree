@@ -5,6 +5,7 @@
 
 #include "PacketUnFramer.h"
 #include "CommunicationChannel.h"
+#include "Utils.h"
 
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
@@ -25,6 +26,8 @@ enum ESERVICESTATE
 {
     SS_DEVICENOTCONFIGURED,     // Device is not configured yet 
     SS_DEVICEREADY,             // Readed configuration is the same as was set
+    SS_SERVICENOTCONFIGURED,
+    SS_FAILED,
 };
 
 enum EJOBSSTATE
@@ -40,6 +43,7 @@ enum class ConnectionState
     CS__DEFAULT = Disconnected,
 };
 
+
 enum EPUMPID
 {
     PI__BEGIN,
@@ -50,6 +54,21 @@ enum EPUMPID
     PI__END,
 };
 
+
+enum ESERVICETIMERS
+{
+    ST__BEGIN,
+    
+    ST_HEARTBEATTIMER = ST__BEGIN,
+    ST_STATUSTIMER,
+
+    ST__PUMPS_TIMERS_BEGIN,
+    ST_INPUTPUMPTIMER = ST__PUMPS_TIMERS_BEGIN,
+    ST_OUTPUTPUMPTIMER,
+    ST__PUMPS_TIMERS_END,
+
+    ST__END = ST__PUMPS_TIMERS_END,
+};
 
 
 
@@ -67,13 +86,27 @@ public:
     void GetServiceStatus(ServiceStatus& _return);
 
 public:
-    void StartBackgroundTasks();
-    void RestartHeartBeatTask();
-    void RestartQueryInputTask();
+    typedef void(HardwareServiceImplementation::*TimerExpiredActionType)();
+    struct TableEntry 
+    { 
+        HardwareServiceImplementation::TimerExpiredActionType action;  
+        unsigned timeout;
+    };
+
+private:
+    void CreateTasksTimers();
+    void DestroyTasksTimers();
+    void RestartTask(ESERVICETIMERS timerId);
 
 private:
     void HeartBeatTask();
-    void QueryInputTask();
+    void StatusTask();
+    void InputPumpControlTask();
+    void OutputPumpControlTask();
+
+public:
+    void StartBackgroundTasks();
+
 
 private:
     void DoHeartBeatTask();
@@ -84,11 +117,6 @@ private:
     void ConfigureIODevice();
     void DoEnablePump();
     void DoDisablePump();
-
-private:
-    void SchedulePourEnd(unsigned timeFromNow);
-    void PourBegin();
-    void PourEnd();
 
 private:
     bool SendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
@@ -127,10 +155,13 @@ private:
 
 private:
     typedef lock_guard<mutex> ScopedLock;
-    
-private:
 
-    boost::asio::deadline_timer &GetPumpControlTimer(EPUMPID id) { return *(m_pumpsControlTimers.at(id)); }
+private:
+    typedef boost::asio::deadline_timer    DeadlineTimer;
+    typedef std::shared_ptr<DeadlineTimer> DeadlineTimerPtr;
+
+private:
+    DeadlineTimer &GetTimerObjectById(ESERVICETIMERS timerId) { return *m_timers[timerId]; }
 
 private:
     mutex                               m_communicationLock;
@@ -140,7 +171,7 @@ private:
     uint8_t                             m_frameBuffer[128];
     size_t                              m_frameBufferSize;
 
-    PacketUnFramer                      m_unframerInstnace;
+    PacketUnFramer                      m_unframer;
 
     ConnectionState                     m_connectionState;
     ESERVICESTATE                       m_deviceState;
@@ -149,10 +180,15 @@ private:
     boost::asio::io_service            m_timersIOService;
     boost::asio::io_service::work      m_endlessWork;
 
-    boost::asio::deadline_timer        m_heartBeatTimer;
-    boost::asio::deadline_timer        m_queryInputTimer;
+private:
+    DeadlineTimerPtr                       m_timers[ST__END];
 
-    vector<std::shared_ptr<boost::asio::deadline_timer>>    m_pumpsControlTimers;
+    boost::chrono::steady_clock::time_point     m_pumpStartTime;
 
-    boost::chrono::steady_clock::time_point          m_pumpStartTime;
+private:
+    static const TableEntry                     m_tasksDescriptors[ST__END];
 };
+
+
+
+

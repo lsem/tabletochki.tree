@@ -18,6 +18,9 @@
     <Filter Include="ThriftGeneratedService">
       <UniqueIdentifier>{f61f340b-5408-4500-a2be-1a2ceecbfe3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JsonParser">
+      <UniqueIdentifier>{aade2641-3ce4-4816-9d6b-ef2d4330cc43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\HardwareService\gen-cpp\HardwareService.cpp">
@@ -46,6 +49,12 @@
     </ClCompile>
     <ClCompile Include="..\Common\PacketUnFramer.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\json-parser-1.1.0\json.c">
+      <Filter>JsonParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HardwareService\ServiceConfiguration.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +98,18 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\PacketUnFramer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\json-parser-1.1.0\json.h">
+      <Filter>JsonParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HardwareService\PumpTypes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HardwareService\ServiceConfiguration.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Utils.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

@@ -120,5 +120,7 @@ namespace Utils
 #define STATIC_MAP_INSTANCE(InstanceName, TypeFrom, TypeTo, RangeBegin, RangeEnd) \
     Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> InstanceName;
 
+#define CLASS_DECLARATION_FOR_FRIENDSHIP(InstanceName, TypeFrom, TypeTo, RangeBegin, RangeEnd) Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd>
+
 
 #endif // __UTILS_H_INCLUDED
