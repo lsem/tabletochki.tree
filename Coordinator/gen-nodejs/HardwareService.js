@@ -12,10 +12,10 @@ var ttypes = require('./HardwareService_types');
 //HELPER FUNCTIONS AND STRUCTURES
 
 HardwareService_configure_args = function(args) {
-  this.configuration = null;
+  this.jsonDocumentText = null;
   if (args) {
-    if (args.configuration !== undefined) {
-      this.configuration = args.configuration;
+    if (args.jsonDocumentText !== undefined) {
+      this.jsonDocumentText = args.jsonDocumentText;
     }
   }
 };
@@ -34,9 +34,8 @@ HardwareService_configure_args.prototype.read = function(input) {
     switch (fid)
     {
       case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.configuration = new ttypes.Configuration();
-        this.configuration.read(input);
+      if (ftype == Thrift.Type.STRING) {
+        this.jsonDocumentText = input.readString();
       } else {
         input.skip(ftype);
       }
@@ -55,9 +54,9 @@ HardwareService_configure_args.prototype.read = function(input) {
 
 HardwareService_configure_args.prototype.write = function(output) {
   output.writeStructBegin('HardwareService_configure_args');
-  if (this.configuration !== null && this.configuration !== undefined) {
-    output.writeFieldBegin('configuration', Thrift.Type.STRUCT, 1);
-    this.configuration.write(output);
+  if (this.jsonDocumentText !== null && this.jsonDocumentText !== undefined) {
+    output.writeFieldBegin('jsonDocumentText', Thrift.Type.STRING, 1);
+    output.writeString(this.jsonDocumentText);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -755,7 +754,7 @@ HardwareServiceClient = exports.Client = function(output, pClass) {
 HardwareServiceClient.prototype = {};
 HardwareServiceClient.prototype.seqid = function() { return this._seqid; }
 HardwareServiceClient.prototype.new_seqid = function() { return this._seqid += 1; }
-HardwareServiceClient.prototype.configure = function(configuration, callback) {
+HardwareServiceClient.prototype.configure = function(jsonDocumentText, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -766,19 +765,19 @@ HardwareServiceClient.prototype.configure = function(configuration, callback) {
         _defer.resolve(result);
       }
     };
-    this.send_configure(configuration);
+    this.send_configure(jsonDocumentText);
     return _defer.promise;
   } else {
     this._reqs[this.seqid()] = callback;
-    this.send_configure(configuration);
+    this.send_configure(jsonDocumentText);
   }
 };
 
-HardwareServiceClient.prototype.send_configure = function(configuration) {
+HardwareServiceClient.prototype.send_configure = function(jsonDocumentText) {
   var output = new this.pClass(this.output);
   output.writeMessageBegin('configure', Thrift.MessageType.CALL, this.seqid());
   var args = new HardwareService_configure_args();
-  args.configuration = configuration;
+  args.jsonDocumentText = jsonDocumentText;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
@@ -1109,7 +1108,7 @@ HardwareServiceProcessor.prototype.process_configure = function(seqid, input, ou
   args.read(input);
   input.readMessageEnd();
   if (this._handler.configure.length === 1) {
-    Q.fcall(this._handler.configure, args.configuration)
+    Q.fcall(this._handler.configure, args.jsonDocumentText)
       .then(function(result) {
         var result = new HardwareService_configure_result({success: result});
         output.writeMessageBegin("configure", Thrift.MessageType.REPLY, seqid);
@@ -1124,7 +1123,7 @@ HardwareServiceProcessor.prototype.process_configure = function(seqid, input, ou
         output.flush();
       });
   } else {
-    this._handler.configure(args.configuration,  function (err, result) {
+    this._handler.configure(args.jsonDocumentText,  function (err, result) {
       var result = new HardwareService_configure_result((err != null ? err : {success: result}));
       output.writeMessageBegin("configure", Thrift.MessageType.REPLY, seqid);
       result.write(output);

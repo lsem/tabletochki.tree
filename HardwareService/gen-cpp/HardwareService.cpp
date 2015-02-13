@@ -34,9 +34,9 @@ uint32_t HardwareService_configure_args::read(::apache::thrift::protocol::TProto
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->configuration.read(iprot);
-          this->__isset.configuration = true;
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->jsonDocumentText);
+          this->__isset.jsonDocumentText = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -58,8 +58,8 @@ uint32_t HardwareService_configure_args::write(::apache::thrift::protocol::TProt
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("HardwareService_configure_args");
 
-  xfer += oprot->writeFieldBegin("configuration", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += this->configuration.write(oprot);
+  xfer += oprot->writeFieldBegin("jsonDocumentText", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->jsonDocumentText);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -78,8 +78,8 @@ uint32_t HardwareService_configure_pargs::write(::apache::thrift::protocol::TPro
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("HardwareService_configure_pargs");
 
-  xfer += oprot->writeFieldBegin("configuration", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += (*(this->configuration)).write(oprot);
+  xfer += oprot->writeFieldBegin("jsonDocumentText", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->jsonDocumentText)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1297,19 +1297,19 @@ uint32_t HardwareService_ping_presult::read(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-void HardwareServiceClient::configure(const Configuration& configuration)
+void HardwareServiceClient::configure(const std::string& jsonDocumentText)
 {
-  send_configure(configuration);
+  send_configure(jsonDocumentText);
   recv_configure();
 }
 
-void HardwareServiceClient::send_configure(const Configuration& configuration)
+void HardwareServiceClient::send_configure(const std::string& jsonDocumentText)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("configure", ::apache::thrift::protocol::T_CALL, cseqid);
 
   HardwareService_configure_pargs args;
-  args.configuration = &configuration;
+  args.jsonDocumentText = &jsonDocumentText;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1739,7 +1739,7 @@ void HardwareServiceProcessor::process_configure(int32_t seqid, ::apache::thrift
 
   HardwareService_configure_result result;
   try {
-    iface_->configure(args.configuration);
+    iface_->configure(args.jsonDocumentText);
   } catch (InvalidOperation &ouch) {
     result.ouch = ouch;
     result.__isset.ouch = true;

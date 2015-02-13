@@ -3,6 +3,7 @@
 #include "HardwareService.h"
 #include "HardwareService_types.h"
 
+#include "ServiceConfiguration.h"
 #include "PacketUnFramer.h"
 #include "CommunicationChannel.h"
 #include "Utils.h"
@@ -24,10 +25,11 @@ class IntervalTimer;
 
 enum ESERVICESTATE
 {
-    SS_DEVICENOTCONFIGURED,     // Device is not configured yet 
-    SS_DEVICEREADY,             // Readed configuration is the same as was set
+    SS_READY,             // Readed configuration is the same as was set
     SS_SERVICENOTCONFIGURED,
     SS_FAILED,
+
+    SS__DEFAULT = SS_FAILED,
 };
 
 enum EJOBSSTATE
@@ -35,24 +37,14 @@ enum EJOBSSTATE
     JS_WATERING,
 };
 
-enum class ConnectionState
+enum ECONNECTIONSTATE
 {
-    Connected,
-    Disconnected,
+    CS_CONNECTED,
+    CS_DISCONNECTED,
 
-    CS__DEFAULT = Disconnected,
+    CS__DEFAULT = CS_DISCONNECTED,
 };
 
-
-enum EPUMPID
-{
-    PI__BEGIN,
-    
-    PI_PUMP0 = PI__BEGIN,
-    PI_PUMP1,
-
-    PI__END,
-};
 
 
 enum ESERVICETIMERS
@@ -70,6 +62,19 @@ enum ESERVICETIMERS
     ST__END = ST__PUMPS_TIMERS_END,
 };
 
+enum EPUMPSTATE
+{
+    PS_STARTED,
+    PS_READY,
+};
+
+
+struct PumpStateDescriptor
+{
+    EPUMPSTATE      m_state;
+    unsigned        m_startTime;
+    unsigned        m_workingTime;
+};
 
 
 class HardwareServiceImplementation : public IPacketUnFramerListener
@@ -78,22 +83,16 @@ public:
     HardwareServiceImplementation();
 
 public:
-    void Configure(const Configuration& configuration);
+    void ApplyConfiguration(const string &jsonDocumentText);
     void Pour(const Container::type from, const Container::type to);
     void GetInput(HardwareInput& _return);
     void StartPump(const int32_t pumpId);
     void StopPump(StopPumpResult& _return, const int32_t pumpId);
     void GetServiceStatus(ServiceStatus& _return);
+    void GetServiceStateJson(string &jsonDocumentReceiver);
 
 public:
-    typedef void(HardwareServiceImplementation::*TimerExpiredActionType)();
-    struct TableEntry 
-    { 
-        HardwareServiceImplementation::TimerExpiredActionType action;  
-        unsigned timeout;
-    };
-
-private:
+    void StartBackgroundTasks();
     void CreateTasksTimers();
     void DestroyTasksTimers();
     void RestartTask(ESERVICETIMERS timerId);
@@ -103,10 +102,6 @@ private:
     void StatusTask();
     void InputPumpControlTask();
     void OutputPumpControlTask();
-
-public:
-    void StartBackgroundTasks();
-
 
 private:
     void DoHeartBeatTask();
@@ -131,6 +126,15 @@ private:
     bool UnsafeResetCommunicationState();
 
 private:
+    typedef void(HardwareServiceImplementation::*TimerExpiredActionType)();
+    struct TableEntry
+    {
+        HardwareServiceImplementation::TimerExpiredActionType action;
+        unsigned timeout;
+    };
+
+
+private:
     void ResetUnframerState();
 
 private:
@@ -139,16 +143,33 @@ private:
 private:
     void SetDisconnectedState();
     void SetConnectedState();
-    ConnectionState GetConnectionState() const { return m_connectionState; }
-    bool IsDeviceConnected() const { return GetConnectionState() == ConnectionState::Connected; }
+    ECONNECTIONSTATE GetDeviceState() const { return m_deviceState; }
+    bool IsDeviceConnected() const { return GetDeviceState() == CS_CONNECTED; }
 
-    bool IsDeviceReady() const { return m_deviceState == SS_DEVICEREADY; }
+private:
+    const char *DecodeServiceState(ESERVICESTATE code) const { return "<notimpl>"; }
+    const char *DecodeDeviceConnectionState(ECONNECTIONSTATE code) const { return "<notimpl>"; }
+
+    //bool IsDeviceReady() const { return m_serviceState == SS_DEVICEREADY; }
+
+public:
+    void SetServiceState(ESERVICESTATE state) { m_serviceState = state; }
+    ESERVICESTATE GetServiceState() { return m_serviceState; }
 
 public:
     void CreateTimerThreads();
     void StartService();
     void ShutdownService();
 
+private:
+    void LoadConfiguration();
+
+private:
+    void SetServiceConfiguration(const ServiceConfiguration  &value) { m_configuration = value; }
+    const ServiceConfiguration  &GetServiceConfiguration() const { return m_configuration; }
+
+private:
+    PumpStateDescriptor &GetPumpDescriptorRef(EPUMPIDENTIFIER pumpId) { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
 private:
     mutex  &GetCommunicationLock() { return m_communicationLock; }
     SerialLibCommunicationChannel *GetCommunicationChannel() { return  &m_communicationChannel; }
@@ -173,8 +194,8 @@ private:
 
     PacketUnFramer                      m_unframer;
 
-    ConnectionState                     m_connectionState;
-    ESERVICESTATE                       m_deviceState;
+    ECONNECTIONSTATE                     m_deviceState;
+    ESERVICESTATE                       m_serviceState;
 
     boost::thread_group                m_timerThreads;
     boost::asio::io_service            m_timersIOService;
@@ -185,8 +206,11 @@ private:
 
     boost::chrono::steady_clock::time_point     m_pumpStartTime;
 
+    PumpStateDescriptor                 m_pumpsState[PI__END];
+
 private:
-    static const TableEntry                     m_tasksDescriptors[ST__END];
+    static const TableEntry             m_tasksDescriptors[ST__END];
+    ServiceConfiguration                m_configuration;
 };
 
 

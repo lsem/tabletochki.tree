@@ -1,12 +1,13 @@
 #pragma once
 
 
-enum PumpIdentifier
+enum EPUMPIDENTIFIER
 {
-    PI__MIN,
+    PI__BEGIN,
 
-    PI_INPUTPUMP = PI__MIN,
+    PI_INPUTPUMP = PI__BEGIN,
     PI_OUTPUTPUMP,
 
-    PI__MAX,
+    PI__END,
 };
+

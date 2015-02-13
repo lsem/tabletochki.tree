@@ -1,4 +1,5 @@
 #include "Global.h"
+#include "CoreDefs.h"
 #include "HardwareService.h"
 #include "HardwareService_Impl.h"
 #include "DataConst.h"
@@ -41,9 +42,9 @@ public:
         m_implementation = implementation;
     }
 
-    virtual void configure(const Configuration& configuration) 
+    virtual void configure(const std::string& jsonDocumentText)
     {
-        m_implementation->Configure(configuration);
+        m_implementation->ApplyConfiguration(jsonDocumentText);
     }
 
     virtual void pour(const Container::type from, const Container::type to) 

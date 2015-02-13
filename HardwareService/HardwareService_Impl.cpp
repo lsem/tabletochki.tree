@@ -31,18 +31,28 @@ HardwareServiceImplementation::HardwareServiceImplementation() :
     m_frameBuffer(),
     m_frameBufferSize(0),
     m_unframer(this),
-    m_connectionState(),
+    m_deviceState(),
+    m_serviceState(SS__DEFAULT),
     m_timerThreads(),
     m_timersIOService(),
     m_endlessWork(m_timersIOService),
     m_timers(),
-    m_pumpStartTime()
+    m_pumpStartTime(),
+    m_pumpsState(),
+    m_configuration()
 {
     CreateTasksTimers();
 }
 
-void HardwareServiceImplementation::Configure(const Configuration& configuration)
+void HardwareServiceImplementation::ApplyConfiguration(const string &jsonDocumentText)
 {
+    ServiceConfiguration newServiceConfiguration;
+
+    if (ServiceConfigurationManager::LoadFromJsonString(jsonDocumentText, newServiceConfiguration))
+    {
+        SetServiceConfiguration(newServiceConfiguration);
+        SetServiceState(SS_READY);
+    }
 }
 
 void HardwareServiceImplementation::Pour(const Container::type from, const Container::type to)
@@ -84,6 +94,47 @@ void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const int3
 void HardwareServiceImplementation::GetServiceStatus(ServiceStatus& _return)
 {
     _return.statusCode = 0;
+#pragma message("WARNING: Obsolete API")
+}
+
+void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentReceiver)
+{
+    std::stringstream j;
+
+    const auto serviceState = GetServiceState();
+    const auto deviceState = GetDeviceState();
+    const auto logicalTime = 0; // ... (TODO)
+#pragma message("WARNING: LogicalTime is not implemented")
+    const auto &inputPumpDescriptor = GetPumpDescriptorRef(PI_INPUTPUMP);
+    const auto &outputPumpDescriptor = GetPumpDescriptorRef(PI_OUTPUTPUMP);
+
+    j << "{ ";
+        j << "general: ";
+        j << "{ ";
+            j << "svcState: " << serviceState << ",";
+            j << "svcStateStr: " << DecodeServiceState(serviceState) << ", ";
+            j << "deviceState: " << deviceState << ", ";
+            j << "deviceStateStr: " << DecodeDeviceConnectionState(deviceState) << ", ";
+            j << "logicalTime: " << logicalTime << "";
+        j << "}, "; // general
+        j << "pumps: ";
+        j << "{ ";
+            j << "input:";
+            j << "{ ";
+                j << "state: " << inputPumpDescriptor.m_state << ",";
+                j << "startTime: " << inputPumpDescriptor.m_startTime << ",";
+                j << "workingTime: " << inputPumpDescriptor.m_workingTime << "";
+            j << "}, "; // input
+            j << "output:";
+            j << "{ ";
+                j << "state: " << outputPumpDescriptor.m_state << ",";
+                j << "startTime: " << outputPumpDescriptor.m_startTime << ",";
+                j << "workingTime: " << outputPumpDescriptor.m_workingTime << "";
+            j << "} "; // output
+        j << "}, "; // pumps
+    j << "} ";
+
+    jsonDocumentReceiver = j.str();
 }
 
 void HardwareServiceImplementation::StartBackgroundTasks()
@@ -93,7 +144,6 @@ void HardwareServiceImplementation::StartBackgroundTasks()
         RestartTask(static_cast<ESERVICETIMERS> (uiTimerIndex));
     }
 }
-
 
 void HardwareServiceImplementation::CreateTasksTimers()
 {
@@ -115,8 +165,10 @@ void HardwareServiceImplementation::RestartTask(ESERVICETIMERS timerId)
 {
     auto actionMethod = m_tasksDescriptors[timerId].action;
     auto timeout = m_tasksDescriptors[timerId].timeout;
-    GetTimerObjectById(timerId).expires_from_now(boost::posix_time::milliseconds(timeout));
-    GetTimerObjectById(timerId).async_wait(std::bind(actionMethod, this));
+    auto &timerObject = GetTimerObjectById(timerId);
+
+    timerObject.expires_from_now(boost::posix_time::milliseconds(timeout));
+    timerObject.async_wait(std::bind(actionMethod, this));
 }
 
 
@@ -429,12 +481,12 @@ string HardwareServiceImplementation::GetLastSystemErrorMessage()
 
 void HardwareServiceImplementation::SetDisconnectedState() 
 {
-    m_connectionState = ConnectionState::Disconnected;
+    m_deviceState = CS_DISCONNECTED;
 }
 
 void HardwareServiceImplementation::SetConnectedState() 
 { 
-    m_connectionState = ConnectionState::Connected;
+    m_deviceState = CS_CONNECTED;
 }
 
 
@@ -446,6 +498,7 @@ void HardwareServiceImplementation::CreateTimerThreads()
 
 void HardwareServiceImplementation::StartService()
 {
+    LoadConfiguration();
     CreateTimerThreads();
     StartBackgroundTasks();
 }
@@ -454,5 +507,19 @@ void HardwareServiceImplementation::ShutdownService()
 {
     m_timersIOService.stop();
     m_timerThreads.join_all();
+}
 
+void HardwareServiceImplementation::LoadConfiguration()
+{
+    ServiceConfiguration loadedConfiguration;
+    
+    if (ServiceConfigurationManager::LoadFromJsonFile(Dataconst::ServiceConfigurationFilePath, /*out*/loadedConfiguration))
+    {
+        SetServiceConfiguration(loadedConfiguration);
+        SetServiceState(SS_READY);
+    }
+    else
+    {
+        SetServiceState(SS_SERVICENOTCONFIGURED);
+    }
 }

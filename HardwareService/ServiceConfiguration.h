@@ -10,14 +10,14 @@ struct PumpConfiguration
 
 struct ServiceConfiguration
 {
-    PumpConfiguration   Pumps[PI__MAX];
+    PumpConfiguration   Pumps[PI__END];
 };
 
 
 // Warning: not thread-safe class
 class ServiceConfigurationManager
 {
-private:
+public:
     static bool LoadFromJsonString(const string &documentContent, ServiceConfiguration &out_configuration);
     static bool LoadFromJsonFile(const string &fileName, ServiceConfiguration &out_configuration);
     static bool SaveToJsonFile(const string &fileName, const string &documentContent);

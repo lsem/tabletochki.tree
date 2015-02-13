@@ -15,7 +15,7 @@ namespace Tabletochki {
 class HardwareServiceIf {
  public:
   virtual ~HardwareServiceIf() {}
-  virtual void configure(const Configuration& configuration) = 0;
+  virtual void configure(const std::string& jsonDocumentText) = 0;
   virtual void pour(const Container::type from, const Container::type to) = 0;
   virtual void getInput(HardwareInput& _return) = 0;
   virtual void startPump(const int32_t pumpId) = 0;
@@ -51,7 +51,7 @@ class HardwareServiceIfSingletonFactory : virtual public HardwareServiceIfFactor
 class HardwareServiceNull : virtual public HardwareServiceIf {
  public:
   virtual ~HardwareServiceNull() {}
-  void configure(const Configuration& /* configuration */) {
+  void configure(const std::string& /* jsonDocumentText */) {
     return;
   }
   void pour(const Container::type /* from */, const Container::type /* to */) {
@@ -75,31 +75,31 @@ class HardwareServiceNull : virtual public HardwareServiceIf {
 };
 
 typedef struct _HardwareService_configure_args__isset {
-  _HardwareService_configure_args__isset() : configuration(false) {}
-  bool configuration :1;
+  _HardwareService_configure_args__isset() : jsonDocumentText(false) {}
+  bool jsonDocumentText :1;
 } _HardwareService_configure_args__isset;
 
 class HardwareService_configure_args {
  public:
 
-  static const char* ascii_fingerprint; // = "DDA7E42F29E886B5008057C3BA79BE1B";
-  static const uint8_t binary_fingerprint[16]; // = {0xDD,0xA7,0xE4,0x2F,0x29,0xE8,0x86,0xB5,0x00,0x80,0x57,0xC3,0xBA,0x79,0xBE,0x1B};
+  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
   HardwareService_configure_args(const HardwareService_configure_args&);
   HardwareService_configure_args& operator=(const HardwareService_configure_args&);
-  HardwareService_configure_args() {
+  HardwareService_configure_args() : jsonDocumentText() {
   }
 
   virtual ~HardwareService_configure_args() throw();
-  Configuration configuration;
+  std::string jsonDocumentText;
 
   _HardwareService_configure_args__isset __isset;
 
-  void __set_configuration(const Configuration& val);
+  void __set_jsonDocumentText(const std::string& val);
 
   bool operator == (const HardwareService_configure_args & rhs) const
   {
-    if (!(configuration == rhs.configuration))
+    if (!(jsonDocumentText == rhs.jsonDocumentText))
       return false;
     return true;
   }
@@ -119,12 +119,12 @@ class HardwareService_configure_args {
 class HardwareService_configure_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "DDA7E42F29E886B5008057C3BA79BE1B";
-  static const uint8_t binary_fingerprint[16]; // = {0xDD,0xA7,0xE4,0x2F,0x29,0xE8,0x86,0xB5,0x00,0x80,0x57,0xC3,0xBA,0x79,0xBE,0x1B};
+  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
 
   virtual ~HardwareService_configure_pargs() throw();
-  const Configuration* configuration;
+  const std::string* jsonDocumentText;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -920,8 +920,8 @@ class HardwareServiceClient : virtual public HardwareServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void configure(const Configuration& configuration);
-  void send_configure(const Configuration& configuration);
+  void configure(const std::string& jsonDocumentText);
+  void send_configure(const std::string& jsonDocumentText);
   void recv_configure();
   void pour(const Container::type from, const Container::type to);
   void send_pour(const Container::type from, const Container::type to);
@@ -1001,13 +1001,13 @@ class HardwareServiceMultiface : virtual public HardwareServiceIf {
     ifaces_.push_back(iface);
   }
  public:
-  void configure(const Configuration& configuration) {
+  void configure(const std::string& jsonDocumentText) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->configure(configuration);
+      ifaces_[i]->configure(jsonDocumentText);
     }
-    ifaces_[i]->configure(configuration);
+    ifaces_[i]->configure(jsonDocumentText);
   }
 
   void pour(const Container::type from, const Container::type to) {

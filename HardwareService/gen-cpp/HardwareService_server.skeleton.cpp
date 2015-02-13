@@ -22,7 +22,7 @@ class HardwareServiceHandler : virtual public HardwareServiceIf {
     // Your initialization goes here
   }
 
-  void configure(const Configuration& configuration) {
+  void configure(const std::string& jsonDocumentText) {
     // Your implementation goes here
     printf("configure\n");
   }
