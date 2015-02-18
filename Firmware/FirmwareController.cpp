@@ -1,17 +1,17 @@
 #include "CoreDefs.h"
 #include "Dataconst.h"
-#include "Firmware.h"
+#include "FirmwareController.h"
 
 
 #ifndef TESTS
 
 
-void Firmware::Initialize()
+void FirmwareController::Initialize()
 {
     m_serialInterface.SerialInterface_Initialize();
 }
 
-void Firmware::ProcessActions()
+void FirmwareController::ProcessActions()
 {
     size_t bytesAvailable = m_serialInterface.SerialInterface_BytesAvailable();
     if (bytesAvailable > 0)

@@ -11,8 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Common\PacketFramer.cpp" />
-    <ClCompile Include="..\Common\PacketUnFramer.cpp" />
+    <ClCompile Include="..\Firmware\PacketFramer.cpp" />
+    <ClCompile Include="..\Firmware\PacketsParser.cpp" />
+    <ClCompile Include="..\Firmware\PacketUnFramer.cpp" />
     <ClCompile Include="..\HardwareService\CommunicationChannel.cpp" />
     <ClCompile Include="..\HardwareService\gen-cpp\HardwareService.cpp" />
     <ClCompile Include="..\HardwareService\gen-cpp\HardwareService_constants.cpp" />
@@ -24,19 +25,18 @@
     <ClCompile Include="..\Vendor\serialib\serialib.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Common\CommonDefs.h" />
-    <ClInclude Include="..\Common\CoreDefs.h" />
-    <ClInclude Include="..\Common\DataConst.h" />
-    <ClInclude Include="..\Common\PacketDefs.h" />
-    <ClInclude Include="..\Common\PacketFramer.h" />
-    <ClInclude Include="..\Common\PacketParserTypes.h" />
-    <ClInclude Include="..\Common\PacketUnFramer.h" />
-    <ClInclude Include="..\Common\Utils.h" />
+    <ClInclude Include="..\Firmware\CommonDefs.h" />
+    <ClInclude Include="..\Firmware\CoreDefs.h" />
+    <ClInclude Include="..\Firmware\DataConst.h" />
+    <ClInclude Include="..\Firmware\Global.h" />
+    <ClInclude Include="..\Firmware\PacketFramer.h" />
+    <ClInclude Include="..\Firmware\PacketParserTypes.h" />
+    <ClInclude Include="..\Firmware\PacketsParser.h" />
+    <ClInclude Include="..\Firmware\PacketUnFramer.h" />
     <ClInclude Include="..\HardwareService\CommunicationChannel.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_constants.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_types.h" />
-    <ClInclude Include="..\HardwareService\Global.h" />
     <ClInclude Include="..\HardwareService\HardwareService_Impl.h" />
     <ClInclude Include="..\HardwareService\PumpTypes.h" />
     <ClInclude Include="..\HardwareService\ServiceConfiguration.h" />
@@ -85,7 +85,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Common;..\Vendor\json-parser-1.1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Firmware;..\Vendor\json-parser-1.1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_DEBUG;_ELPP_THREAD_SAFE;_ELPP_DISABLE_DEBUG_LOGS;_ELPP_DISABLE_DEFAULT_CRASH_HANDLING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -101,7 +101,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Firmware;..\Vendor\json-parser-1.1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;_ELPP_DISABLE_DEBUG_LOGS;_ELPP_DISABLE_DEFAULT_CRASH_HANDLING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

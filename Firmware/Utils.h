@@ -111,6 +111,7 @@ namespace Utils
         static const ToType SourceElements[];
     };
 
+    #ifdef _WIN32
     inline string GetLastSystemErrorMessage()
     {
         DWORD errorCode = GetLastError();
@@ -137,12 +138,20 @@ namespace Utils
 
         return std::string();
     }
+    #endif // _WIN32
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef _MSC_VER
+#  define __CONST const
+#else
+#  define __CONST
+#endif // _MSC_VER
+
 #define STATIC_MAP(InstanceName, TypeFrom, TypeTo, RangeBegin, RangeEnd) \
-    const Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> InstanceName; \
+    __CONST Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> InstanceName; \
     template <> const TypeTo Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> ::SourceElements[RangeEnd - RangeBegin] =
 
 #define STATIC_MAP_INSTANCE(InstanceName, TypeFrom, TypeTo, RangeBegin, RangeEnd) \

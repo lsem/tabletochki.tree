@@ -10,10 +10,10 @@
 #include "PacketsParser.h"
 
 
-class Firmware
+class FirmwareController
 {
 public:
-    Firmware() :
+    FirmwareController() :
         m_serialInterface(),
         m_ioController(),
         m_persistentStorage(),

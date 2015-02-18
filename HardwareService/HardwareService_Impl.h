@@ -83,6 +83,16 @@ enum EPUMPSTATE
     PS__DEFAULT = PS_FAILED
 };
 
+enum ESERVICEJOB
+{
+    SJ__BEGIN,
+
+    SJ_WATERINPUT = SJ__BEGIN,
+    SJ_WATEROUTPUT,
+
+    SJ__END,
+};
+
 
 struct PumpStateDescriptor
 {
@@ -244,15 +254,14 @@ private:
 STATIC_MAP(ServiceStateNames, ESERVICESTATE, string, SS__BEGIN, SS__END)
 {
     "READY",            // SS_READY
-        "NOT_CONFIGURED",   // SS_SERVICENOTCONFIGURED
-        "FAILED",           // SS_FAILED
+    "NOT_CONFIGURED",   // SS_SERVICENOTCONFIGURED
+    "FAILED",           // SS_FAILED
 };
-
 
 STATIC_MAP(DeviceStateNames, ECONNECTIONSTATE, string, CS__BEGIN, CS__END)
 {
     "CONNECTED",        // CS_CONNECTED
-        "DISCONNECTED"      // CS_DISCONNECTED
+    "DISCONNECTED"      // CS_DISCONNECTED
 };
 
 STATIC_MAP(PumpStateNames, EPUMPSTATE, string, PS__BEGIN, PS__END)

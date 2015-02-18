@@ -298,6 +298,11 @@ void HardwareServiceImplementation::ConfigureIODevice()
     }
 }
 
+void DefferJob(ESERVICEJOB jobId, void *param)
+{
+
+}
+
 void HardwareServiceImplementation::DoEnablePump()
 {
     // TODO: Read IO pins from configuration

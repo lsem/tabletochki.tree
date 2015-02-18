@@ -151,7 +151,7 @@ namespace Packets
 
         struct ConfigureIOResponse
         {
-            ConfigureIOResponse() :Status(nullptr) {}
+            ConfigureIOResponse() :Status(NULL) {}
             Output::StatusResponse  Status;
         };
 
@@ -171,7 +171,7 @@ namespace Packets
 
         struct WriteIOCommandResponse
         {
-            WriteIOCommandResponse(): Status(nullptr) {}
+            WriteIOCommandResponse(): Status(NULL) {}
 
             Output::StatusResponse  Status;
         };

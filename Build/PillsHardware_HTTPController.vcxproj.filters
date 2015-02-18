@@ -44,17 +44,20 @@
     <ClCompile Include="..\HardwareService\HardwareService_Impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\PacketFramer.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\PacketUnFramer.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Vendor\json-parser-1.1.0\json.c">
       <Filter>JsonParser</Filter>
     </ClCompile>
     <ClCompile Include="..\HardwareService\ServiceConfiguration.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Firmware\PacketFramer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Firmware\PacketsParser.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Firmware\PacketUnFramer.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,32 +76,8 @@
     <ClInclude Include="..\HardwareService\CommunicationChannel.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\HardwareService\Global.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\HardwareService\HardwareService_Impl.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\CommonDefs.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\CoreDefs.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\DataConst.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\PacketDefs.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\PacketFramer.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\PacketParserTypes.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\PacketUnFramer.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Vendor\json-parser-1.1.0\json.h">
       <Filter>JsonParser</Filter>
@@ -109,7 +88,28 @@
     <ClInclude Include="..\HardwareService\ServiceConfiguration.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Utils.h">
+    <ClInclude Include="..\Firmware\CommonDefs.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Firmware\CoreDefs.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Firmware\DataConst.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Firmware\PacketFramer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Firmware\PacketParserTypes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Firmware\PacketsParser.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Firmware\PacketUnFramer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Firmware\Global.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

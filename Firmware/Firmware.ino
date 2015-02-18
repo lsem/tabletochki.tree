@@ -1,9 +1,9 @@
 
 #include "CoreDefs.h"
-#include "Firmware.h"
+#include "FirmwareController.h"
 
 
-static Firmware FirmwareInstance;
+static FirmwareController FirmwareInstance;
 
 
 void setup()
