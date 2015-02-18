@@ -1,4 +1,6 @@
 #include "Global.h"
+#include "CoreDefs.h"
+#include "Utils.h"
 #include "ServiceConfiguration.h"
 
 #include <fstream>
@@ -110,12 +112,19 @@ bool ServiceConfigurationManager::LoadFileToString(const string &fileName, strin
 {
     std::ifstream fileStream(fileName);
 
-    fileStream.seekg(0, std::ios::end);
-    out_fileContent.reserve(fileStream.tellg());
-    fileStream.seekg(0, std::ios::beg);
+    if (!fileStream.fail())
+    {
+        fileStream.seekg(0, std::ios::end);
+        out_fileContent.reserve(fileStream.tellg());
+        fileStream.seekg(0, std::ios::beg);
 
-    out_fileContent.assign((std::istreambuf_iterator<char>(fileStream)),
-        std::istreambuf_iterator<char>());
+        out_fileContent.assign((std::istreambuf_iterator<char>(fileStream)),
+            std::istreambuf_iterator<char>());
+    }
+    else
+    {
+        LOG(ERROR) << "Failed opening file: '" << fileName << "'; last error: " << Utils::GetLastSystemErrorMessage();
+    }
 
     return true;
 }
@@ -125,8 +134,11 @@ bool ServiceConfigurationManager::SaveStringToFile(const string &fileName, const
 {
     std::ofstream fileStream(fileName);
 
-    fileStream << fileContent;
-    fileStream.close();
+    if (!fileStream.fail())
+    {
+        fileStream << fileContent;
+        fileStream.close();
+    }
 
     return true;
 }

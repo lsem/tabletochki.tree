@@ -112,7 +112,7 @@
                 '<pre> {{vm.configurationJsonDocument | json:4}} </pre>' +
             '</div>' +
             '<a role="button" eat-click-if="vm.steps.step1.canGo()" ui-sref="^.step1" type="button" class="btn btn-default">Previous</button>',
-            '<a role="button"  type="button" class="btn btn-success">Upload</button>',
+            '<a role="button"  ng-click="vm.steps.step2.uploadClicked()" ng-disabled="!vm.steps.step2.uploadAllowed()" type="button" class="btn btn-success">Upload</button>',
             '<a role="button"  ui-sref="app" type="button" class="btn btn-success">Finish</button>',
         ].join(''));
         //
@@ -316,11 +316,13 @@
                     completedCallback: function() {
                         _this.steps.step1.completed = true;
                         _this.configurationJsonDocument = {
-                            pump1: {
-                                performance: Math.round(pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000))
-                            },
-                            pump2: {
-                                performance: Math.round(pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000))
+                            pumps: {
+                                inputPump: {
+                                    performance: Math.round(pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000))
+                                },
+                                outputPump: {
+                                    performance: Math.round(pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000))
+                                }
                             }
                         };
                     },
@@ -388,6 +390,17 @@
                     completed: false
                 },
                 step2: {
+                    uploadClicked: function() {
+                        CalibrationService.uploadConfiguration(JSON.stringify(_this.configurationJsonDocument)).then(function(data) {
+                            console.log('config uploaded successfully');
+                        },
+                        function (error) {
+                            console.log('failed uploading configuration');
+                        });
+                    },
+                    uploadAllowed: function() {
+                        return CalibrationService.isConnectionOk();
+                    },
                     canGo: function() {
                         return _this.steps.step1.completed;
                     },
@@ -455,6 +468,10 @@
             clusterStatus: { method: 'GET', isArray: false }
         });
 
+        var configurationResource = $resource(buildUrl('upload_config'), null, {
+           uploadConfig: { method: 'POST'}
+        });
+
 
         var currentStatus = {status: 0, hardStatus: 0};
 
@@ -471,6 +488,9 @@
         }, 500);
 
         var _public = {
+            uploadConfiguration: function(configJsonText) {
+                return configurationResource.uploadConfig({configJsonText: configJsonText}).$promise;
+            },
             clusterStatus: function() {
                 return clusterStatusResource.clusterStatus().$promise;
             },

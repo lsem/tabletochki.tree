@@ -1,3 +1,4 @@
+#include "Global.h"
 #include "CoreDefs.h"
 #include "Utils.h"
 #include "PacketFramer.h"

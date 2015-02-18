@@ -52,6 +52,11 @@ class HardwareServiceHandler : virtual public HardwareServiceIf {
     printf("getServiceStatus\n");
   }
 
+  void GetServiceStateJson(std::string& _return) {
+    // Your implementation goes here
+    printf("GetServiceStateJson\n");
+  }
+
   void ping(const int32_t arg) {
     // Your implementation goes here
     printf("ping\n");

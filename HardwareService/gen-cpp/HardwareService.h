@@ -21,6 +21,7 @@ class HardwareServiceIf {
   virtual void startPump(const int32_t pumpId) = 0;
   virtual void stopPump(StopPumpResult& _return, const int32_t pumpId) = 0;
   virtual void getServiceStatus(ServiceStatus& _return) = 0;
+  virtual void GetServiceStateJson(std::string& _return) = 0;
   virtual void ping(const int32_t arg) = 0;
 };
 
@@ -67,6 +68,9 @@ class HardwareServiceNull : virtual public HardwareServiceIf {
     return;
   }
   void getServiceStatus(ServiceStatus& /* _return */) {
+    return;
+  }
+  void GetServiceStateJson(std::string& /* _return */) {
     return;
   }
   void ping(const int32_t /* arg */) {
@@ -793,6 +797,114 @@ class HardwareService_getServiceStatus_presult {
   friend std::ostream& operator<<(std::ostream& out, const HardwareService_getServiceStatus_presult& obj);
 };
 
+
+class HardwareService_GetServiceStateJson_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+  HardwareService_GetServiceStateJson_args(const HardwareService_GetServiceStateJson_args&);
+  HardwareService_GetServiceStateJson_args& operator=(const HardwareService_GetServiceStateJson_args&);
+  HardwareService_GetServiceStateJson_args() {
+  }
+
+  virtual ~HardwareService_GetServiceStateJson_args() throw();
+
+  bool operator == (const HardwareService_GetServiceStateJson_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const HardwareService_GetServiceStateJson_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const HardwareService_GetServiceStateJson_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_GetServiceStateJson_args& obj);
+};
+
+
+class HardwareService_GetServiceStateJson_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+
+  virtual ~HardwareService_GetServiceStateJson_pargs() throw();
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_GetServiceStateJson_pargs& obj);
+};
+
+typedef struct _HardwareService_GetServiceStateJson_result__isset {
+  _HardwareService_GetServiceStateJson_result__isset() : success(false) {}
+  bool success :1;
+} _HardwareService_GetServiceStateJson_result__isset;
+
+class HardwareService_GetServiceStateJson_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "9A73381FEFD6B67F432E717102246330";
+  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x73,0x38,0x1F,0xEF,0xD6,0xB6,0x7F,0x43,0x2E,0x71,0x71,0x02,0x24,0x63,0x30};
+
+  HardwareService_GetServiceStateJson_result(const HardwareService_GetServiceStateJson_result&);
+  HardwareService_GetServiceStateJson_result& operator=(const HardwareService_GetServiceStateJson_result&);
+  HardwareService_GetServiceStateJson_result() : success() {
+  }
+
+  virtual ~HardwareService_GetServiceStateJson_result() throw();
+  std::string success;
+
+  _HardwareService_GetServiceStateJson_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  bool operator == (const HardwareService_GetServiceStateJson_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const HardwareService_GetServiceStateJson_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const HardwareService_GetServiceStateJson_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_GetServiceStateJson_result& obj);
+};
+
+typedef struct _HardwareService_GetServiceStateJson_presult__isset {
+  _HardwareService_GetServiceStateJson_presult__isset() : success(false) {}
+  bool success :1;
+} _HardwareService_GetServiceStateJson_presult__isset;
+
+class HardwareService_GetServiceStateJson_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "9A73381FEFD6B67F432E717102246330";
+  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x73,0x38,0x1F,0xEF,0xD6,0xB6,0x7F,0x43,0x2E,0x71,0x71,0x02,0x24,0x63,0x30};
+
+
+  virtual ~HardwareService_GetServiceStateJson_presult() throw();
+  std::string* success;
+
+  _HardwareService_GetServiceStateJson_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_GetServiceStateJson_presult& obj);
+};
+
 typedef struct _HardwareService_ping_args__isset {
   _HardwareService_ping_args__isset() : arg(false) {}
   bool arg :1;
@@ -938,6 +1050,9 @@ class HardwareServiceClient : virtual public HardwareServiceIf {
   void getServiceStatus(ServiceStatus& _return);
   void send_getServiceStatus();
   void recv_getServiceStatus(ServiceStatus& _return);
+  void GetServiceStateJson(std::string& _return);
+  void send_GetServiceStateJson();
+  void recv_GetServiceStateJson(std::string& _return);
   void ping(const int32_t arg);
   void send_ping(const int32_t arg);
   void recv_ping();
@@ -962,6 +1077,7 @@ class HardwareServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_startPump(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_stopPump(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getServiceStatus(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_GetServiceStateJson(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   HardwareServiceProcessor(boost::shared_ptr<HardwareServiceIf> iface) :
@@ -972,6 +1088,7 @@ class HardwareServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["startPump"] = &HardwareServiceProcessor::process_startPump;
     processMap_["stopPump"] = &HardwareServiceProcessor::process_stopPump;
     processMap_["getServiceStatus"] = &HardwareServiceProcessor::process_getServiceStatus;
+    processMap_["GetServiceStateJson"] = &HardwareServiceProcessor::process_GetServiceStateJson;
     processMap_["ping"] = &HardwareServiceProcessor::process_ping;
   }
 
@@ -1055,6 +1172,16 @@ class HardwareServiceMultiface : virtual public HardwareServiceIf {
       ifaces_[i]->getServiceStatus(_return);
     }
     ifaces_[i]->getServiceStatus(_return);
+    return;
+  }
+
+  void GetServiceStateJson(std::string& _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->GetServiceStateJson(_return);
+    }
+    ifaces_[i]->GetServiceStateJson(_return);
     return;
   }
 

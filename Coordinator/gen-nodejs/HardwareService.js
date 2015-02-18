@@ -664,6 +664,87 @@ HardwareService_getServiceStatus_result.prototype.write = function(output) {
   return;
 };
 
+HardwareService_GetServiceStateJson_args = function(args) {
+};
+HardwareService_GetServiceStateJson_args.prototype = {};
+HardwareService_GetServiceStateJson_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    input.skip(ftype);
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_GetServiceStateJson_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_GetServiceStateJson_args');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+HardwareService_GetServiceStateJson_result = function(args) {
+  this.success = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+  }
+};
+HardwareService_GetServiceStateJson_result.prototype = {};
+HardwareService_GetServiceStateJson_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRING) {
+        this.success = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_GetServiceStateJson_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_GetServiceStateJson_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.STRING, 0);
+    output.writeString(this.success);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 HardwareService_ping_args = function(args) {
   this.arg = null;
   if (args) {
@@ -1041,6 +1122,52 @@ HardwareServiceClient.prototype.recv_getServiceStatus = function(input,mtype,rse
   }
   return callback('getServiceStatus failed: unknown result');
 };
+HardwareServiceClient.prototype.GetServiceStateJson = function(callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_GetServiceStateJson();
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_GetServiceStateJson();
+  }
+};
+
+HardwareServiceClient.prototype.send_GetServiceStateJson = function() {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('GetServiceStateJson', Thrift.MessageType.CALL, this.seqid());
+  var args = new HardwareService_GetServiceStateJson_args();
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+HardwareServiceClient.prototype.recv_GetServiceStateJson = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new HardwareService_GetServiceStateJson_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('GetServiceStateJson failed: unknown result');
+};
 HardwareServiceClient.prototype.ping = function(arg, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
@@ -1276,6 +1403,36 @@ HardwareServiceProcessor.prototype.process_getServiceStatus = function(seqid, in
     this._handler.getServiceStatus( function (err, result) {
       var result = new HardwareService_getServiceStatus_result((err != null ? err : {success: result}));
       output.writeMessageBegin("getServiceStatus", Thrift.MessageType.REPLY, seqid);
+      result.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+}
+
+HardwareServiceProcessor.prototype.process_GetServiceStateJson = function(seqid, input, output) {
+  var args = new HardwareService_GetServiceStateJson_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.GetServiceStateJson.length === 0) {
+    Q.fcall(this._handler.GetServiceStateJson)
+      .then(function(result) {
+        var result = new HardwareService_GetServiceStateJson_result({success: result});
+        output.writeMessageBegin("GetServiceStateJson", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result = new HardwareService_GetServiceStateJson_result(err);
+        output.writeMessageBegin("GetServiceStateJson", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.GetServiceStateJson( function (err, result) {
+      var result = new HardwareService_GetServiceStateJson_result((err != null ? err : {success: result}));
+      output.writeMessageBegin("GetServiceStateJson", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
       output.flush();

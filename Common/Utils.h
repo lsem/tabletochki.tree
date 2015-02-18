@@ -1,6 +1,7 @@
 #ifndef __UTILS_H_INCLUDED
 #define __UTILS_H_INCLUDED
 
+
 namespace Utils 
 {
 
@@ -107,18 +108,45 @@ namespace Utils
         static const ToType *GetMappedElementsStoragePtr() { return SourceElements; }
         static const size_t GetMappedElementCount() { return RangeEnd - RangeBegin; }
     private:
-        static const ToType SourceElements[RangeEnd - RangeBegin];
+        static const ToType SourceElements[];
     };
+
+    inline string GetLastSystemErrorMessage()
+    {
+        DWORD errorCode = GetLastError();
+
+        if (errorCode)
+        {
+            LPVOID messageData;
+            DWORD messageLength = ::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                FORMAT_MESSAGE_FROM_SYSTEM |
+                FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL,
+                errorCode,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPTSTR)&messageData,
+                0, NULL);
+
+            if (messageLength > 0)
+            {
+                string result((LPCSTR)messageData, (LPCSTR)messageData + messageLength);
+                ::LocalFree(messageData);
+                return std::to_string(errorCode) + ": " + result;
+            }
+        }
+
+        return std::string();
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 #define STATIC_MAP(InstanceName, TypeFrom, TypeTo, RangeBegin, RangeEnd) \
-    Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> InstanceName; \
-    template <> const TypeTo Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> ::SourceElements[] =
+    const Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> InstanceName; \
+    template <> const TypeTo Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> ::SourceElements[RangeEnd - RangeBegin] =
 
 #define STATIC_MAP_INSTANCE(InstanceName, TypeFrom, TypeTo, RangeBegin, RangeEnd) \
-    Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> InstanceName;
+    const Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd> InstanceName;
 
 #define CLASS_DECLARATION_FOR_FRIENDSHIP(InstanceName, TypeFrom, TypeTo, RangeBegin, RangeEnd) Utils::StaticMap<TypeFrom, TypeTo, RangeBegin, RangeEnd>
 

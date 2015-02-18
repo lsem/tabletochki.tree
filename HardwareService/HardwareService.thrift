@@ -47,5 +47,6 @@ service HardwareService {
     void startPump(1: i32  pumpId) throws (1:InvalidOperation ouch);
     StopPumpResult stopPump(1: i32  pumpId) throws (1:InvalidOperation ouch);
     ServiceStatus getServiceStatus();
+    string GetServiceStateJson();
     void ping(1: i32 arg);
 }

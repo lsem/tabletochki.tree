@@ -25,12 +25,18 @@ class IntervalTimer;
 
 enum ESERVICESTATE
 {
-    SS_READY,             // Readed configuration is the same as was set
+    SS__BEGIN,
+
+    SS_READY = SS__BEGIN,
     SS_SERVICENOTCONFIGURED,
     SS_FAILED,
 
+    SS__END,
+    
     SS__DEFAULT = SS_FAILED,
 };
+
+
 
 enum EJOBSSTATE
 {
@@ -39,9 +45,12 @@ enum EJOBSSTATE
 
 enum ECONNECTIONSTATE
 {
-    CS_CONNECTED,
+    CS__BEGIN,
+
+    CS_CONNECTED = CS__BEGIN,
     CS_DISCONNECTED,
 
+    CS__END,
     CS__DEFAULT = CS_DISCONNECTED,
 };
 
@@ -64,13 +73,26 @@ enum ESERVICETIMERS
 
 enum EPUMPSTATE
 {
-    PS_STARTED,
+    PS__BEGIN,
+
+    PS_STARTED = PS__BEGIN,
     PS_READY,
+    PS_FAILED,
+
+    PS__END,
+    PS__DEFAULT = PS_FAILED
 };
 
 
 struct PumpStateDescriptor
 {
+    void Assign(EPUMPSTATE state, unsigned startTime, unsigned workingTime)
+    {
+        m_state = state;
+        m_startTime = startTime;
+        m_workingTime = workingTime;
+    }
+
     EPUMPSTATE      m_state;
     unsigned        m_startTime;
     unsigned        m_workingTime;
@@ -126,6 +148,10 @@ private:
     bool UnsafeResetCommunicationState();
 
 private:
+    void InitializePumpsState();
+    void InitializeServiceState();
+
+private:
     typedef void(HardwareServiceImplementation::*TimerExpiredActionType)();
     struct TableEntry
     {
@@ -137,18 +163,17 @@ private:
 private:
     void ResetUnframerState();
 
-private:
-    string GetLastSystemErrorMessage();
 
 private:
     void SetDisconnectedState();
     void SetConnectedState();
+    void SetDeviceState(ECONNECTIONSTATE value) { m_deviceState = value; }
     ECONNECTIONSTATE GetDeviceState() const { return m_deviceState; }
     bool IsDeviceConnected() const { return GetDeviceState() == CS_CONNECTED; }
 
 private:
-    const char *DecodeServiceState(ESERVICESTATE code) const { return "<notimpl>"; }
-    const char *DecodeDeviceConnectionState(ECONNECTIONSTATE code) const { return "<notimpl>"; }
+    string DecodeServiceState(ESERVICESTATE code) const;
+    string DecodeDeviceConnectionState(ECONNECTIONSTATE code) const;
 
     //bool IsDeviceReady() const { return m_serviceState == SS_DEVICEREADY; }
 
@@ -214,5 +239,25 @@ private:
 };
 
 
+//////////////////////////////////////////////////////////////////////////
+
+STATIC_MAP(ServiceStateNames, ESERVICESTATE, string, SS__BEGIN, SS__END)
+{
+    "READY",            // SS_READY
+        "NOT_CONFIGURED",   // SS_SERVICENOTCONFIGURED
+        "FAILED",           // SS_FAILED
+};
 
 
+STATIC_MAP(DeviceStateNames, ECONNECTIONSTATE, string, CS__BEGIN, CS__END)
+{
+    "CONNECTED",        // CS_CONNECTED
+        "DISCONNECTED"      // CS_DISCONNECTED
+};
+
+STATIC_MAP(PumpStateNames, EPUMPSTATE, string, PS__BEGIN, PS__END)
+{
+    "STARTED",      // PS_STARTED
+    "READY",         // PS_READY
+    "FAILED",       // PS_FAILED
+};

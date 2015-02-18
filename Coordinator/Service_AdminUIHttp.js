@@ -45,7 +45,7 @@ function hardwareConnectionStatusLoop() {
         thriftConnection = thrift.createConnection("localhost", 9090, {transport: transport, protocol: protocol});
         thriftConnection.on('connect', function () {
             console.log('(Re)Establishing connection to hardware service');
-            setTimeout(hardwareConnectionStatusLoop, 300);
+            setTimeout(hardwareConnectionStatusLoop, 2000);
         });
         thriftConnection.on('error', function () {
             logger.error('Hardware Service connection problem');
@@ -143,6 +143,25 @@ app.post('/pumpControl/stop', function(request, response) {
     });
 
     response.send({resultId: responseId});
+    response.end();
+});
+
+app.post('/upload_config', function (request, response) {
+    var jsonConfigText = request.body.configJsonText;
+    console.log('config: ' + jsonConfigText);
+    if (typeof jsonConfigText === 'undefined') {
+        response.status(httpStatus.BAD_REQUEST);
+    } else {
+        var client = thrift.createClient(HardwareService, thriftConnection);
+        client.configure(jsonConfigText, function (err, data) {
+            if (err) {
+                console.log('failed calling configure api')
+            } else {
+                console.log('uploaded..');
+            }
+        });
+    }
+
     response.end();
 });
 

@@ -42,6 +42,8 @@ HardwareServiceImplementation::HardwareServiceImplementation() :
     m_configuration()
 {
     CreateTasksTimers();
+    InitializeServiceState();
+    InitializePumpsState();
 }
 
 void HardwareServiceImplementation::ApplyConfiguration(const string &jsonDocumentText)
@@ -50,8 +52,22 @@ void HardwareServiceImplementation::ApplyConfiguration(const string &jsonDocumen
 
     if (ServiceConfigurationManager::LoadFromJsonString(jsonDocumentText, newServiceConfiguration))
     {
+        if (ServiceConfigurationManager::SaveToJsonFile(Dataconst::ServiceConfigurationFilePath,
+            jsonDocumentText))
+        {
+            LOG(INFO) << "New configuration applied";
+        }
+        else
+        {
+            LOG(ERROR) << "Failed saving configuration to file; last error: " << Utils::GetLastSystemErrorMessage();
+        }
+
         SetServiceConfiguration(newServiceConfiguration);
         SetServiceState(SS_READY);
+    }
+    else
+    {
+        
     }
 }
 
@@ -107,31 +123,35 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
 #pragma message("WARNING: LogicalTime is not implemented")
     const auto &inputPumpDescriptor = GetPumpDescriptorRef(PI_INPUTPUMP);
     const auto &outputPumpDescriptor = GetPumpDescriptorRef(PI_OUTPUTPUMP);
+    const auto inputPumpStateName = PumpStateNames.GetMappedValue(inputPumpDescriptor.m_state);
+    const auto outputPumpStateName = PumpStateNames.GetMappedValue(inputPumpDescriptor.m_state);
 
     j << "{ ";
-        j << "general: ";
+        j << "\"general\": ";
         j << "{ ";
-            j << "svcState: " << serviceState << ",";
-            j << "svcStateStr: " << DecodeServiceState(serviceState) << ", ";
-            j << "deviceState: " << deviceState << ", ";
-            j << "deviceStateStr: " << DecodeDeviceConnectionState(deviceState) << ", ";
-            j << "logicalTime: " << logicalTime << "";
+            j << "\"svcState\": " << serviceState << ",";
+            j << "\"svcStateStr\": \"" << DecodeServiceState(serviceState) << "\", ";
+            j << "\"deviceState\": " << deviceState << ", ";
+            j << "\"deviceStateStr\": \"" << DecodeDeviceConnectionState(deviceState) << "\", ";
+            j << "\"logicalTime\": " << logicalTime << "";
         j << "}, "; // general
-        j << "pumps: ";
+        j << "\"pumps\": ";
         j << "{ ";
-            j << "input:";
+            j << "\"input\":";
             j << "{ ";
-                j << "state: " << inputPumpDescriptor.m_state << ",";
-                j << "startTime: " << inputPumpDescriptor.m_startTime << ",";
-                j << "workingTime: " << inputPumpDescriptor.m_workingTime << "";
+                j << "\"state\": " << inputPumpDescriptor.m_state << ",";
+                j << "\"stateStr\": \"" << inputPumpStateName << "\",";
+                j << "\"startTime\": " << inputPumpDescriptor.m_startTime << ",";
+                j << "\"workingTime\": " << inputPumpDescriptor.m_workingTime << "";
             j << "}, "; // input
-            j << "output:";
+            j << "\"output\":";
             j << "{ ";
-                j << "state: " << outputPumpDescriptor.m_state << ",";
-                j << "startTime: " << outputPumpDescriptor.m_startTime << ",";
-                j << "workingTime: " << outputPumpDescriptor.m_workingTime << "";
+                j << "\"state\": " << outputPumpDescriptor.m_state << ",";
+                j << "\"stateStr\": \"" << outputPumpStateName << "\",";
+                j << "\"startTime\": " << outputPumpDescriptor.m_startTime << ",";
+                j << "\"workingTime\": " << outputPumpDescriptor.m_workingTime << "";
             j << "} "; // output
-        j << "}, "; // pumps
+        j << "} "; // pumps
     j << "} ";
 
     jsonDocumentReceiver = j.str();
@@ -139,25 +159,25 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
 
 void HardwareServiceImplementation::StartBackgroundTasks()
 {
-    for (unsigned uiTimerIndex = 0; uiTimerIndex != ST__END; ++uiTimerIndex)
+    for (unsigned timerIndex = ST__BEGIN; timerIndex != ST__END; ++timerIndex)
     {
-        RestartTask(static_cast<ESERVICETIMERS> (uiTimerIndex));
+        RestartTask(static_cast<ESERVICETIMERS> (timerIndex));
     }
 }
 
 void HardwareServiceImplementation::CreateTasksTimers()
 {
-    for (unsigned uiTimerIndex = 0; uiTimerIndex != ST__END; ++uiTimerIndex)
+    for (unsigned timerIndex = ST__BEGIN; timerIndex != ST__END; ++timerIndex)
     {
-        m_timers[uiTimerIndex] = std::make_shared<DeadlineTimer>(m_timersIOService);
+        m_timers[timerIndex] = std::make_shared<DeadlineTimer>(m_timersIOService);
     }
 }
 
 void HardwareServiceImplementation::DestroyTasksTimers()
 {
-    for (unsigned uiTimerIndex = 0; uiTimerIndex != ST__END; ++uiTimerIndex)
+    for (unsigned timerIndex = ST__BEGIN; timerIndex != ST__END; ++timerIndex)
     {
-        m_timers[uiTimerIndex].reset();
+        m_timers[timerIndex].reset();
     }
 }
 
@@ -356,7 +376,7 @@ bool HardwareServiceImplementation::DoSendPacketData(void *packetData, size_t pa
 
         if (!UnsafeSendPacket((const uint8_t*)packetData, packetDataSize))
         {
-            LOG(ERROR) << "Failed sending packet to the device. Error: '" << GetLastSystemErrorMessage() << "'";
+            LOG(ERROR) << "Failed sending packet to the device. Error: '" << Utils::GetLastSystemErrorMessage() << "'";
             break;
         }
 
@@ -365,7 +385,7 @@ bool HardwareServiceImplementation::DoSendPacketData(void *packetData, size_t pa
         size_t receivedPacketSize;
         if (!UnsafeReceivePacket((uint8_t*)buffer, packetSize, receivedPacketSize, Dataconst::CommandSendReceiveTimeout))
         {
-            LOG(ERROR) << "Failed receiving response packet. Error: '" << GetLastSystemErrorMessage() << "'";
+            LOG(ERROR) << "Failed receiving response packet. Error: '" << Utils::GetLastSystemErrorMessage() << "'";
 
             ResetUnframerState();
             UnsafeResetCommunicationState();
@@ -445,39 +465,25 @@ bool HardwareServiceImplementation::UnsafeResetCommunicationState()
     return communicatioChannel->CommunicationChannel_SerialWrite(resetSequence.data(), resetSequence.size());
 }
 
+void HardwareServiceImplementation::InitializePumpsState()
+{
+    for (unsigned pumpIndex = 0; pumpIndex != PI__END; ++pumpIndex)
+    {
+        m_pumpsState[pumpIndex].Assign(PS__DEFAULT, 0, 0);
+    }
+}
+
+void HardwareServiceImplementation::InitializeServiceState()
+{
+    SetServiceState(SS__DEFAULT);
+    SetDeviceState(CS__DEFAULT);
+}
+
 void HardwareServiceImplementation::ResetUnframerState()
 {
     m_unframer.Reset();
 }
 
-
-// TODO: move to something line SystemUtils or PlatformUtils
-string HardwareServiceImplementation::GetLastSystemErrorMessage()
-{
-    DWORD errorCode = GetLastError();
-    
-    if (errorCode)
-    {
-        LPVOID messageData;
-        DWORD messageLength = ::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                                     FORMAT_MESSAGE_FROM_SYSTEM |
-                                     FORMAT_MESSAGE_IGNORE_INSERTS,
-                                     NULL,
-                                     errorCode,
-                                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                                     (LPTSTR)&messageData,
-                                     0, NULL);
-
-        if (messageLength > 0)
-        {
-            std::string result((LPCSTR)messageData, (LPCSTR)messageData + messageLength);
-            ::LocalFree(messageData);
-            return std::to_string(errorCode) + ": " + result;
-        }
-    }
-    
-    return std::string();
-}
 
 void HardwareServiceImplementation::SetDisconnectedState() 
 {
@@ -489,11 +495,25 @@ void HardwareServiceImplementation::SetConnectedState()
     m_deviceState = CS_CONNECTED;
 }
 
+string HardwareServiceImplementation::DecodeServiceState(ESERVICESTATE code) const
+{ 
+    const auto result = ServiceStateNames.GetMappedValue(code);
+    return result;
+}
+
+string HardwareServiceImplementation::DecodeDeviceConnectionState(ECONNECTIONSTATE code) const 
+{ 
+    const auto result = DeviceStateNames.GetMappedValue(code);
+    return result;
+}
+
 
 void HardwareServiceImplementation::CreateTimerThreads()
 {
     for (unsigned i = 0; i != Dataconst::TimerThreadPoolSize; ++i)
+    {
         m_timerThreads.create_thread(boost::bind(&boost::asio::io_service::run, &m_timersIOService));
+    }
 }
 
 void HardwareServiceImplementation::StartService()
