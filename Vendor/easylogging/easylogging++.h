@@ -200,7 +200,7 @@
 #endif
 // Compiler specific support evaluations
 #if (!_ELPP_MINGW && !_ELPP_COMPILER_CLANG) || defined(_ELPP_FORCE_USE_STD_THREAD)
-#   define _ELPP_USE_STD_THREADING 1
+#   define _ELPP_USE_STD_THREADING 0
 #endif  // (!_ELPP_MINGW && !_ELPP_COMPILER_CLANG) || defined(_ELPP_FORCE_USE_STD_THREAD)
 #undef ELPP_FINAL
 #if _ELPP_COMPILER_INTEL || (_ELPP_GCC_VERSION < 40702)
@@ -986,16 +986,21 @@ template <typename M>
 class ScopedLock : base::NoCopy {
 public:
     explicit ScopedLock(M& mutex) {  // NOLINT
+        lastError = GetLastError();
         m_mutex = &mutex;
         m_mutex->lock();
     }
 
     virtual ~ScopedLock(void) {
         m_mutex->unlock();
+        SetLastError(lastError);
     }
 private:
     M* m_mutex;
     ScopedLock(void);
+#ifdef _WIN32
+    DWORD lastError;
+#endif // _WIN32
 };
 } // namespace internal
 /// @brief Gets ID of currently running threading in windows systems. On unix, nothing is returned.
@@ -1014,7 +1019,7 @@ typedef base::threading::internal::Mutex Mutex;
 typedef base::threading::internal::ScopedLock<base::threading::Mutex> ScopedLock;
 #   else
 /// @brief Gets ID of currently running threading using std::this_thread::get_id()
-static inline std::string getCurrentThreadId(void) {
+static inline std::string getCurrentThreadId(void) ScopedLock{
     std::stringstream ss;
     ss << std::this_thread::get_id();
     return ss.str();
@@ -1059,8 +1064,8 @@ typedef base::threading::internal::NoScopedLock<base::threading::Mutex> ScopedLo
 /// @brief Base of thread safe class, this class is inheritable-only
 class ThreadSafe {
 public:
-    virtual inline void acquireLock(void) ELPP_FINAL { m_mutex.lock(); }
-    virtual inline void releaseLock(void) ELPP_FINAL { m_mutex.unlock(); }
+    virtual inline void acquireLock(void) ELPP_FINAL{ const auto lastErrorSaved = GetLastError(); m_mutex.lock();  SetLastError(lastErrorSaved); }
+    virtual inline void releaseLock(void) ELPP_FINAL{ const auto lastErrorSaved = GetLastError(); m_mutex.unlock(); SetLastError(lastErrorSaved); }
     virtual inline base::threading::Mutex& lock(void) ELPP_FINAL { return m_mutex; }
 protected:
     ThreadSafe(void) {}
@@ -2931,14 +2936,29 @@ private:
     friend class el::base::DefaultLogDispatchCallback;
     friend class el::base::LogDispatcher;
 
+    class LastErrorPreserver {
+    public:
+        LastErrorPreserver():
+            lastError(GetLastError())
+        {
+        }
+        ~LastErrorPreserver() {
+            SetLastError(lastError);
+        }
+    private:
+        DWORD lastError;
+    };
+
     template <typename Conf_T>
     inline Conf_T getConfigByVal(Level level, const std::map<Level, Conf_T>* confMap, const char* confName) {
+        LastErrorPreserver preserver;
         base::threading::ScopedLock scopedLock(lock());
         return unsafeGetConfigByVal(level, confMap, confName);  // This is not unsafe anymore - mutex locked in scope
     }
 
     template <typename Conf_T>
     inline Conf_T& getConfigByRef(Level level, std::map<Level, Conf_T>* confMap, const char* confName) {
+        LastErrorPreserver preserver;
         base::threading::ScopedLock scopedLock(lock());
         return unsafeGetConfigByRef(level, confMap, confName);  // This is not unsafe anymore - mutex locked in scope
     }
@@ -3611,6 +3631,7 @@ public:
     }
 
     Logger* get(const std::string& id, bool forceCreation = true) {
+        
         base::threading::ScopedLock scopedLock(lock());
         Logger* logger_ = base::utils::Registry<Logger, std::string>::get(id);
         if (logger_ == nullptr && forceCreation) {
@@ -4934,6 +4955,7 @@ public:
     }
 
     Writer& construct(int count, const char* loggerIds, ...) {
+        const auto lastErr = GetLastError();
         if (ELPP->hasFlag(LoggingFlag::MultiLoggerSupport)) {
             va_list loggersList;
             va_start(loggersList, loggerIds);

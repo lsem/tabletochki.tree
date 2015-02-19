@@ -20,9 +20,10 @@ public:
         m_serialInterface(serialInterface),
         m_ioController(ioController),
         m_persistentStorage(persistentStorage),
-        m_boardConfiguration()
+        m_boardConfiguration(),
+        m_deviceStatus(PDS_UNCONFIGURED)
     {
-    };
+    }
 
 public:
     virtual void PacketParserListener_ConfigurationBegin() {}
@@ -63,6 +64,10 @@ private:
     const IOPinConfiguration &GetPinConfoguration(uint8_t pin) { return m_boardConfiguration.IOPins[pin]; }
 
 private:
+    EPHYSICALDEVICESTATUS GetDeviceStatus() const { return m_deviceStatus; }
+    void SetDeviceStatus(EPHYSICALDEVICESTATUS value) { m_deviceStatus = value; }
+
+private:
     static bool IsValidPinNumber(uint8_t number)
     {
         return Utils::InRange(number, (uint8_t)SelectedBoardTraits::DigitalPinsBeginIndex,
@@ -81,4 +86,5 @@ private:
 
 
     SelectedBoardConfiguration      m_boardConfiguration;
+    EPHYSICALDEVICESTATUS           m_deviceStatus;
 };

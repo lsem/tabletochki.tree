@@ -102,7 +102,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Firmware;..\Vendor\json-parser-1.1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_ELPP_THREAD_SAFE;_ELPP_DISABLE_DEBUG_LOGS;_ELPP_DISABLE_DEFAULT_CRASH_HANDLING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_DEBUG;_ELPP_THREAD_SAFE;_ELPP_DISABLE_DEBUG_LOGS;_ELPP_DISABLE_DEFAULT_CRASH_HANDLING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

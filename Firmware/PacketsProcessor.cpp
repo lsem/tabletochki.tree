@@ -45,13 +45,15 @@ void PacketProcessor::PacketParserListener_HeartBeat()
 
 void PacketProcessor::RespondGeneric_OK()
 {
-    Packets::Output::StatusResponse response(EC_OK, 0);
+    const EPHYSICALDEVICESTATUS deviceStatus = GetDeviceStatus();
+    Packets::Output::StatusResponse response(EC_OK, static_cast<uint8_t>(deviceStatus));
     OutputData(&response, sizeof(response));
 }
 
 void PacketProcessor::RespondGeneric_Fail(ErrorCodes code/* = EC_FAILURE*/)
 {
-    Packets::Output::StatusResponse response(code, 0);
+    const EPHYSICALDEVICESTATUS deviceStatus = GetDeviceStatus();
+    Packets::Output::StatusResponse response(code, static_cast<uint8_t>(deviceStatus));
     OutputData(&response, sizeof(response));
 }
 
@@ -91,6 +93,7 @@ void PacketProcessor::ProcessSetConfigurationCommand(const Packets::IOPinConfigu
     }
     else
     {
+        SetDeviceStatus(PDS_CONFIGURED);
         RespondGeneric_OK();
     }
 }
@@ -131,8 +134,8 @@ void PacketProcessor::ProcessGetInputOutputCommand(const Packets::DigitalPinInpu
 
     GetInput::GetInputHeader *header = (GetInput::GetInputHeader*) packetBuffer;
     header->Count = count;
-    header->Id = 0;
-    header->Status = EC_OK;
+    header->OperationResultCode = EC_OK;
+    header->DeviceStatus = GetDeviceStatus();
 
     GetInput::GetInputPinData *pinData = (GetInput::GetInputPinData *) ((const uint8_t*)packetBuffer + sizeof(*header));
 

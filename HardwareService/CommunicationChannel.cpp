@@ -20,7 +20,6 @@ bool SerialLibCommunicationChannel::Open(const char *comportDescriptor)
     const auto result = m_serialLibInstance->Open(comportDescriptor, 9600);
     if (result != 1)
     {
-        LOG(ERROR) << "Opening failed. Result is: " << result;
         anyFault = true;
     }
 
