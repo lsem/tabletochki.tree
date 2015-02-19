@@ -83,17 +83,17 @@ namespace Packets
         {
             HeaderBase() {}
 
-            HeaderBase(uint8_t status, uint8_t id) : Status(status), Id(id)  {}
+            HeaderBase(uint8_t  code, uint8_t status) : OperationResultCode(code), DeviceStatus(status) {}
 
-            uint8_t Status;
-            uint8_t Id;
+            uint8_t OperationResultCode;
+            uint8_t DeviceStatus;
         };
 
         struct StatusResponse : public HeaderBase
         {
             StatusResponse()  {}
             StatusResponse(void *) : HeaderBase(EC__INVALID, 0) {}
-            StatusResponse(uint8_t status, uint8_t id) : HeaderBase(status, id) {}
+            StatusResponse(uint8_t code, uint8_t status) : HeaderBase(code, status) {}
         };
 
         struct GetInput

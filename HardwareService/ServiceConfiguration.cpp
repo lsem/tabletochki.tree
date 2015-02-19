@@ -10,7 +10,6 @@
 #include <easylogging++.h>
 
 
-
 bool ServiceConfigurationManager::LoadFromJsonString(const string &documentContent, ServiceConfiguration &out_configuration)
 {
     const bool result = ServiceConfigurationManager::ValidateJsonString(documentContent, out_configuration);

@@ -8,6 +8,11 @@ enum ECOMMAND
     CMD_HEARTBEAT,
 };
 
+enum EPHYSICALDEVICESTATUS
+{
+    PDS_CONFIGURED,
+    PDS_UNCONFIGURED,
+};
 
 #include "PacketDefs.h"
 

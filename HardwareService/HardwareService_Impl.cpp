@@ -194,28 +194,32 @@ void HardwareServiceImplementation::RestartTask(ESERVICETIMERS timerId)
 
 void HardwareServiceImplementation::HeartBeatTask()
 {
-    LOG(INFO) << "[HEARTBEAT] Activated";
+    LOG(DEBUG) << "[HEARTBEAT] Activated";
+
+    DoHeartBeatTask();
 
     RestartTask(ST_HEARTBEATTIMER);
 }
 
 void HardwareServiceImplementation::StatusTask()
 {
-    LOG(INFO) << "[STATUS] Activated";
+    LOG(DEBUG) << "[STATUS] Activated";
+
+    DoQueryInputTask();
 
     RestartTask(ST_STATUSTIMER);
 }
 
 void HardwareServiceImplementation::InputPumpControlTask()
 {
-    LOG(INFO) << "[INPUT CONTROL PUMP] Activated";
+    LOG(DEBUG) << "[INPUT CONTROL PUMP] Activated";
 
     RestartTask(ST_INPUTPUMPTIMER);
 }
 
 void HardwareServiceImplementation::OutputPumpControlTask()
 {
-    LOG(INFO) << "[OUTPUT CONTROL PUMP] Activated";
+    LOG(DEBUG) << "[OUTPUT CONTROL PUMP] Activated";
 
     RestartTask(ST_OUTPUTPUMPTIMER);
 }
@@ -223,58 +227,97 @@ void HardwareServiceImplementation::OutputPumpControlTask()
 
 void HardwareServiceImplementation::DoHeartBeatTask()
 {
-    Packets::Command heartbeatCommand(CMD_HEARTBEAT);
-    Packets::Output::StatusResponse response(nullptr);
+    uint32_t deviceStatus;
 
-    if (SendPacketData(&heartbeatCommand, sizeof(heartbeatCommand), &response, sizeof(response)))
-    {
-        SetConnectedState();
-    }
-    else
-    {
-        SetDisconnectedState();
-    }
-}
+    const auto currentState = GetDeviceState();
 
-void HardwareServiceImplementation::DoQueryStatusTask()
-{
-    ScopedLock locked(GetCommunicationLock());
-}
-
-void HardwareServiceImplementation::DoQueryInputTask()
-{
-    if (IsDeviceConnected())
+    if (SendHeartbeatCommand(deviceStatus))
     {
-        Packets::Templates::ConfigureIORequest<1> configureIORequest;
-        configureIORequest.Pins[0].Assign(0, PF_INPUTPULLUP | PF_ANALOG, 0, 10);
-        Packets::Templates::ConfigureIOResponse configureResponse;
-        if (SendPacketData(&configureIORequest, sizeof(configureIORequest), &configureResponse, sizeof(configureResponse)))
+        if (currentState == CS_READY)
         {
-            if (configureResponse.Status.Status == EC_OK)
+            if (deviceStatus == PDS_UNCONFIGURED)
             {
-                
-                Packets::Templates::ReadIOCommandRequest<1> readIORequest;
-                readIORequest.Pins[0].PinNumber = 0;
-                Packets::Templates::ReadIOCommandResponse<1> readIOResponse;
-                std::memset(&readIOResponse, 0, sizeof(readIOResponse));
+                LOG(INFO) << "Seems like device was restarted; forcing reconfiguration";
+                SetDeviceState(CS_CONNECTED);
+            }
+            else
+            {
+                // Do nothing
+            }
+        }
+        else if (currentState == CS_CONNECTED)
+        {
+            if (DoConfigureDevice())
+            {
+                SetDeviceState(CS_READY);
 
-                if (SendPacketData(&readIORequest, sizeof(readIORequest), &readIOResponse, sizeof(readIOResponse)))
-                {
-                    //LOG(INFO) << "VALUE: " << readIOResponse.Pins[0].Value;
-                    
-                    std::printf("\r                            \rDISTANCE: %d", readIOResponse.Pins[0].Value);
-                }
+                LOG(INFO) << "Device changed state to ready";
+            }
+        }
+        else if (currentState == CS_DISCONNECTED)
+        {
+            if (DoCheckDeviceConnection())
+            {
+                SetDeviceState(CS_CONNECTED);
+
+                LOG(INFO) << "Device changed state to connected";
             }
         }
     }
     else
     {
-        LOG(ERROR) << "WaterLevelTask: Device is not connected";
+        SetDeviceState(CS_DISCONNECTED);
+
+        if (currentState != CS_DISCONNECTED)
+        {
+            LOG(INFO) << "Device changed state to disconnected";
+        }
     }
 }
 
-void HardwareServiceImplementation::ConfigureIODevice()
+void HardwareServiceImplementation::DoQueryStatusTask()
 {
+    
+    Packets::Templates::ConfigureIORequest<1> configureIORequest;
+
+}
+
+void HardwareServiceImplementation::DoQueryInputTask()
+{
+    //if (IsDeviceConnected())
+    //{
+    //    Packets::Templates::ConfigureIORequest<1> configureIORequest;
+    //    configureIORequest.Pins[0].Assign(0, PF_INPUTPULLUP | PF_ANALOG, 0, 10);
+    //    Packets::Templates::ConfigureIOResponse configureResponse;
+    //    if (SendPacketData(&configureIORequest, sizeof(configureIORequest), &configureResponse, sizeof(configureResponse)))
+    //    {
+    //        if (configureResponse.Status.Status == EC_OK)
+    //        {
+    //            
+    //            Packets::Templates::ReadIOCommandRequest<1> readIORequest;
+    //            readIORequest.Pins[0].PinNumber = 0;
+    //            Packets::Templates::ReadIOCommandResponse<1> readIOResponse;
+    //            std::memset(&readIOResponse, 0, sizeof(readIOResponse));
+
+    //            if (SendPacketData(&readIORequest, sizeof(readIORequest), &readIOResponse, sizeof(readIOResponse)))
+    //            {
+    //                //LOG(INFO) << "VALUE: " << readIOResponse.Pins[0].Value;
+    //                
+    //                std::printf("\r                            \rDISTANCE: %d", readIOResponse.Pins[0].Value);
+    //            }
+    //        }
+    //    }
+    //}
+    ////else
+    //{
+    //    LOG(ERROR) << "WaterLevelTask: Device is not connected";
+    //}
+}
+
+bool HardwareServiceImplementation::DoConfigureDevice()
+{
+    bool result = false;
+
     Packets::Templates::ConfigureIORequest<3> configureIORequest;
 
     size_t pinNumber = 0;
@@ -291,16 +334,31 @@ void HardwareServiceImplementation::ConfigureIODevice()
     Packets::Templates::ConfigureIOResponse configureResponse;
     if (SendPacketData(&configureIORequest, sizeof(configureIORequest), &configureResponse, sizeof(configureResponse)))
     {
-        if (configureResponse.Status.Status == EC_OK)
+        if (configureResponse.Status.OperationResultCode == EC_OK)
         {
-            SetConnectedState();
+            result = true;
         }
     }
+
+    return result;
 }
 
-void DefferJob(ESERVICEJOB jobId, void *param)
+bool HardwareServiceImplementation::DoCheckDeviceConnection()
 {
+    bool result = false;
 
+    Packets::Command heartbeatCommand(CMD_HEARTBEAT);
+
+    Packets::Output::StatusResponse response(nullptr);
+
+    if (SendPacketData(&heartbeatCommand, sizeof(heartbeatCommand), &response, sizeof(response)))
+    {
+        // TODO: check response.Id to detect device restarts (whether need to be reconfigured)
+#pragma message("WARNING: Unclosed TODO")
+        result = true;
+    }
+
+    return result;
 }
 
 void HardwareServiceImplementation::DoEnablePump()
@@ -368,10 +426,10 @@ bool HardwareServiceImplementation::DoSendPacketData(void *packetData, size_t pa
     {
         LOG(DEBUG) << "Opening communication channel on COM4";
 
-        
 
         if (!communicationChannel->Open("COM4"))
         {
+            LOG(ERROR) << "Failed opening device port. Error: '" << Utils::GetLastSystemErrorMessage() << "'";
             break;
         }
 
@@ -400,7 +458,7 @@ bool HardwareServiceImplementation::DoSendPacketData(void *packetData, size_t pa
         LOG(DEBUG) << "Data received";
 
         result = true;
-    } 
+    }
     while (false);
 
 
@@ -410,7 +468,25 @@ bool HardwareServiceImplementation::DoSendPacketData(void *packetData, size_t pa
     }
 
     return result;
+}
 
+bool HardwareServiceImplementation::SendHeartbeatCommand(unsigned &out_deviceStatus)
+{
+    bool result = false;
+
+    Packets::Command heartbeatCommand(CMD_HEARTBEAT);
+    Packets::Output::StatusResponse response(nullptr);
+
+    if (SendPacketData(&heartbeatCommand, sizeof(heartbeatCommand), &response, sizeof(response)))
+    {
+        if (response.OperationResultCode == EC_OK)
+        {
+            out_deviceStatus = response.DeviceStatus;
+            result = true;
+        }
+    }
+
+    return result;
 }
 
 /*virtual */
@@ -489,16 +565,6 @@ void HardwareServiceImplementation::ResetUnframerState()
     m_unframer.Reset();
 }
 
-
-void HardwareServiceImplementation::SetDisconnectedState() 
-{
-    m_deviceState = CS_DISCONNECTED;
-}
-
-void HardwareServiceImplementation::SetConnectedState() 
-{ 
-    m_deviceState = CS_CONNECTED;
-}
 
 string HardwareServiceImplementation::DecodeServiceState(ESERVICESTATE code) const
 { 

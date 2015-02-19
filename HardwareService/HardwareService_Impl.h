@@ -49,6 +49,7 @@ enum ECONNECTIONSTATE
 
     CS_CONNECTED = CS__BEGIN,
     CS_DISCONNECTED,
+    CS_READY,
 
     CS__END,
     CS__DEFAULT = CS_DISCONNECTED,
@@ -141,13 +142,17 @@ private:
     void DoQueryInputTask();
 
 private:
-    void ConfigureIODevice();
+    bool DoConfigureDevice();
+    bool DoCheckDeviceConnection();
     void DoEnablePump();
     void DoDisablePump();
 
 private:
     bool SendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
     bool DoSendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
+
+private:
+    bool SendHeartbeatCommand(unsigned &out_deviceStatus);
 
 public:
     virtual void PacketUnFramerListener_OnCommandParsed(const uint8_t* packetBuffer, size_t packetSize);
@@ -175,8 +180,6 @@ private:
 
 
 private:
-    void SetDisconnectedState();
-    void SetConnectedState();
     void SetDeviceState(ECONNECTIONSTATE value) { m_deviceState = value; }
     ECONNECTIONSTATE GetDeviceState() const { return m_deviceState; }
     bool IsDeviceConnected() const { return GetDeviceState() == CS_CONNECTED; }
