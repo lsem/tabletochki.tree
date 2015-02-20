@@ -153,7 +153,7 @@ app.post('/upload_config', function (request, response) {
         response.status(httpStatus.BAD_REQUEST);
     } else {
         var client = thrift.createClient(HardwareService, thriftConnection);
-        client.configure(jsonConfigText, function (err, data) {
+        client.applyConfiguration(jsonConfigText, function (err, data) {
             if (err) {
                 console.log('failed calling configure api')
             } else {

@@ -13,25 +13,31 @@
 
 namespace Tabletochki {
 
-int _kContainerValues[] = {
-  Container::VISIBLE,
-  Container::HIDDEN
-};
-const char* _kContainerNames[] = {
-  "VISIBLE",
-  "HIDDEN"
-};
-const std::map<int, const char*> _Container_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kContainerValues, _kContainerNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
-
 int _kErrorCodeValues[] = {
   ErrorCode::INVALID_CONFIGURATION,
-  ErrorCode::DEVICE_ALREADY_IN_USE
+  ErrorCode::DEVICE_ALREADY_IN_USE,
+  ErrorCode::SERVICE_NOT_READY,
+  ErrorCode::DEVICE_NOT_READY,
+  ErrorCode::PUMP_NOT_READY
 };
 const char* _kErrorCodeNames[] = {
   "INVALID_CONFIGURATION",
-  "DEVICE_ALREADY_IN_USE"
+  "DEVICE_ALREADY_IN_USE",
+  "SERVICE_NOT_READY",
+  "DEVICE_NOT_READY",
+  "PUMP_NOT_READY"
 };
-const std::map<int, const char*> _ErrorCode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kErrorCodeValues, _kErrorCodeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ErrorCode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kErrorCodeValues, _kErrorCodeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kPumpIdentifierValues[] = {
+  PumpIdentifier::INPUT_PUMP,
+  PumpIdentifier::OUTPUT_PUMP
+};
+const char* _kPumpIdentifierNames[] = {
+  "INPUT_PUMP",
+  "OUTPUT_PUMP"
+};
+const std::map<int, const char*> _PumpIdentifier_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kPumpIdentifierValues, _kPumpIdentifierNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 InvalidOperation::~InvalidOperation() throw() {
@@ -236,296 +242,6 @@ std::ostream& operator<<(std::ostream& out, const StopPumpResult& obj) {
 }
 
 
-HardwareInput::~HardwareInput() throw() {
-}
-
-
-void HardwareInput::__set_buttonPressed(const bool val) {
-  this->buttonPressed = val;
-}
-
-const char* HardwareInput::ascii_fingerprint = "5892306F7B861249AE8E27C8ED619593";
-const uint8_t HardwareInput::binary_fingerprint[16] = {0x58,0x92,0x30,0x6F,0x7B,0x86,0x12,0x49,0xAE,0x8E,0x27,0xC8,0xED,0x61,0x95,0x93};
-
-uint32_t HardwareInput::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->buttonPressed);
-          this->__isset.buttonPressed = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t HardwareInput::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareInput");
-
-  xfer += oprot->writeFieldBegin("buttonPressed", ::apache::thrift::protocol::T_BOOL, 1);
-  xfer += oprot->writeBool(this->buttonPressed);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-void swap(HardwareInput &a, HardwareInput &b) {
-  using ::std::swap;
-  swap(a.buttonPressed, b.buttonPressed);
-  swap(a.__isset, b.__isset);
-}
-
-HardwareInput::HardwareInput(const HardwareInput& other5) {
-  buttonPressed = other5.buttonPressed;
-  __isset = other5.__isset;
-}
-HardwareInput& HardwareInput::operator=(const HardwareInput& other6) {
-  buttonPressed = other6.buttonPressed;
-  __isset = other6.__isset;
-  return *this;
-}
-std::ostream& operator<<(std::ostream& out, const HardwareInput& obj) {
-  using apache::thrift::to_string;
-  out << "HardwareInput(";
-  out << "buttonPressed=" << to_string(obj.buttonPressed);
-  out << ")";
-  return out;
-}
-
-
-PumpConfiguration::~PumpConfiguration() throw() {
-}
-
-
-void PumpConfiguration::__set_productivityMillilitresPerSecond(const int32_t val) {
-  this->productivityMillilitresPerSecond = val;
-}
-
-const char* PumpConfiguration::ascii_fingerprint = "E86CACEB22240450EDCBEFC3A83970E4";
-const uint8_t PumpConfiguration::binary_fingerprint[16] = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
-
-uint32_t PumpConfiguration::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->productivityMillilitresPerSecond);
-          this->__isset.productivityMillilitresPerSecond = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t PumpConfiguration::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("PumpConfiguration");
-
-  xfer += oprot->writeFieldBegin("productivityMillilitresPerSecond", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->productivityMillilitresPerSecond);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-void swap(PumpConfiguration &a, PumpConfiguration &b) {
-  using ::std::swap;
-  swap(a.productivityMillilitresPerSecond, b.productivityMillilitresPerSecond);
-  swap(a.__isset, b.__isset);
-}
-
-PumpConfiguration::PumpConfiguration(const PumpConfiguration& other7) {
-  productivityMillilitresPerSecond = other7.productivityMillilitresPerSecond;
-  __isset = other7.__isset;
-}
-PumpConfiguration& PumpConfiguration::operator=(const PumpConfiguration& other8) {
-  productivityMillilitresPerSecond = other8.productivityMillilitresPerSecond;
-  __isset = other8.__isset;
-  return *this;
-}
-std::ostream& operator<<(std::ostream& out, const PumpConfiguration& obj) {
-  using apache::thrift::to_string;
-  out << "PumpConfiguration(";
-  out << "productivityMillilitresPerSecond=" << to_string(obj.productivityMillilitresPerSecond);
-  out << ")";
-  return out;
-}
-
-
-Configuration::~Configuration() throw() {
-}
-
-
-void Configuration::__set_pumpsConfiguration(const std::vector<PumpConfiguration> & val) {
-  this->pumpsConfiguration = val;
-}
-
-const char* Configuration::ascii_fingerprint = "1171AE793D9EC39A88B865BB7391D846";
-const uint8_t Configuration::binary_fingerprint[16] = {0x11,0x71,0xAE,0x79,0x3D,0x9E,0xC3,0x9A,0x88,0xB8,0x65,0xBB,0x73,0x91,0xD8,0x46};
-
-uint32_t Configuration::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->pumpsConfiguration.clear();
-            uint32_t _size9;
-            ::apache::thrift::protocol::TType _etype12;
-            xfer += iprot->readListBegin(_etype12, _size9);
-            this->pumpsConfiguration.resize(_size9);
-            uint32_t _i13;
-            for (_i13 = 0; _i13 < _size9; ++_i13)
-            {
-              xfer += this->pumpsConfiguration[_i13].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.pumpsConfiguration = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t Configuration::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("Configuration");
-
-  xfer += oprot->writeFieldBegin("pumpsConfiguration", ::apache::thrift::protocol::T_LIST, 1);
-  {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->pumpsConfiguration.size()));
-    std::vector<PumpConfiguration> ::const_iterator _iter14;
-    for (_iter14 = this->pumpsConfiguration.begin(); _iter14 != this->pumpsConfiguration.end(); ++_iter14)
-    {
-      xfer += (*_iter14).write(oprot);
-    }
-    xfer += oprot->writeListEnd();
-  }
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-void swap(Configuration &a, Configuration &b) {
-  using ::std::swap;
-  swap(a.pumpsConfiguration, b.pumpsConfiguration);
-  swap(a.__isset, b.__isset);
-}
-
-Configuration::Configuration(const Configuration& other15) {
-  pumpsConfiguration = other15.pumpsConfiguration;
-  __isset = other15.__isset;
-}
-Configuration& Configuration::operator=(const Configuration& other16) {
-  pumpsConfiguration = other16.pumpsConfiguration;
-  __isset = other16.__isset;
-  return *this;
-}
-std::ostream& operator<<(std::ostream& out, const Configuration& obj) {
-  using apache::thrift::to_string;
-  out << "Configuration(";
-  out << "pumpsConfiguration=" << to_string(obj.pumpsConfiguration);
-  out << ")";
-  return out;
-}
-
-
 ServiceStatus::~ServiceStatus() throw() {
 }
 
@@ -598,13 +314,13 @@ void swap(ServiceStatus &a, ServiceStatus &b) {
   swap(a.__isset, b.__isset);
 }
 
-ServiceStatus::ServiceStatus(const ServiceStatus& other17) {
-  statusCode = other17.statusCode;
-  __isset = other17.__isset;
+ServiceStatus::ServiceStatus(const ServiceStatus& other5) {
+  statusCode = other5.statusCode;
+  __isset = other5.__isset;
 }
-ServiceStatus& ServiceStatus::operator=(const ServiceStatus& other18) {
-  statusCode = other18.statusCode;
-  __isset = other18.__isset;
+ServiceStatus& ServiceStatus::operator=(const ServiceStatus& other6) {
+  statusCode = other6.statusCode;
+  __isset = other6.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const ServiceStatus& obj) {

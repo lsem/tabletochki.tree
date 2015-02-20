@@ -19,33 +19,30 @@
 
 namespace Tabletochki {
 
-struct Container {
-  enum type {
-    VISIBLE = 0,
-    HIDDEN = 1
-  };
-};
-
-extern const std::map<int, const char*> _Container_VALUES_TO_NAMES;
-
 struct ErrorCode {
   enum type {
     INVALID_CONFIGURATION = 0,
-    DEVICE_ALREADY_IN_USE = 1
+    DEVICE_ALREADY_IN_USE = 1,
+    SERVICE_NOT_READY = 2,
+    DEVICE_NOT_READY = 3,
+    PUMP_NOT_READY = 4
   };
 };
 
 extern const std::map<int, const char*> _ErrorCode_VALUES_TO_NAMES;
 
+struct PumpIdentifier {
+  enum type {
+    INPUT_PUMP = 0,
+    OUTPUT_PUMP = 1
+  };
+};
+
+extern const std::map<int, const char*> _PumpIdentifier_VALUES_TO_NAMES;
+
 class InvalidOperation;
 
 class StopPumpResult;
-
-class HardwareInput;
-
-class PumpConfiguration;
-
-class Configuration;
 
 class ServiceStatus;
 
@@ -140,135 +137,6 @@ class StopPumpResult {
 };
 
 void swap(StopPumpResult &a, StopPumpResult &b);
-
-typedef struct _HardwareInput__isset {
-  _HardwareInput__isset() : buttonPressed(false) {}
-  bool buttonPressed :1;
-} _HardwareInput__isset;
-
-class HardwareInput {
- public:
-
-  static const char* ascii_fingerprint; // = "5892306F7B861249AE8E27C8ED619593";
-  static const uint8_t binary_fingerprint[16]; // = {0x58,0x92,0x30,0x6F,0x7B,0x86,0x12,0x49,0xAE,0x8E,0x27,0xC8,0xED,0x61,0x95,0x93};
-
-  HardwareInput(const HardwareInput&);
-  HardwareInput& operator=(const HardwareInput&);
-  HardwareInput() : buttonPressed(0) {
-  }
-
-  virtual ~HardwareInput() throw();
-  bool buttonPressed;
-
-  _HardwareInput__isset __isset;
-
-  void __set_buttonPressed(const bool val);
-
-  bool operator == (const HardwareInput & rhs) const
-  {
-    if (!(buttonPressed == rhs.buttonPressed))
-      return false;
-    return true;
-  }
-  bool operator != (const HardwareInput &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const HardwareInput & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareInput& obj);
-};
-
-void swap(HardwareInput &a, HardwareInput &b);
-
-typedef struct _PumpConfiguration__isset {
-  _PumpConfiguration__isset() : productivityMillilitresPerSecond(false) {}
-  bool productivityMillilitresPerSecond :1;
-} _PumpConfiguration__isset;
-
-class PumpConfiguration {
- public:
-
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
-
-  PumpConfiguration(const PumpConfiguration&);
-  PumpConfiguration& operator=(const PumpConfiguration&);
-  PumpConfiguration() : productivityMillilitresPerSecond(0) {
-  }
-
-  virtual ~PumpConfiguration() throw();
-  int32_t productivityMillilitresPerSecond;
-
-  _PumpConfiguration__isset __isset;
-
-  void __set_productivityMillilitresPerSecond(const int32_t val);
-
-  bool operator == (const PumpConfiguration & rhs) const
-  {
-    if (!(productivityMillilitresPerSecond == rhs.productivityMillilitresPerSecond))
-      return false;
-    return true;
-  }
-  bool operator != (const PumpConfiguration &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const PumpConfiguration & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const PumpConfiguration& obj);
-};
-
-void swap(PumpConfiguration &a, PumpConfiguration &b);
-
-typedef struct _Configuration__isset {
-  _Configuration__isset() : pumpsConfiguration(false) {}
-  bool pumpsConfiguration :1;
-} _Configuration__isset;
-
-class Configuration {
- public:
-
-  static const char* ascii_fingerprint; // = "1171AE793D9EC39A88B865BB7391D846";
-  static const uint8_t binary_fingerprint[16]; // = {0x11,0x71,0xAE,0x79,0x3D,0x9E,0xC3,0x9A,0x88,0xB8,0x65,0xBB,0x73,0x91,0xD8,0x46};
-
-  Configuration(const Configuration&);
-  Configuration& operator=(const Configuration&);
-  Configuration() {
-  }
-
-  virtual ~Configuration() throw();
-  std::vector<PumpConfiguration>  pumpsConfiguration;
-
-  _Configuration__isset __isset;
-
-  void __set_pumpsConfiguration(const std::vector<PumpConfiguration> & val);
-
-  bool operator == (const Configuration & rhs) const
-  {
-    if (!(pumpsConfiguration == rhs.pumpsConfiguration))
-      return false;
-    return true;
-  }
-  bool operator != (const Configuration &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Configuration & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Configuration& obj);
-};
-
-void swap(Configuration &a, Configuration &b);
 
 typedef struct _ServiceStatus__isset {
   _ServiceStatus__isset() : statusCode(false) {}

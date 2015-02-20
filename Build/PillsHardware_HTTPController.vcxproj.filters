@@ -115,5 +115,8 @@
     <ClInclude Include="..\HardwareService\DeviceIOMapping.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\HardwareService\ThriftHelpers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

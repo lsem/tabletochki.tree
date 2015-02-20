@@ -41,6 +41,7 @@
     <ClInclude Include="..\HardwareService\HardwareService_Impl.h" />
     <ClInclude Include="..\HardwareService\PumpTypes.h" />
     <ClInclude Include="..\HardwareService\ServiceConfiguration.h" />
+    <ClInclude Include="..\HardwareService\ThriftHelpers.h" />
     <ClInclude Include="..\Vendor\json-parser-1.1.0\json.h" />
     <ClInclude Include="..\Vendor\serialib\serialib.h" />
   </ItemGroup>

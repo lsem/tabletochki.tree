@@ -42,51 +42,53 @@ public:
         m_implementation = implementation;
     }
 
-    virtual void configure(const std::string& jsonDocumentText)
+    virtual void applyConfiguration(const std::string& jsonDocumentText)
     {
-        LOG(INFO) << "API - configure";
+        LOG(INFO) << "API: applyConfiguration";
+        
         m_implementation->ApplyConfiguration(jsonDocumentText);
     }
-
-    virtual void pour(const Container::type from, const Container::type to) 
+    
+    virtual void startPump(const PumpIdentifier::type pumpId)
     {
-        LOG(INFO) << "API - pour";
-        m_implementation->Pour(from, to);
-    }
-
-    virtual void getInput(HardwareInput& _return) 
-    {
-        LOG(INFO) << "API - getInput";
-        m_implementation->GetInput(_return);
-    }
-
-    virtual void startPump(const int32_t pumpId) 
-    {
-        LOG(INFO) << "API - startPump";
+        LOG(INFO) << "API: startPump";
+        
         m_implementation->StartPump(pumpId);
     }
 
-    virtual void stopPump(StopPumpResult& _return, const int32_t pumpId) 
+    virtual void stopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId)
     {
-        LOG(INFO) << "API - stopPump";
+        LOG(INFO) << "API: stopPump";
+        
         m_implementation->StopPump(_return, pumpId);
     }
 
-    virtual void getServiceStatus(ServiceStatus& _return) 
+    virtual void getServiceStatus(ServiceStatus& _return)
     {
-        LOG(INFO) << "API - getServiceStatus";
+        LOG(INFO) << "API: getServiceStatus";
+
         m_implementation->GetServiceStatus(_return);
     }
 
-    virtual void GetServiceStateJson(std::string& _return)
+    virtual void getServiceStateJson(std::string& _return)
     {
-        LOG(INFO) << "API - GetServiceStateJson";
+        LOG(INFO) << "API: getServiceStateJson";
+
         m_implementation->GetServiceStateJson(_return);
     }
 
-    virtual void ping(const int32_t arg) 
+    virtual void fillVisibleContainerMillilitres(const int32_t amount)
     {
-        LOG(INFO) << "API - ping";
+        LOG(INFO) << "API: fillVisibleContainerMillilitres";
+
+        m_implementation->FillVisibleContainerMillilitres(amount);
+    }
+    
+    virtual void emptyVisiableContainerMillilitres(const int32_t amount)
+    {
+        LOG(INFO) << "API: emptyVisiableContainerMillilitres";
+
+        m_implementation->EmptyVisiableContainerMillilitres(amount);
     }
 
 private:

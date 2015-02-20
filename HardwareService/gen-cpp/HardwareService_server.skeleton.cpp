@@ -22,27 +22,17 @@ class HardwareServiceHandler : virtual public HardwareServiceIf {
     // Your initialization goes here
   }
 
-  void configure(const std::string& jsonDocumentText) {
+  void applyConfiguration(const std::string& jsonDocumentText) {
     // Your implementation goes here
-    printf("configure\n");
+    printf("applyConfiguration\n");
   }
 
-  void pour(const Container::type from, const Container::type to) {
-    // Your implementation goes here
-    printf("pour\n");
-  }
-
-  void getInput(HardwareInput& _return) {
-    // Your implementation goes here
-    printf("getInput\n");
-  }
-
-  void startPump(const int32_t pumpId) {
+  void startPump(const PumpIdentifier::type pumpId) {
     // Your implementation goes here
     printf("startPump\n");
   }
 
-  void stopPump(StopPumpResult& _return, const int32_t pumpId) {
+  void stopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId) {
     // Your implementation goes here
     printf("stopPump\n");
   }
@@ -52,14 +42,19 @@ class HardwareServiceHandler : virtual public HardwareServiceIf {
     printf("getServiceStatus\n");
   }
 
-  void GetServiceStateJson(std::string& _return) {
+  void getServiceStateJson(std::string& _return) {
     // Your implementation goes here
-    printf("GetServiceStateJson\n");
+    printf("getServiceStateJson\n");
   }
 
-  void ping(const int32_t arg) {
+  void fillVisibleContainerMillilitres(const int32_t amount) {
     // Your implementation goes here
-    printf("ping\n");
+    printf("fillVisibleContainerMillilitres\n");
+  }
+
+  void emptyVisiableContainerMillilitres(const int32_t amount) {
+    // Your implementation goes here
+    printf("emptyVisiableContainerMillilitres\n");
   }
 
 };

@@ -9,11 +9,11 @@
 namespace Tabletochki {
 
 
-HardwareService_configure_args::~HardwareService_configure_args() throw() {
+HardwareService_applyConfiguration_args::~HardwareService_applyConfiguration_args() throw() {
 }
 
 
-uint32_t HardwareService_configure_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_applyConfiguration_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -53,10 +53,10 @@ uint32_t HardwareService_configure_args::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t HardwareService_configure_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_applyConfiguration_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_configure_args");
+  xfer += oprot->writeStructBegin("HardwareService_applyConfiguration_args");
 
   xfer += oprot->writeFieldBegin("jsonDocumentText", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->jsonDocumentText);
@@ -69,14 +69,14 @@ uint32_t HardwareService_configure_args::write(::apache::thrift::protocol::TProt
 }
 
 
-HardwareService_configure_pargs::~HardwareService_configure_pargs() throw() {
+HardwareService_applyConfiguration_pargs::~HardwareService_applyConfiguration_pargs() throw() {
 }
 
 
-uint32_t HardwareService_configure_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_applyConfiguration_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_configure_pargs");
+  xfer += oprot->writeStructBegin("HardwareService_applyConfiguration_pargs");
 
   xfer += oprot->writeFieldBegin("jsonDocumentText", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->jsonDocumentText)));
@@ -89,11 +89,11 @@ uint32_t HardwareService_configure_pargs::write(::apache::thrift::protocol::TPro
 }
 
 
-HardwareService_configure_result::~HardwareService_configure_result() throw() {
+HardwareService_applyConfiguration_result::~HardwareService_applyConfiguration_result() throw() {
 }
 
 
-uint32_t HardwareService_configure_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_applyConfiguration_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -133,11 +133,11 @@ uint32_t HardwareService_configure_result::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t HardwareService_configure_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_applyConfiguration_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("HardwareService_configure_result");
+  xfer += oprot->writeStructBegin("HardwareService_applyConfiguration_result");
 
   if (this->__isset.ouch) {
     xfer += oprot->writeFieldBegin("ouch", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -150,11 +150,11 @@ uint32_t HardwareService_configure_result::write(::apache::thrift::protocol::TPr
 }
 
 
-HardwareService_configure_presult::~HardwareService_configure_presult() throw() {
+HardwareService_applyConfiguration_presult::~HardwareService_applyConfiguration_presult() throw() {
 }
 
 
-uint32_t HardwareService_configure_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_applyConfiguration_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -174,397 +174,6 @@ uint32_t HardwareService_configure_presult::read(::apache::thrift::protocol::TPr
     }
     switch (fid)
     {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->ouch.read(iprot);
-          this->__isset.ouch = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-
-HardwareService_pour_args::~HardwareService_pour_args() throw() {
-}
-
-
-uint32_t HardwareService_pour_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast19;
-          xfer += iprot->readI32(ecast19);
-          this->from = (Container::type)ecast19;
-          this->__isset.from = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast20;
-          xfer += iprot->readI32(ecast20);
-          this->to = (Container::type)ecast20;
-          this->__isset.to = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t HardwareService_pour_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_pour_args");
-
-  xfer += oprot->writeFieldBegin("from", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((int32_t)this->from);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("to", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32((int32_t)this->to);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-
-HardwareService_pour_pargs::~HardwareService_pour_pargs() throw() {
-}
-
-
-uint32_t HardwareService_pour_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_pour_pargs");
-
-  xfer += oprot->writeFieldBegin("from", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((int32_t)(*(this->from)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("to", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32((int32_t)(*(this->to)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-
-HardwareService_pour_result::~HardwareService_pour_result() throw() {
-}
-
-
-uint32_t HardwareService_pour_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->ouch.read(iprot);
-          this->__isset.ouch = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t HardwareService_pour_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("HardwareService_pour_result");
-
-  if (this->__isset.ouch) {
-    xfer += oprot->writeFieldBegin("ouch", ::apache::thrift::protocol::T_STRUCT, 1);
-    xfer += this->ouch.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-
-HardwareService_pour_presult::~HardwareService_pour_presult() throw() {
-}
-
-
-uint32_t HardwareService_pour_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->ouch.read(iprot);
-          this->__isset.ouch = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-
-HardwareService_getInput_args::~HardwareService_getInput_args() throw() {
-}
-
-
-uint32_t HardwareService_getInput_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t HardwareService_getInput_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_getInput_args");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-
-HardwareService_getInput_pargs::~HardwareService_getInput_pargs() throw() {
-}
-
-
-uint32_t HardwareService_getInput_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_getInput_pargs");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-
-HardwareService_getInput_result::~HardwareService_getInput_result() throw() {
-}
-
-
-uint32_t HardwareService_getInput_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->success.read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->ouch.read(iprot);
-          this->__isset.ouch = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t HardwareService_getInput_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("HardwareService_getInput_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
-    xfer += this->success.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  } else if (this->__isset.ouch) {
-    xfer += oprot->writeFieldBegin("ouch", ::apache::thrift::protocol::T_STRUCT, 1);
-    xfer += this->ouch.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-
-HardwareService_getInput_presult::~HardwareService_getInput_presult() throw() {
-}
-
-
-uint32_t HardwareService_getInput_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += (*(this->success)).read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ouch.read(iprot);
@@ -612,7 +221,9 @@ uint32_t HardwareService_startPump_args::read(::apache::thrift::protocol::TProto
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->pumpId);
+          int32_t ecast7;
+          xfer += iprot->readI32(ecast7);
+          this->pumpId = (PumpIdentifier::type)ecast7;
           this->__isset.pumpId = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -636,7 +247,7 @@ uint32_t HardwareService_startPump_args::write(::apache::thrift::protocol::TProt
   xfer += oprot->writeStructBegin("HardwareService_startPump_args");
 
   xfer += oprot->writeFieldBegin("pumpId", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->pumpId);
+  xfer += oprot->writeI32((int32_t)this->pumpId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -656,7 +267,7 @@ uint32_t HardwareService_startPump_pargs::write(::apache::thrift::protocol::TPro
   xfer += oprot->writeStructBegin("HardwareService_startPump_pargs");
 
   xfer += oprot->writeFieldBegin("pumpId", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->pumpId)));
+  xfer += oprot->writeI32((int32_t)(*(this->pumpId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -798,7 +409,9 @@ uint32_t HardwareService_stopPump_args::read(::apache::thrift::protocol::TProtoc
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->pumpId);
+          int32_t ecast8;
+          xfer += iprot->readI32(ecast8);
+          this->pumpId = (PumpIdentifier::type)ecast8;
           this->__isset.pumpId = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -822,7 +435,7 @@ uint32_t HardwareService_stopPump_args::write(::apache::thrift::protocol::TProto
   xfer += oprot->writeStructBegin("HardwareService_stopPump_args");
 
   xfer += oprot->writeFieldBegin("pumpId", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->pumpId);
+  xfer += oprot->writeI32((int32_t)this->pumpId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -842,7 +455,7 @@ uint32_t HardwareService_stopPump_pargs::write(::apache::thrift::protocol::TProt
   xfer += oprot->writeStructBegin("HardwareService_stopPump_pargs");
 
   xfer += oprot->writeFieldBegin("pumpId", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->pumpId)));
+  xfer += oprot->writeI32((int32_t)(*(this->pumpId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1143,11 +756,11 @@ uint32_t HardwareService_getServiceStatus_presult::read(::apache::thrift::protoc
 }
 
 
-HardwareService_GetServiceStateJson_args::~HardwareService_GetServiceStateJson_args() throw() {
+HardwareService_getServiceStateJson_args::~HardwareService_getServiceStateJson_args() throw() {
 }
 
 
-uint32_t HardwareService_GetServiceStateJson_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_getServiceStateJson_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1174,10 +787,10 @@ uint32_t HardwareService_GetServiceStateJson_args::read(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t HardwareService_GetServiceStateJson_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_getServiceStateJson_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_GetServiceStateJson_args");
+  xfer += oprot->writeStructBegin("HardwareService_getServiceStateJson_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -1186,14 +799,14 @@ uint32_t HardwareService_GetServiceStateJson_args::write(::apache::thrift::proto
 }
 
 
-HardwareService_GetServiceStateJson_pargs::~HardwareService_GetServiceStateJson_pargs() throw() {
+HardwareService_getServiceStateJson_pargs::~HardwareService_getServiceStateJson_pargs() throw() {
 }
 
 
-uint32_t HardwareService_GetServiceStateJson_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_getServiceStateJson_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_GetServiceStateJson_pargs");
+  xfer += oprot->writeStructBegin("HardwareService_getServiceStateJson_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -1202,11 +815,11 @@ uint32_t HardwareService_GetServiceStateJson_pargs::write(::apache::thrift::prot
 }
 
 
-HardwareService_GetServiceStateJson_result::~HardwareService_GetServiceStateJson_result() throw() {
+HardwareService_getServiceStateJson_result::~HardwareService_getServiceStateJson_result() throw() {
 }
 
 
-uint32_t HardwareService_GetServiceStateJson_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_getServiceStateJson_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1246,11 +859,11 @@ uint32_t HardwareService_GetServiceStateJson_result::read(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t HardwareService_GetServiceStateJson_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_getServiceStateJson_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("HardwareService_GetServiceStateJson_result");
+  xfer += oprot->writeStructBegin("HardwareService_getServiceStateJson_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -1263,11 +876,11 @@ uint32_t HardwareService_GetServiceStateJson_result::write(::apache::thrift::pro
 }
 
 
-HardwareService_GetServiceStateJson_presult::~HardwareService_GetServiceStateJson_presult() throw() {
+HardwareService_getServiceStateJson_presult::~HardwareService_getServiceStateJson_presult() throw() {
 }
 
 
-uint32_t HardwareService_GetServiceStateJson_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_getServiceStateJson_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1308,11 +921,11 @@ uint32_t HardwareService_GetServiceStateJson_presult::read(::apache::thrift::pro
 }
 
 
-HardwareService_ping_args::~HardwareService_ping_args() throw() {
+HardwareService_fillVisibleContainerMillilitres_args::~HardwareService_fillVisibleContainerMillilitres_args() throw() {
 }
 
 
-uint32_t HardwareService_ping_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_fillVisibleContainerMillilitres_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1334,8 +947,8 @@ uint32_t HardwareService_ping_args::read(::apache::thrift::protocol::TProtocol* 
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->arg);
-          this->__isset.arg = true;
+          xfer += iprot->readI32(this->amount);
+          this->__isset.amount = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1352,13 +965,13 @@ uint32_t HardwareService_ping_args::read(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t HardwareService_ping_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_fillVisibleContainerMillilitres_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_ping_args");
+  xfer += oprot->writeStructBegin("HardwareService_fillVisibleContainerMillilitres_args");
 
-  xfer += oprot->writeFieldBegin("arg", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->arg);
+  xfer += oprot->writeFieldBegin("amount", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->amount);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1368,17 +981,17 @@ uint32_t HardwareService_ping_args::write(::apache::thrift::protocol::TProtocol*
 }
 
 
-HardwareService_ping_pargs::~HardwareService_ping_pargs() throw() {
+HardwareService_fillVisibleContainerMillilitres_pargs::~HardwareService_fillVisibleContainerMillilitres_pargs() throw() {
 }
 
 
-uint32_t HardwareService_ping_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_fillVisibleContainerMillilitres_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("HardwareService_ping_pargs");
+  xfer += oprot->writeStructBegin("HardwareService_fillVisibleContainerMillilitres_pargs");
 
-  xfer += oprot->writeFieldBegin("arg", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->arg)));
+  xfer += oprot->writeFieldBegin("amount", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->amount)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1388,11 +1001,11 @@ uint32_t HardwareService_ping_pargs::write(::apache::thrift::protocol::TProtocol
 }
 
 
-HardwareService_ping_result::~HardwareService_ping_result() throw() {
+HardwareService_fillVisibleContainerMillilitres_result::~HardwareService_fillVisibleContainerMillilitres_result() throw() {
 }
 
 
-uint32_t HardwareService_ping_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_fillVisibleContainerMillilitres_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1410,7 +1023,20 @@ uint32_t HardwareService_ping_result::read(::apache::thrift::protocol::TProtocol
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ouch.read(iprot);
+          this->__isset.ouch = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
@@ -1419,23 +1045,28 @@ uint32_t HardwareService_ping_result::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t HardwareService_ping_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t HardwareService_fillVisibleContainerMillilitres_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("HardwareService_ping_result");
+  xfer += oprot->writeStructBegin("HardwareService_fillVisibleContainerMillilitres_result");
 
+  if (this->__isset.ouch) {
+    xfer += oprot->writeFieldBegin("ouch", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ouch.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
 
-HardwareService_ping_presult::~HardwareService_ping_presult() throw() {
+HardwareService_fillVisibleContainerMillilitres_presult::~HardwareService_fillVisibleContainerMillilitres_presult() throw() {
 }
 
 
-uint32_t HardwareService_ping_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t HardwareService_fillVisibleContainerMillilitres_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1453,7 +1084,20 @@ uint32_t HardwareService_ping_presult::read(::apache::thrift::protocol::TProtoco
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ouch.read(iprot);
+          this->__isset.ouch = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
@@ -1462,18 +1106,204 @@ uint32_t HardwareService_ping_presult::read(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-void HardwareServiceClient::configure(const std::string& jsonDocumentText)
+
+HardwareService_emptyVisiableContainerMillilitres_args::~HardwareService_emptyVisiableContainerMillilitres_args() throw() {
+}
+
+
+uint32_t HardwareService_emptyVisiableContainerMillilitres_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->amount);
+          this->__isset.amount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t HardwareService_emptyVisiableContainerMillilitres_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("HardwareService_emptyVisiableContainerMillilitres_args");
+
+  xfer += oprot->writeFieldBegin("amount", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->amount);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+HardwareService_emptyVisiableContainerMillilitres_pargs::~HardwareService_emptyVisiableContainerMillilitres_pargs() throw() {
+}
+
+
+uint32_t HardwareService_emptyVisiableContainerMillilitres_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("HardwareService_emptyVisiableContainerMillilitres_pargs");
+
+  xfer += oprot->writeFieldBegin("amount", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->amount)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+HardwareService_emptyVisiableContainerMillilitres_result::~HardwareService_emptyVisiableContainerMillilitres_result() throw() {
+}
+
+
+uint32_t HardwareService_emptyVisiableContainerMillilitres_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ouch.read(iprot);
+          this->__isset.ouch = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t HardwareService_emptyVisiableContainerMillilitres_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("HardwareService_emptyVisiableContainerMillilitres_result");
+
+  if (this->__isset.ouch) {
+    xfer += oprot->writeFieldBegin("ouch", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ouch.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+HardwareService_emptyVisiableContainerMillilitres_presult::~HardwareService_emptyVisiableContainerMillilitres_presult() throw() {
+}
+
+
+uint32_t HardwareService_emptyVisiableContainerMillilitres_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ouch.read(iprot);
+          this->__isset.ouch = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+void HardwareServiceClient::applyConfiguration(const std::string& jsonDocumentText)
 {
-  send_configure(jsonDocumentText);
-  recv_configure();
+  send_applyConfiguration(jsonDocumentText);
+  recv_applyConfiguration();
 }
 
-void HardwareServiceClient::send_configure(const std::string& jsonDocumentText)
+void HardwareServiceClient::send_applyConfiguration(const std::string& jsonDocumentText)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("configure", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("applyConfiguration", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  HardwareService_configure_pargs args;
+  HardwareService_applyConfiguration_pargs args;
   args.jsonDocumentText = &jsonDocumentText;
   args.write(oprot_);
 
@@ -1482,7 +1312,7 @@ void HardwareServiceClient::send_configure(const std::string& jsonDocumentText)
   oprot_->getTransport()->flush();
 }
 
-void HardwareServiceClient::recv_configure()
+void HardwareServiceClient::recv_applyConfiguration()
 {
 
   int32_t rseqid = 0;
@@ -1502,12 +1332,12 @@ void HardwareServiceClient::recv_configure()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("configure") != 0) {
+  if (fname.compare("applyConfiguration") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  HardwareService_configure_presult result;
+  HardwareService_applyConfiguration_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
@@ -1518,130 +1348,13 @@ void HardwareServiceClient::recv_configure()
   return;
 }
 
-void HardwareServiceClient::pour(const Container::type from, const Container::type to)
-{
-  send_pour(from, to);
-  recv_pour();
-}
-
-void HardwareServiceClient::send_pour(const Container::type from, const Container::type to)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("pour", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  HardwareService_pour_pargs args;
-  args.from = &from;
-  args.to = &to;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void HardwareServiceClient::recv_pour()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("pour") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  HardwareService_pour_presult result;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.ouch) {
-    throw result.ouch;
-  }
-  return;
-}
-
-void HardwareServiceClient::getInput(HardwareInput& _return)
-{
-  send_getInput();
-  recv_getInput(_return);
-}
-
-void HardwareServiceClient::send_getInput()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("getInput", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  HardwareService_getInput_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void HardwareServiceClient::recv_getInput(HardwareInput& _return)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("getInput") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  HardwareService_getInput_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  if (result.__isset.ouch) {
-    throw result.ouch;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getInput failed: unknown result");
-}
-
-void HardwareServiceClient::startPump(const int32_t pumpId)
+void HardwareServiceClient::startPump(const PumpIdentifier::type pumpId)
 {
   send_startPump(pumpId);
   recv_startPump();
 }
 
-void HardwareServiceClient::send_startPump(const int32_t pumpId)
+void HardwareServiceClient::send_startPump(const PumpIdentifier::type pumpId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("startPump", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -1691,13 +1404,13 @@ void HardwareServiceClient::recv_startPump()
   return;
 }
 
-void HardwareServiceClient::stopPump(StopPumpResult& _return, const int32_t pumpId)
+void HardwareServiceClient::stopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId)
 {
   send_stopPump(pumpId);
   recv_stopPump(_return);
 }
 
-void HardwareServiceClient::send_stopPump(const int32_t pumpId)
+void HardwareServiceClient::send_stopPump(const PumpIdentifier::type pumpId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("stopPump", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -1809,18 +1522,18 @@ void HardwareServiceClient::recv_getServiceStatus(ServiceStatus& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getServiceStatus failed: unknown result");
 }
 
-void HardwareServiceClient::GetServiceStateJson(std::string& _return)
+void HardwareServiceClient::getServiceStateJson(std::string& _return)
 {
-  send_GetServiceStateJson();
-  recv_GetServiceStateJson(_return);
+  send_getServiceStateJson();
+  recv_getServiceStateJson(_return);
 }
 
-void HardwareServiceClient::send_GetServiceStateJson()
+void HardwareServiceClient::send_getServiceStateJson()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("GetServiceStateJson", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("getServiceStateJson", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  HardwareService_GetServiceStateJson_pargs args;
+  HardwareService_getServiceStateJson_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1828,7 +1541,7 @@ void HardwareServiceClient::send_GetServiceStateJson()
   oprot_->getTransport()->flush();
 }
 
-void HardwareServiceClient::recv_GetServiceStateJson(std::string& _return)
+void HardwareServiceClient::recv_getServiceStateJson(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -1848,12 +1561,12 @@ void HardwareServiceClient::recv_GetServiceStateJson(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("GetServiceStateJson") != 0) {
+  if (fname.compare("getServiceStateJson") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  HardwareService_GetServiceStateJson_presult result;
+  HardwareService_getServiceStateJson_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -1863,22 +1576,22 @@ void HardwareServiceClient::recv_GetServiceStateJson(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetServiceStateJson failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getServiceStateJson failed: unknown result");
 }
 
-void HardwareServiceClient::ping(const int32_t arg)
+void HardwareServiceClient::fillVisibleContainerMillilitres(const int32_t amount)
 {
-  send_ping(arg);
-  recv_ping();
+  send_fillVisibleContainerMillilitres(amount);
+  recv_fillVisibleContainerMillilitres();
 }
 
-void HardwareServiceClient::send_ping(const int32_t arg)
+void HardwareServiceClient::send_fillVisibleContainerMillilitres(const int32_t amount)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("ping", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("fillVisibleContainerMillilitres", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  HardwareService_ping_pargs args;
-  args.arg = &arg;
+  HardwareService_fillVisibleContainerMillilitres_pargs args;
+  args.amount = &amount;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1886,7 +1599,7 @@ void HardwareServiceClient::send_ping(const int32_t arg)
   oprot_->getTransport()->flush();
 }
 
-void HardwareServiceClient::recv_ping()
+void HardwareServiceClient::recv_fillVisibleContainerMillilitres()
 {
 
   int32_t rseqid = 0;
@@ -1906,16 +1619,75 @@ void HardwareServiceClient::recv_ping()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("ping") != 0) {
+  if (fname.compare("fillVisibleContainerMillilitres") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  HardwareService_ping_presult result;
+  HardwareService_fillVisibleContainerMillilitres_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.ouch) {
+    throw result.ouch;
+  }
+  return;
+}
+
+void HardwareServiceClient::emptyVisiableContainerMillilitres(const int32_t amount)
+{
+  send_emptyVisiableContainerMillilitres(amount);
+  recv_emptyVisiableContainerMillilitres();
+}
+
+void HardwareServiceClient::send_emptyVisiableContainerMillilitres(const int32_t amount)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("emptyVisiableContainerMillilitres", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  HardwareService_emptyVisiableContainerMillilitres_pargs args;
+  args.amount = &amount;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void HardwareServiceClient::recv_emptyVisiableContainerMillilitres()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("emptyVisiableContainerMillilitres") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  HardwareService_emptyVisiableContainerMillilitres_presult result;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.ouch) {
+    throw result.ouch;
+  }
   return;
 }
 
@@ -1938,40 +1710,40 @@ bool HardwareServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtoco
   return true;
 }
 
-void HardwareServiceProcessor::process_configure(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HardwareServiceProcessor::process_applyConfiguration(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("HardwareService.configure", callContext);
+    ctx = this->eventHandler_->getContext("HardwareService.applyConfiguration", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.configure");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.applyConfiguration");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "HardwareService.configure");
+    this->eventHandler_->preRead(ctx, "HardwareService.applyConfiguration");
   }
 
-  HardwareService_configure_args args;
+  HardwareService_applyConfiguration_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "HardwareService.configure", bytes);
+    this->eventHandler_->postRead(ctx, "HardwareService.applyConfiguration", bytes);
   }
 
-  HardwareService_configure_result result;
+  HardwareService_applyConfiguration_result result;
   try {
-    iface_->configure(args.jsonDocumentText);
+    iface_->applyConfiguration(args.jsonDocumentText);
   } catch (InvalidOperation &ouch) {
     result.ouch = ouch;
     result.__isset.ouch = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "HardwareService.configure");
+      this->eventHandler_->handlerError(ctx, "HardwareService.applyConfiguration");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("configure", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("applyConfiguration", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -1980,130 +1752,17 @@ void HardwareServiceProcessor::process_configure(int32_t seqid, ::apache::thrift
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "HardwareService.configure");
+    this->eventHandler_->preWrite(ctx, "HardwareService.applyConfiguration");
   }
 
-  oprot->writeMessageBegin("configure", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("applyConfiguration", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "HardwareService.configure", bytes);
-  }
-}
-
-void HardwareServiceProcessor::process_pour(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("HardwareService.pour", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.pour");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "HardwareService.pour");
-  }
-
-  HardwareService_pour_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "HardwareService.pour", bytes);
-  }
-
-  HardwareService_pour_result result;
-  try {
-    iface_->pour(args.from, args.to);
-  } catch (InvalidOperation &ouch) {
-    result.ouch = ouch;
-    result.__isset.ouch = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "HardwareService.pour");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("pour", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "HardwareService.pour");
-  }
-
-  oprot->writeMessageBegin("pour", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "HardwareService.pour", bytes);
-  }
-}
-
-void HardwareServiceProcessor::process_getInput(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("HardwareService.getInput", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.getInput");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "HardwareService.getInput");
-  }
-
-  HardwareService_getInput_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "HardwareService.getInput", bytes);
-  }
-
-  HardwareService_getInput_result result;
-  try {
-    iface_->getInput(result.success);
-    result.__isset.success = true;
-  } catch (InvalidOperation &ouch) {
-    result.ouch = ouch;
-    result.__isset.ouch = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "HardwareService.getInput");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("getInput", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "HardwareService.getInput");
-  }
-
-  oprot->writeMessageBegin("getInput", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "HardwareService.getInput", bytes);
+    this->eventHandler_->postWrite(ctx, "HardwareService.applyConfiguration", bytes);
   }
 }
 
@@ -2274,38 +1933,38 @@ void HardwareServiceProcessor::process_getServiceStatus(int32_t seqid, ::apache:
   }
 }
 
-void HardwareServiceProcessor::process_GetServiceStateJson(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HardwareServiceProcessor::process_getServiceStateJson(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("HardwareService.GetServiceStateJson", callContext);
+    ctx = this->eventHandler_->getContext("HardwareService.getServiceStateJson", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.GetServiceStateJson");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.getServiceStateJson");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "HardwareService.GetServiceStateJson");
+    this->eventHandler_->preRead(ctx, "HardwareService.getServiceStateJson");
   }
 
-  HardwareService_GetServiceStateJson_args args;
+  HardwareService_getServiceStateJson_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "HardwareService.GetServiceStateJson", bytes);
+    this->eventHandler_->postRead(ctx, "HardwareService.getServiceStateJson", bytes);
   }
 
-  HardwareService_GetServiceStateJson_result result;
+  HardwareService_getServiceStateJson_result result;
   try {
-    iface_->GetServiceStateJson(result.success);
+    iface_->getServiceStateJson(result.success);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "HardwareService.GetServiceStateJson");
+      this->eventHandler_->handlerError(ctx, "HardwareService.getServiceStateJson");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("GetServiceStateJson", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("getServiceStateJson", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -2314,51 +1973,54 @@ void HardwareServiceProcessor::process_GetServiceStateJson(int32_t seqid, ::apac
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "HardwareService.GetServiceStateJson");
+    this->eventHandler_->preWrite(ctx, "HardwareService.getServiceStateJson");
   }
 
-  oprot->writeMessageBegin("GetServiceStateJson", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("getServiceStateJson", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "HardwareService.GetServiceStateJson", bytes);
+    this->eventHandler_->postWrite(ctx, "HardwareService.getServiceStateJson", bytes);
   }
 }
 
-void HardwareServiceProcessor::process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HardwareServiceProcessor::process_fillVisibleContainerMillilitres(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("HardwareService.ping", callContext);
+    ctx = this->eventHandler_->getContext("HardwareService.fillVisibleContainerMillilitres", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.ping");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.fillVisibleContainerMillilitres");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "HardwareService.ping");
+    this->eventHandler_->preRead(ctx, "HardwareService.fillVisibleContainerMillilitres");
   }
 
-  HardwareService_ping_args args;
+  HardwareService_fillVisibleContainerMillilitres_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "HardwareService.ping", bytes);
+    this->eventHandler_->postRead(ctx, "HardwareService.fillVisibleContainerMillilitres", bytes);
   }
 
-  HardwareService_ping_result result;
+  HardwareService_fillVisibleContainerMillilitres_result result;
   try {
-    iface_->ping(args.arg);
+    iface_->fillVisibleContainerMillilitres(args.amount);
+  } catch (InvalidOperation &ouch) {
+    result.ouch = ouch;
+    result.__isset.ouch = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "HardwareService.ping");
+      this->eventHandler_->handlerError(ctx, "HardwareService.fillVisibleContainerMillilitres");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("ping", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("fillVisibleContainerMillilitres", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -2367,17 +2029,73 @@ void HardwareServiceProcessor::process_ping(int32_t seqid, ::apache::thrift::pro
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "HardwareService.ping");
+    this->eventHandler_->preWrite(ctx, "HardwareService.fillVisibleContainerMillilitres");
   }
 
-  oprot->writeMessageBegin("ping", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("fillVisibleContainerMillilitres", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "HardwareService.ping", bytes);
+    this->eventHandler_->postWrite(ctx, "HardwareService.fillVisibleContainerMillilitres", bytes);
+  }
+}
+
+void HardwareServiceProcessor::process_emptyVisiableContainerMillilitres(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("HardwareService.emptyVisiableContainerMillilitres", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "HardwareService.emptyVisiableContainerMillilitres");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "HardwareService.emptyVisiableContainerMillilitres");
+  }
+
+  HardwareService_emptyVisiableContainerMillilitres_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "HardwareService.emptyVisiableContainerMillilitres", bytes);
+  }
+
+  HardwareService_emptyVisiableContainerMillilitres_result result;
+  try {
+    iface_->emptyVisiableContainerMillilitres(args.amount);
+  } catch (InvalidOperation &ouch) {
+    result.ouch = ouch;
+    result.__isset.ouch = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "HardwareService.emptyVisiableContainerMillilitres");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("emptyVisiableContainerMillilitres", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "HardwareService.emptyVisiableContainerMillilitres");
+  }
+
+  oprot->writeMessageBegin("emptyVisiableContainerMillilitres", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "HardwareService.emptyVisiableContainerMillilitres", bytes);
   }
 }
 

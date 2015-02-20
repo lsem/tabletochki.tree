@@ -15,14 +15,13 @@ namespace Tabletochki {
 class HardwareServiceIf {
  public:
   virtual ~HardwareServiceIf() {}
-  virtual void configure(const std::string& jsonDocumentText) = 0;
-  virtual void pour(const Container::type from, const Container::type to) = 0;
-  virtual void getInput(HardwareInput& _return) = 0;
-  virtual void startPump(const int32_t pumpId) = 0;
-  virtual void stopPump(StopPumpResult& _return, const int32_t pumpId) = 0;
+  virtual void applyConfiguration(const std::string& jsonDocumentText) = 0;
+  virtual void startPump(const PumpIdentifier::type pumpId) = 0;
+  virtual void stopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId) = 0;
   virtual void getServiceStatus(ServiceStatus& _return) = 0;
-  virtual void GetServiceStateJson(std::string& _return) = 0;
-  virtual void ping(const int32_t arg) = 0;
+  virtual void getServiceStateJson(std::string& _return) = 0;
+  virtual void fillVisibleContainerMillilitres(const int32_t amount) = 0;
+  virtual void emptyVisiableContainerMillilitres(const int32_t amount) = 0;
 };
 
 class HardwareServiceIfFactory {
@@ -52,393 +51,147 @@ class HardwareServiceIfSingletonFactory : virtual public HardwareServiceIfFactor
 class HardwareServiceNull : virtual public HardwareServiceIf {
  public:
   virtual ~HardwareServiceNull() {}
-  void configure(const std::string& /* jsonDocumentText */) {
+  void applyConfiguration(const std::string& /* jsonDocumentText */) {
     return;
   }
-  void pour(const Container::type /* from */, const Container::type /* to */) {
+  void startPump(const PumpIdentifier::type /* pumpId */) {
     return;
   }
-  void getInput(HardwareInput& /* _return */) {
-    return;
-  }
-  void startPump(const int32_t /* pumpId */) {
-    return;
-  }
-  void stopPump(StopPumpResult& /* _return */, const int32_t /* pumpId */) {
+  void stopPump(StopPumpResult& /* _return */, const PumpIdentifier::type /* pumpId */) {
     return;
   }
   void getServiceStatus(ServiceStatus& /* _return */) {
     return;
   }
-  void GetServiceStateJson(std::string& /* _return */) {
+  void getServiceStateJson(std::string& /* _return */) {
     return;
   }
-  void ping(const int32_t /* arg */) {
+  void fillVisibleContainerMillilitres(const int32_t /* amount */) {
+    return;
+  }
+  void emptyVisiableContainerMillilitres(const int32_t /* amount */) {
     return;
   }
 };
 
-typedef struct _HardwareService_configure_args__isset {
-  _HardwareService_configure_args__isset() : jsonDocumentText(false) {}
+typedef struct _HardwareService_applyConfiguration_args__isset {
+  _HardwareService_applyConfiguration_args__isset() : jsonDocumentText(false) {}
   bool jsonDocumentText :1;
-} _HardwareService_configure_args__isset;
+} _HardwareService_applyConfiguration_args__isset;
 
-class HardwareService_configure_args {
+class HardwareService_applyConfiguration_args {
  public:
 
   static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
   static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
-  HardwareService_configure_args(const HardwareService_configure_args&);
-  HardwareService_configure_args& operator=(const HardwareService_configure_args&);
-  HardwareService_configure_args() : jsonDocumentText() {
+  HardwareService_applyConfiguration_args(const HardwareService_applyConfiguration_args&);
+  HardwareService_applyConfiguration_args& operator=(const HardwareService_applyConfiguration_args&);
+  HardwareService_applyConfiguration_args() : jsonDocumentText() {
   }
 
-  virtual ~HardwareService_configure_args() throw();
+  virtual ~HardwareService_applyConfiguration_args() throw();
   std::string jsonDocumentText;
 
-  _HardwareService_configure_args__isset __isset;
+  _HardwareService_applyConfiguration_args__isset __isset;
 
   void __set_jsonDocumentText(const std::string& val);
 
-  bool operator == (const HardwareService_configure_args & rhs) const
+  bool operator == (const HardwareService_applyConfiguration_args & rhs) const
   {
     if (!(jsonDocumentText == rhs.jsonDocumentText))
       return false;
     return true;
   }
-  bool operator != (const HardwareService_configure_args &rhs) const {
+  bool operator != (const HardwareService_applyConfiguration_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const HardwareService_configure_args & ) const;
+  bool operator < (const HardwareService_applyConfiguration_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_configure_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_applyConfiguration_args& obj);
 };
 
 
-class HardwareService_configure_pargs {
+class HardwareService_applyConfiguration_pargs {
  public:
 
   static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
   static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
 
-  virtual ~HardwareService_configure_pargs() throw();
+  virtual ~HardwareService_applyConfiguration_pargs() throw();
   const std::string* jsonDocumentText;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_configure_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_applyConfiguration_pargs& obj);
 };
 
-typedef struct _HardwareService_configure_result__isset {
-  _HardwareService_configure_result__isset() : ouch(false) {}
+typedef struct _HardwareService_applyConfiguration_result__isset {
+  _HardwareService_applyConfiguration_result__isset() : ouch(false) {}
   bool ouch :1;
-} _HardwareService_configure_result__isset;
+} _HardwareService_applyConfiguration_result__isset;
 
-class HardwareService_configure_result {
+class HardwareService_applyConfiguration_result {
  public:
 
   static const char* ascii_fingerprint; // = "75163450D5D62165E86860A3D30E517A";
   static const uint8_t binary_fingerprint[16]; // = {0x75,0x16,0x34,0x50,0xD5,0xD6,0x21,0x65,0xE8,0x68,0x60,0xA3,0xD3,0x0E,0x51,0x7A};
 
-  HardwareService_configure_result(const HardwareService_configure_result&);
-  HardwareService_configure_result& operator=(const HardwareService_configure_result&);
-  HardwareService_configure_result() {
+  HardwareService_applyConfiguration_result(const HardwareService_applyConfiguration_result&);
+  HardwareService_applyConfiguration_result& operator=(const HardwareService_applyConfiguration_result&);
+  HardwareService_applyConfiguration_result() {
   }
 
-  virtual ~HardwareService_configure_result() throw();
+  virtual ~HardwareService_applyConfiguration_result() throw();
   InvalidOperation ouch;
 
-  _HardwareService_configure_result__isset __isset;
+  _HardwareService_applyConfiguration_result__isset __isset;
 
   void __set_ouch(const InvalidOperation& val);
 
-  bool operator == (const HardwareService_configure_result & rhs) const
+  bool operator == (const HardwareService_applyConfiguration_result & rhs) const
   {
     if (!(ouch == rhs.ouch))
       return false;
     return true;
   }
-  bool operator != (const HardwareService_configure_result &rhs) const {
+  bool operator != (const HardwareService_applyConfiguration_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const HardwareService_configure_result & ) const;
+  bool operator < (const HardwareService_applyConfiguration_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_configure_result& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_applyConfiguration_result& obj);
 };
 
-typedef struct _HardwareService_configure_presult__isset {
-  _HardwareService_configure_presult__isset() : ouch(false) {}
+typedef struct _HardwareService_applyConfiguration_presult__isset {
+  _HardwareService_applyConfiguration_presult__isset() : ouch(false) {}
   bool ouch :1;
-} _HardwareService_configure_presult__isset;
+} _HardwareService_applyConfiguration_presult__isset;
 
-class HardwareService_configure_presult {
+class HardwareService_applyConfiguration_presult {
  public:
 
   static const char* ascii_fingerprint; // = "75163450D5D62165E86860A3D30E517A";
   static const uint8_t binary_fingerprint[16]; // = {0x75,0x16,0x34,0x50,0xD5,0xD6,0x21,0x65,0xE8,0x68,0x60,0xA3,0xD3,0x0E,0x51,0x7A};
 
 
-  virtual ~HardwareService_configure_presult() throw();
+  virtual ~HardwareService_applyConfiguration_presult() throw();
   InvalidOperation ouch;
 
-  _HardwareService_configure_presult__isset __isset;
+  _HardwareService_applyConfiguration_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_configure_presult& obj);
-};
-
-typedef struct _HardwareService_pour_args__isset {
-  _HardwareService_pour_args__isset() : from(false), to(false) {}
-  bool from :1;
-  bool to :1;
-} _HardwareService_pour_args__isset;
-
-class HardwareService_pour_args {
- public:
-
-  static const char* ascii_fingerprint; // = "69EF77542FBF7A8DD68310C9FF3B44BD";
-  static const uint8_t binary_fingerprint[16]; // = {0x69,0xEF,0x77,0x54,0x2F,0xBF,0x7A,0x8D,0xD6,0x83,0x10,0xC9,0xFF,0x3B,0x44,0xBD};
-
-  HardwareService_pour_args(const HardwareService_pour_args&);
-  HardwareService_pour_args& operator=(const HardwareService_pour_args&);
-  HardwareService_pour_args() : from((Container::type)0), to((Container::type)0) {
-  }
-
-  virtual ~HardwareService_pour_args() throw();
-  Container::type from;
-  Container::type to;
-
-  _HardwareService_pour_args__isset __isset;
-
-  void __set_from(const Container::type val);
-
-  void __set_to(const Container::type val);
-
-  bool operator == (const HardwareService_pour_args & rhs) const
-  {
-    if (!(from == rhs.from))
-      return false;
-    if (!(to == rhs.to))
-      return false;
-    return true;
-  }
-  bool operator != (const HardwareService_pour_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const HardwareService_pour_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_pour_args& obj);
-};
-
-
-class HardwareService_pour_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "69EF77542FBF7A8DD68310C9FF3B44BD";
-  static const uint8_t binary_fingerprint[16]; // = {0x69,0xEF,0x77,0x54,0x2F,0xBF,0x7A,0x8D,0xD6,0x83,0x10,0xC9,0xFF,0x3B,0x44,0xBD};
-
-
-  virtual ~HardwareService_pour_pargs() throw();
-  const Container::type* from;
-  const Container::type* to;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_pour_pargs& obj);
-};
-
-typedef struct _HardwareService_pour_result__isset {
-  _HardwareService_pour_result__isset() : ouch(false) {}
-  bool ouch :1;
-} _HardwareService_pour_result__isset;
-
-class HardwareService_pour_result {
- public:
-
-  static const char* ascii_fingerprint; // = "75163450D5D62165E86860A3D30E517A";
-  static const uint8_t binary_fingerprint[16]; // = {0x75,0x16,0x34,0x50,0xD5,0xD6,0x21,0x65,0xE8,0x68,0x60,0xA3,0xD3,0x0E,0x51,0x7A};
-
-  HardwareService_pour_result(const HardwareService_pour_result&);
-  HardwareService_pour_result& operator=(const HardwareService_pour_result&);
-  HardwareService_pour_result() {
-  }
-
-  virtual ~HardwareService_pour_result() throw();
-  InvalidOperation ouch;
-
-  _HardwareService_pour_result__isset __isset;
-
-  void __set_ouch(const InvalidOperation& val);
-
-  bool operator == (const HardwareService_pour_result & rhs) const
-  {
-    if (!(ouch == rhs.ouch))
-      return false;
-    return true;
-  }
-  bool operator != (const HardwareService_pour_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const HardwareService_pour_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_pour_result& obj);
-};
-
-typedef struct _HardwareService_pour_presult__isset {
-  _HardwareService_pour_presult__isset() : ouch(false) {}
-  bool ouch :1;
-} _HardwareService_pour_presult__isset;
-
-class HardwareService_pour_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "75163450D5D62165E86860A3D30E517A";
-  static const uint8_t binary_fingerprint[16]; // = {0x75,0x16,0x34,0x50,0xD5,0xD6,0x21,0x65,0xE8,0x68,0x60,0xA3,0xD3,0x0E,0x51,0x7A};
-
-
-  virtual ~HardwareService_pour_presult() throw();
-  InvalidOperation ouch;
-
-  _HardwareService_pour_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_pour_presult& obj);
-};
-
-
-class HardwareService_getInput_args {
- public:
-
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
-
-  HardwareService_getInput_args(const HardwareService_getInput_args&);
-  HardwareService_getInput_args& operator=(const HardwareService_getInput_args&);
-  HardwareService_getInput_args() {
-  }
-
-  virtual ~HardwareService_getInput_args() throw();
-
-  bool operator == (const HardwareService_getInput_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const HardwareService_getInput_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const HardwareService_getInput_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_getInput_args& obj);
-};
-
-
-class HardwareService_getInput_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
-
-
-  virtual ~HardwareService_getInput_pargs() throw();
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_getInput_pargs& obj);
-};
-
-typedef struct _HardwareService_getInput_result__isset {
-  _HardwareService_getInput_result__isset() : success(false), ouch(false) {}
-  bool success :1;
-  bool ouch :1;
-} _HardwareService_getInput_result__isset;
-
-class HardwareService_getInput_result {
- public:
-
-  static const char* ascii_fingerprint; // = "D5AC64616352116A03D8E6BA8250FEF9";
-  static const uint8_t binary_fingerprint[16]; // = {0xD5,0xAC,0x64,0x61,0x63,0x52,0x11,0x6A,0x03,0xD8,0xE6,0xBA,0x82,0x50,0xFE,0xF9};
-
-  HardwareService_getInput_result(const HardwareService_getInput_result&);
-  HardwareService_getInput_result& operator=(const HardwareService_getInput_result&);
-  HardwareService_getInput_result() {
-  }
-
-  virtual ~HardwareService_getInput_result() throw();
-  HardwareInput success;
-  InvalidOperation ouch;
-
-  _HardwareService_getInput_result__isset __isset;
-
-  void __set_success(const HardwareInput& val);
-
-  void __set_ouch(const InvalidOperation& val);
-
-  bool operator == (const HardwareService_getInput_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ouch == rhs.ouch))
-      return false;
-    return true;
-  }
-  bool operator != (const HardwareService_getInput_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const HardwareService_getInput_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_getInput_result& obj);
-};
-
-typedef struct _HardwareService_getInput_presult__isset {
-  _HardwareService_getInput_presult__isset() : success(false), ouch(false) {}
-  bool success :1;
-  bool ouch :1;
-} _HardwareService_getInput_presult__isset;
-
-class HardwareService_getInput_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "D5AC64616352116A03D8E6BA8250FEF9";
-  static const uint8_t binary_fingerprint[16]; // = {0xD5,0xAC,0x64,0x61,0x63,0x52,0x11,0x6A,0x03,0xD8,0xE6,0xBA,0x82,0x50,0xFE,0xF9};
-
-
-  virtual ~HardwareService_getInput_presult() throw();
-  HardwareInput* success;
-  InvalidOperation ouch;
-
-  _HardwareService_getInput_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_getInput_presult& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_applyConfiguration_presult& obj);
 };
 
 typedef struct _HardwareService_startPump_args__isset {
@@ -449,20 +202,20 @@ typedef struct _HardwareService_startPump_args__isset {
 class HardwareService_startPump_args {
  public:
 
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+  static const char* ascii_fingerprint; // = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
+  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
 
   HardwareService_startPump_args(const HardwareService_startPump_args&);
   HardwareService_startPump_args& operator=(const HardwareService_startPump_args&);
-  HardwareService_startPump_args() : pumpId(0) {
+  HardwareService_startPump_args() : pumpId((PumpIdentifier::type)0) {
   }
 
   virtual ~HardwareService_startPump_args() throw();
-  int32_t pumpId;
+  PumpIdentifier::type pumpId;
 
   _HardwareService_startPump_args__isset __isset;
 
-  void __set_pumpId(const int32_t val);
+  void __set_pumpId(const PumpIdentifier::type val);
 
   bool operator == (const HardwareService_startPump_args & rhs) const
   {
@@ -486,12 +239,12 @@ class HardwareService_startPump_args {
 class HardwareService_startPump_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+  static const char* ascii_fingerprint; // = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
+  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
 
 
   virtual ~HardwareService_startPump_pargs() throw();
-  const int32_t* pumpId;
+  const PumpIdentifier::type* pumpId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -569,20 +322,20 @@ typedef struct _HardwareService_stopPump_args__isset {
 class HardwareService_stopPump_args {
  public:
 
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+  static const char* ascii_fingerprint; // = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
+  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
 
   HardwareService_stopPump_args(const HardwareService_stopPump_args&);
   HardwareService_stopPump_args& operator=(const HardwareService_stopPump_args&);
-  HardwareService_stopPump_args() : pumpId(0) {
+  HardwareService_stopPump_args() : pumpId((PumpIdentifier::type)0) {
   }
 
   virtual ~HardwareService_stopPump_args() throw();
-  int32_t pumpId;
+  PumpIdentifier::type pumpId;
 
   _HardwareService_stopPump_args__isset __isset;
 
-  void __set_pumpId(const int32_t val);
+  void __set_pumpId(const PumpIdentifier::type val);
 
   bool operator == (const HardwareService_stopPump_args & rhs) const
   {
@@ -606,12 +359,12 @@ class HardwareService_stopPump_args {
 class HardwareService_stopPump_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+  static const char* ascii_fingerprint; // = "8BBB3D0C3B370CB38F2D1340BB79F0AA";
+  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xBB,0x3D,0x0C,0x3B,0x37,0x0C,0xB3,0x8F,0x2D,0x13,0x40,0xBB,0x79,0xF0,0xAA};
 
 
   virtual ~HardwareService_stopPump_pargs() throw();
-  const int32_t* pumpId;
+  const PumpIdentifier::type* pumpId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -798,213 +551,351 @@ class HardwareService_getServiceStatus_presult {
 };
 
 
-class HardwareService_GetServiceStateJson_args {
+class HardwareService_getServiceStateJson_args {
  public:
 
   static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
   static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
 
-  HardwareService_GetServiceStateJson_args(const HardwareService_GetServiceStateJson_args&);
-  HardwareService_GetServiceStateJson_args& operator=(const HardwareService_GetServiceStateJson_args&);
-  HardwareService_GetServiceStateJson_args() {
+  HardwareService_getServiceStateJson_args(const HardwareService_getServiceStateJson_args&);
+  HardwareService_getServiceStateJson_args& operator=(const HardwareService_getServiceStateJson_args&);
+  HardwareService_getServiceStateJson_args() {
   }
 
-  virtual ~HardwareService_GetServiceStateJson_args() throw();
+  virtual ~HardwareService_getServiceStateJson_args() throw();
 
-  bool operator == (const HardwareService_GetServiceStateJson_args & /* rhs */) const
+  bool operator == (const HardwareService_getServiceStateJson_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const HardwareService_GetServiceStateJson_args &rhs) const {
+  bool operator != (const HardwareService_getServiceStateJson_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const HardwareService_GetServiceStateJson_args & ) const;
+  bool operator < (const HardwareService_getServiceStateJson_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_GetServiceStateJson_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_getServiceStateJson_args& obj);
 };
 
 
-class HardwareService_GetServiceStateJson_pargs {
+class HardwareService_getServiceStateJson_pargs {
  public:
 
   static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
   static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
 
 
-  virtual ~HardwareService_GetServiceStateJson_pargs() throw();
+  virtual ~HardwareService_getServiceStateJson_pargs() throw();
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_GetServiceStateJson_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_getServiceStateJson_pargs& obj);
 };
 
-typedef struct _HardwareService_GetServiceStateJson_result__isset {
-  _HardwareService_GetServiceStateJson_result__isset() : success(false) {}
+typedef struct _HardwareService_getServiceStateJson_result__isset {
+  _HardwareService_getServiceStateJson_result__isset() : success(false) {}
   bool success :1;
-} _HardwareService_GetServiceStateJson_result__isset;
+} _HardwareService_getServiceStateJson_result__isset;
 
-class HardwareService_GetServiceStateJson_result {
+class HardwareService_getServiceStateJson_result {
  public:
 
   static const char* ascii_fingerprint; // = "9A73381FEFD6B67F432E717102246330";
   static const uint8_t binary_fingerprint[16]; // = {0x9A,0x73,0x38,0x1F,0xEF,0xD6,0xB6,0x7F,0x43,0x2E,0x71,0x71,0x02,0x24,0x63,0x30};
 
-  HardwareService_GetServiceStateJson_result(const HardwareService_GetServiceStateJson_result&);
-  HardwareService_GetServiceStateJson_result& operator=(const HardwareService_GetServiceStateJson_result&);
-  HardwareService_GetServiceStateJson_result() : success() {
+  HardwareService_getServiceStateJson_result(const HardwareService_getServiceStateJson_result&);
+  HardwareService_getServiceStateJson_result& operator=(const HardwareService_getServiceStateJson_result&);
+  HardwareService_getServiceStateJson_result() : success() {
   }
 
-  virtual ~HardwareService_GetServiceStateJson_result() throw();
+  virtual ~HardwareService_getServiceStateJson_result() throw();
   std::string success;
 
-  _HardwareService_GetServiceStateJson_result__isset __isset;
+  _HardwareService_getServiceStateJson_result__isset __isset;
 
   void __set_success(const std::string& val);
 
-  bool operator == (const HardwareService_GetServiceStateJson_result & rhs) const
+  bool operator == (const HardwareService_getServiceStateJson_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const HardwareService_GetServiceStateJson_result &rhs) const {
+  bool operator != (const HardwareService_getServiceStateJson_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const HardwareService_GetServiceStateJson_result & ) const;
+  bool operator < (const HardwareService_getServiceStateJson_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_GetServiceStateJson_result& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_getServiceStateJson_result& obj);
 };
 
-typedef struct _HardwareService_GetServiceStateJson_presult__isset {
-  _HardwareService_GetServiceStateJson_presult__isset() : success(false) {}
+typedef struct _HardwareService_getServiceStateJson_presult__isset {
+  _HardwareService_getServiceStateJson_presult__isset() : success(false) {}
   bool success :1;
-} _HardwareService_GetServiceStateJson_presult__isset;
+} _HardwareService_getServiceStateJson_presult__isset;
 
-class HardwareService_GetServiceStateJson_presult {
+class HardwareService_getServiceStateJson_presult {
  public:
 
   static const char* ascii_fingerprint; // = "9A73381FEFD6B67F432E717102246330";
   static const uint8_t binary_fingerprint[16]; // = {0x9A,0x73,0x38,0x1F,0xEF,0xD6,0xB6,0x7F,0x43,0x2E,0x71,0x71,0x02,0x24,0x63,0x30};
 
 
-  virtual ~HardwareService_GetServiceStateJson_presult() throw();
+  virtual ~HardwareService_getServiceStateJson_presult() throw();
   std::string* success;
 
-  _HardwareService_GetServiceStateJson_presult__isset __isset;
+  _HardwareService_getServiceStateJson_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_GetServiceStateJson_presult& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_getServiceStateJson_presult& obj);
 };
 
-typedef struct _HardwareService_ping_args__isset {
-  _HardwareService_ping_args__isset() : arg(false) {}
-  bool arg :1;
-} _HardwareService_ping_args__isset;
+typedef struct _HardwareService_fillVisibleContainerMillilitres_args__isset {
+  _HardwareService_fillVisibleContainerMillilitres_args__isset() : amount(false) {}
+  bool amount :1;
+} _HardwareService_fillVisibleContainerMillilitres_args__isset;
 
-class HardwareService_ping_args {
+class HardwareService_fillVisibleContainerMillilitres_args {
  public:
 
   static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
   static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
 
-  HardwareService_ping_args(const HardwareService_ping_args&);
-  HardwareService_ping_args& operator=(const HardwareService_ping_args&);
-  HardwareService_ping_args() : arg(0) {
+  HardwareService_fillVisibleContainerMillilitres_args(const HardwareService_fillVisibleContainerMillilitres_args&);
+  HardwareService_fillVisibleContainerMillilitres_args& operator=(const HardwareService_fillVisibleContainerMillilitres_args&);
+  HardwareService_fillVisibleContainerMillilitres_args() : amount(0) {
   }
 
-  virtual ~HardwareService_ping_args() throw();
-  int32_t arg;
+  virtual ~HardwareService_fillVisibleContainerMillilitres_args() throw();
+  int32_t amount;
 
-  _HardwareService_ping_args__isset __isset;
+  _HardwareService_fillVisibleContainerMillilitres_args__isset __isset;
 
-  void __set_arg(const int32_t val);
+  void __set_amount(const int32_t val);
 
-  bool operator == (const HardwareService_ping_args & rhs) const
+  bool operator == (const HardwareService_fillVisibleContainerMillilitres_args & rhs) const
   {
-    if (!(arg == rhs.arg))
+    if (!(amount == rhs.amount))
       return false;
     return true;
   }
-  bool operator != (const HardwareService_ping_args &rhs) const {
+  bool operator != (const HardwareService_fillVisibleContainerMillilitres_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const HardwareService_ping_args & ) const;
+  bool operator < (const HardwareService_fillVisibleContainerMillilitres_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_ping_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_fillVisibleContainerMillilitres_args& obj);
 };
 
 
-class HardwareService_ping_pargs {
+class HardwareService_fillVisibleContainerMillilitres_pargs {
  public:
 
   static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
   static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
 
 
-  virtual ~HardwareService_ping_pargs() throw();
-  const int32_t* arg;
+  virtual ~HardwareService_fillVisibleContainerMillilitres_pargs() throw();
+  const int32_t* amount;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_ping_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_fillVisibleContainerMillilitres_pargs& obj);
 };
 
+typedef struct _HardwareService_fillVisibleContainerMillilitres_result__isset {
+  _HardwareService_fillVisibleContainerMillilitres_result__isset() : ouch(false) {}
+  bool ouch :1;
+} _HardwareService_fillVisibleContainerMillilitres_result__isset;
 
-class HardwareService_ping_result {
+class HardwareService_fillVisibleContainerMillilitres_result {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "75163450D5D62165E86860A3D30E517A";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0x16,0x34,0x50,0xD5,0xD6,0x21,0x65,0xE8,0x68,0x60,0xA3,0xD3,0x0E,0x51,0x7A};
 
-  HardwareService_ping_result(const HardwareService_ping_result&);
-  HardwareService_ping_result& operator=(const HardwareService_ping_result&);
-  HardwareService_ping_result() {
+  HardwareService_fillVisibleContainerMillilitres_result(const HardwareService_fillVisibleContainerMillilitres_result&);
+  HardwareService_fillVisibleContainerMillilitres_result& operator=(const HardwareService_fillVisibleContainerMillilitres_result&);
+  HardwareService_fillVisibleContainerMillilitres_result() {
   }
 
-  virtual ~HardwareService_ping_result() throw();
+  virtual ~HardwareService_fillVisibleContainerMillilitres_result() throw();
+  InvalidOperation ouch;
 
-  bool operator == (const HardwareService_ping_result & /* rhs */) const
+  _HardwareService_fillVisibleContainerMillilitres_result__isset __isset;
+
+  void __set_ouch(const InvalidOperation& val);
+
+  bool operator == (const HardwareService_fillVisibleContainerMillilitres_result & rhs) const
   {
+    if (!(ouch == rhs.ouch))
+      return false;
     return true;
   }
-  bool operator != (const HardwareService_ping_result &rhs) const {
+  bool operator != (const HardwareService_fillVisibleContainerMillilitres_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const HardwareService_ping_result & ) const;
+  bool operator < (const HardwareService_fillVisibleContainerMillilitres_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_ping_result& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_fillVisibleContainerMillilitres_result& obj);
 };
 
+typedef struct _HardwareService_fillVisibleContainerMillilitres_presult__isset {
+  _HardwareService_fillVisibleContainerMillilitres_presult__isset() : ouch(false) {}
+  bool ouch :1;
+} _HardwareService_fillVisibleContainerMillilitres_presult__isset;
 
-class HardwareService_ping_presult {
+class HardwareService_fillVisibleContainerMillilitres_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "75163450D5D62165E86860A3D30E517A";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0x16,0x34,0x50,0xD5,0xD6,0x21,0x65,0xE8,0x68,0x60,0xA3,0xD3,0x0E,0x51,0x7A};
 
 
-  virtual ~HardwareService_ping_presult() throw();
+  virtual ~HardwareService_fillVisibleContainerMillilitres_presult() throw();
+  InvalidOperation ouch;
+
+  _HardwareService_fillVisibleContainerMillilitres_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const HardwareService_ping_presult& obj);
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_fillVisibleContainerMillilitres_presult& obj);
+};
+
+typedef struct _HardwareService_emptyVisiableContainerMillilitres_args__isset {
+  _HardwareService_emptyVisiableContainerMillilitres_args__isset() : amount(false) {}
+  bool amount :1;
+} _HardwareService_emptyVisiableContainerMillilitres_args__isset;
+
+class HardwareService_emptyVisiableContainerMillilitres_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
+  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+
+  HardwareService_emptyVisiableContainerMillilitres_args(const HardwareService_emptyVisiableContainerMillilitres_args&);
+  HardwareService_emptyVisiableContainerMillilitres_args& operator=(const HardwareService_emptyVisiableContainerMillilitres_args&);
+  HardwareService_emptyVisiableContainerMillilitres_args() : amount(0) {
+  }
+
+  virtual ~HardwareService_emptyVisiableContainerMillilitres_args() throw();
+  int32_t amount;
+
+  _HardwareService_emptyVisiableContainerMillilitres_args__isset __isset;
+
+  void __set_amount(const int32_t val);
+
+  bool operator == (const HardwareService_emptyVisiableContainerMillilitres_args & rhs) const
+  {
+    if (!(amount == rhs.amount))
+      return false;
+    return true;
+  }
+  bool operator != (const HardwareService_emptyVisiableContainerMillilitres_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const HardwareService_emptyVisiableContainerMillilitres_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_emptyVisiableContainerMillilitres_args& obj);
+};
+
+
+class HardwareService_emptyVisiableContainerMillilitres_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
+  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+
+
+  virtual ~HardwareService_emptyVisiableContainerMillilitres_pargs() throw();
+  const int32_t* amount;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_emptyVisiableContainerMillilitres_pargs& obj);
+};
+
+typedef struct _HardwareService_emptyVisiableContainerMillilitres_result__isset {
+  _HardwareService_emptyVisiableContainerMillilitres_result__isset() : ouch(false) {}
+  bool ouch :1;
+} _HardwareService_emptyVisiableContainerMillilitres_result__isset;
+
+class HardwareService_emptyVisiableContainerMillilitres_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "75163450D5D62165E86860A3D30E517A";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0x16,0x34,0x50,0xD5,0xD6,0x21,0x65,0xE8,0x68,0x60,0xA3,0xD3,0x0E,0x51,0x7A};
+
+  HardwareService_emptyVisiableContainerMillilitres_result(const HardwareService_emptyVisiableContainerMillilitres_result&);
+  HardwareService_emptyVisiableContainerMillilitres_result& operator=(const HardwareService_emptyVisiableContainerMillilitres_result&);
+  HardwareService_emptyVisiableContainerMillilitres_result() {
+  }
+
+  virtual ~HardwareService_emptyVisiableContainerMillilitres_result() throw();
+  InvalidOperation ouch;
+
+  _HardwareService_emptyVisiableContainerMillilitres_result__isset __isset;
+
+  void __set_ouch(const InvalidOperation& val);
+
+  bool operator == (const HardwareService_emptyVisiableContainerMillilitres_result & rhs) const
+  {
+    if (!(ouch == rhs.ouch))
+      return false;
+    return true;
+  }
+  bool operator != (const HardwareService_emptyVisiableContainerMillilitres_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const HardwareService_emptyVisiableContainerMillilitres_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_emptyVisiableContainerMillilitres_result& obj);
+};
+
+typedef struct _HardwareService_emptyVisiableContainerMillilitres_presult__isset {
+  _HardwareService_emptyVisiableContainerMillilitres_presult__isset() : ouch(false) {}
+  bool ouch :1;
+} _HardwareService_emptyVisiableContainerMillilitres_presult__isset;
+
+class HardwareService_emptyVisiableContainerMillilitres_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "75163450D5D62165E86860A3D30E517A";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0x16,0x34,0x50,0xD5,0xD6,0x21,0x65,0xE8,0x68,0x60,0xA3,0xD3,0x0E,0x51,0x7A};
+
+
+  virtual ~HardwareService_emptyVisiableContainerMillilitres_presult() throw();
+  InvalidOperation ouch;
+
+  _HardwareService_emptyVisiableContainerMillilitres_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const HardwareService_emptyVisiableContainerMillilitres_presult& obj);
 };
 
 class HardwareServiceClient : virtual public HardwareServiceIf {
@@ -1032,30 +923,27 @@ class HardwareServiceClient : virtual public HardwareServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void configure(const std::string& jsonDocumentText);
-  void send_configure(const std::string& jsonDocumentText);
-  void recv_configure();
-  void pour(const Container::type from, const Container::type to);
-  void send_pour(const Container::type from, const Container::type to);
-  void recv_pour();
-  void getInput(HardwareInput& _return);
-  void send_getInput();
-  void recv_getInput(HardwareInput& _return);
-  void startPump(const int32_t pumpId);
-  void send_startPump(const int32_t pumpId);
+  void applyConfiguration(const std::string& jsonDocumentText);
+  void send_applyConfiguration(const std::string& jsonDocumentText);
+  void recv_applyConfiguration();
+  void startPump(const PumpIdentifier::type pumpId);
+  void send_startPump(const PumpIdentifier::type pumpId);
   void recv_startPump();
-  void stopPump(StopPumpResult& _return, const int32_t pumpId);
-  void send_stopPump(const int32_t pumpId);
+  void stopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId);
+  void send_stopPump(const PumpIdentifier::type pumpId);
   void recv_stopPump(StopPumpResult& _return);
   void getServiceStatus(ServiceStatus& _return);
   void send_getServiceStatus();
   void recv_getServiceStatus(ServiceStatus& _return);
-  void GetServiceStateJson(std::string& _return);
-  void send_GetServiceStateJson();
-  void recv_GetServiceStateJson(std::string& _return);
-  void ping(const int32_t arg);
-  void send_ping(const int32_t arg);
-  void recv_ping();
+  void getServiceStateJson(std::string& _return);
+  void send_getServiceStateJson();
+  void recv_getServiceStateJson(std::string& _return);
+  void fillVisibleContainerMillilitres(const int32_t amount);
+  void send_fillVisibleContainerMillilitres(const int32_t amount);
+  void recv_fillVisibleContainerMillilitres();
+  void emptyVisiableContainerMillilitres(const int32_t amount);
+  void send_emptyVisiableContainerMillilitres(const int32_t amount);
+  void recv_emptyVisiableContainerMillilitres();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1071,25 +959,23 @@ class HardwareServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (HardwareServiceProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_configure(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_pour(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getInput(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_applyConfiguration(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_startPump(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_stopPump(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getServiceStatus(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_GetServiceStateJson(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getServiceStateJson(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_fillVisibleContainerMillilitres(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_emptyVisiableContainerMillilitres(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   HardwareServiceProcessor(boost::shared_ptr<HardwareServiceIf> iface) :
     iface_(iface) {
-    processMap_["configure"] = &HardwareServiceProcessor::process_configure;
-    processMap_["pour"] = &HardwareServiceProcessor::process_pour;
-    processMap_["getInput"] = &HardwareServiceProcessor::process_getInput;
+    processMap_["applyConfiguration"] = &HardwareServiceProcessor::process_applyConfiguration;
     processMap_["startPump"] = &HardwareServiceProcessor::process_startPump;
     processMap_["stopPump"] = &HardwareServiceProcessor::process_stopPump;
     processMap_["getServiceStatus"] = &HardwareServiceProcessor::process_getServiceStatus;
-    processMap_["GetServiceStateJson"] = &HardwareServiceProcessor::process_GetServiceStateJson;
-    processMap_["ping"] = &HardwareServiceProcessor::process_ping;
+    processMap_["getServiceStateJson"] = &HardwareServiceProcessor::process_getServiceStateJson;
+    processMap_["fillVisibleContainerMillilitres"] = &HardwareServiceProcessor::process_fillVisibleContainerMillilitres;
+    processMap_["emptyVisiableContainerMillilitres"] = &HardwareServiceProcessor::process_emptyVisiableContainerMillilitres;
   }
 
   virtual ~HardwareServiceProcessor() {}
@@ -1118,35 +1004,16 @@ class HardwareServiceMultiface : virtual public HardwareServiceIf {
     ifaces_.push_back(iface);
   }
  public:
-  void configure(const std::string& jsonDocumentText) {
+  void applyConfiguration(const std::string& jsonDocumentText) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->configure(jsonDocumentText);
+      ifaces_[i]->applyConfiguration(jsonDocumentText);
     }
-    ifaces_[i]->configure(jsonDocumentText);
+    ifaces_[i]->applyConfiguration(jsonDocumentText);
   }
 
-  void pour(const Container::type from, const Container::type to) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->pour(from, to);
-    }
-    ifaces_[i]->pour(from, to);
-  }
-
-  void getInput(HardwareInput& _return) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getInput(_return);
-    }
-    ifaces_[i]->getInput(_return);
-    return;
-  }
-
-  void startPump(const int32_t pumpId) {
+  void startPump(const PumpIdentifier::type pumpId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -1155,7 +1022,7 @@ class HardwareServiceMultiface : virtual public HardwareServiceIf {
     ifaces_[i]->startPump(pumpId);
   }
 
-  void stopPump(StopPumpResult& _return, const int32_t pumpId) {
+  void stopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -1175,23 +1042,32 @@ class HardwareServiceMultiface : virtual public HardwareServiceIf {
     return;
   }
 
-  void GetServiceStateJson(std::string& _return) {
+  void getServiceStateJson(std::string& _return) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->GetServiceStateJson(_return);
+      ifaces_[i]->getServiceStateJson(_return);
     }
-    ifaces_[i]->GetServiceStateJson(_return);
+    ifaces_[i]->getServiceStateJson(_return);
     return;
   }
 
-  void ping(const int32_t arg) {
+  void fillVisibleContainerMillilitres(const int32_t amount) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->ping(arg);
+      ifaces_[i]->fillVisibleContainerMillilitres(amount);
     }
-    ifaces_[i]->ping(arg);
+    ifaces_[i]->fillVisibleContainerMillilitres(amount);
+  }
+
+  void emptyVisiableContainerMillilitres(const int32_t amount) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->emptyVisiableContainerMillilitres(amount);
+    }
+    ifaces_[i]->emptyVisiableContainerMillilitres(amount);
   }
 
 };

@@ -11,7 +11,7 @@ var Q = thrift.Q;
 var ttypes = require('./HardwareService_types');
 //HELPER FUNCTIONS AND STRUCTURES
 
-HardwareService_configure_args = function(args) {
+HardwareService_applyConfiguration_args = function(args) {
   this.jsonDocumentText = null;
   if (args) {
     if (args.jsonDocumentText !== undefined) {
@@ -19,8 +19,8 @@ HardwareService_configure_args = function(args) {
     }
   }
 };
-HardwareService_configure_args.prototype = {};
-HardwareService_configure_args.prototype.read = function(input) {
+HardwareService_applyConfiguration_args.prototype = {};
+HardwareService_applyConfiguration_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -52,8 +52,8 @@ HardwareService_configure_args.prototype.read = function(input) {
   return;
 };
 
-HardwareService_configure_args.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_configure_args');
+HardwareService_applyConfiguration_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_applyConfiguration_args');
   if (this.jsonDocumentText !== null && this.jsonDocumentText !== undefined) {
     output.writeFieldBegin('jsonDocumentText', Thrift.Type.STRING, 1);
     output.writeString(this.jsonDocumentText);
@@ -64,7 +64,7 @@ HardwareService_configure_args.prototype.write = function(output) {
   return;
 };
 
-HardwareService_configure_result = function(args) {
+HardwareService_applyConfiguration_result = function(args) {
   this.ouch = null;
   if (args instanceof ttypes.InvalidOperation) {
     this.ouch = args;
@@ -76,8 +76,8 @@ HardwareService_configure_result = function(args) {
     }
   }
 };
-HardwareService_configure_result.prototype = {};
-HardwareService_configure_result.prototype.read = function(input) {
+HardwareService_applyConfiguration_result.prototype = {};
+HardwareService_applyConfiguration_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -110,232 +110,8 @@ HardwareService_configure_result.prototype.read = function(input) {
   return;
 };
 
-HardwareService_configure_result.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_configure_result');
-  if (this.ouch !== null && this.ouch !== undefined) {
-    output.writeFieldBegin('ouch', Thrift.Type.STRUCT, 1);
-    this.ouch.write(output);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-HardwareService_pour_args = function(args) {
-  this.from = null;
-  this.to = null;
-  if (args) {
-    if (args.from !== undefined) {
-      this.from = args.from;
-    }
-    if (args.to !== undefined) {
-      this.to = args.to;
-    }
-  }
-};
-HardwareService_pour_args.prototype = {};
-HardwareService_pour_args.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.I32) {
-        this.from = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
-      if (ftype == Thrift.Type.I32) {
-        this.to = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-HardwareService_pour_args.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_pour_args');
-  if (this.from !== null && this.from !== undefined) {
-    output.writeFieldBegin('from', Thrift.Type.I32, 1);
-    output.writeI32(this.from);
-    output.writeFieldEnd();
-  }
-  if (this.to !== null && this.to !== undefined) {
-    output.writeFieldBegin('to', Thrift.Type.I32, 2);
-    output.writeI32(this.to);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-HardwareService_pour_result = function(args) {
-  this.ouch = null;
-  if (args instanceof ttypes.InvalidOperation) {
-    this.ouch = args;
-    return;
-  }
-  if (args) {
-    if (args.ouch !== undefined) {
-      this.ouch = args.ouch;
-    }
-  }
-};
-HardwareService_pour_result.prototype = {};
-HardwareService_pour_result.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.ouch = new ttypes.InvalidOperation();
-        this.ouch.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-HardwareService_pour_result.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_pour_result');
-  if (this.ouch !== null && this.ouch !== undefined) {
-    output.writeFieldBegin('ouch', Thrift.Type.STRUCT, 1);
-    this.ouch.write(output);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-HardwareService_getInput_args = function(args) {
-};
-HardwareService_getInput_args.prototype = {};
-HardwareService_getInput_args.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    input.skip(ftype);
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-HardwareService_getInput_args.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_getInput_args');
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-HardwareService_getInput_result = function(args) {
-  this.success = null;
-  this.ouch = null;
-  if (args instanceof ttypes.InvalidOperation) {
-    this.ouch = args;
-    return;
-  }
-  if (args) {
-    if (args.success !== undefined) {
-      this.success = args.success;
-    }
-    if (args.ouch !== undefined) {
-      this.ouch = args.ouch;
-    }
-  }
-};
-HardwareService_getInput_result.prototype = {};
-HardwareService_getInput_result.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.success = new ttypes.HardwareInput();
-        this.success.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.ouch = new ttypes.InvalidOperation();
-        this.ouch.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-HardwareService_getInput_result.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_getInput_result');
-  if (this.success !== null && this.success !== undefined) {
-    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
-    this.success.write(output);
-    output.writeFieldEnd();
-  }
+HardwareService_applyConfiguration_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_applyConfiguration_result');
   if (this.ouch !== null && this.ouch !== undefined) {
     output.writeFieldBegin('ouch', Thrift.Type.STRUCT, 1);
     this.ouch.write(output);
@@ -664,10 +440,10 @@ HardwareService_getServiceStatus_result.prototype.write = function(output) {
   return;
 };
 
-HardwareService_GetServiceStateJson_args = function(args) {
+HardwareService_getServiceStateJson_args = function(args) {
 };
-HardwareService_GetServiceStateJson_args.prototype = {};
-HardwareService_GetServiceStateJson_args.prototype.read = function(input) {
+HardwareService_getServiceStateJson_args.prototype = {};
+HardwareService_getServiceStateJson_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -685,14 +461,14 @@ HardwareService_GetServiceStateJson_args.prototype.read = function(input) {
   return;
 };
 
-HardwareService_GetServiceStateJson_args.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_GetServiceStateJson_args');
+HardwareService_getServiceStateJson_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_getServiceStateJson_args');
   output.writeFieldStop();
   output.writeStructEnd();
   return;
 };
 
-HardwareService_GetServiceStateJson_result = function(args) {
+HardwareService_getServiceStateJson_result = function(args) {
   this.success = null;
   if (args) {
     if (args.success !== undefined) {
@@ -700,8 +476,8 @@ HardwareService_GetServiceStateJson_result = function(args) {
     }
   }
 };
-HardwareService_GetServiceStateJson_result.prototype = {};
-HardwareService_GetServiceStateJson_result.prototype.read = function(input) {
+HardwareService_getServiceStateJson_result.prototype = {};
+HardwareService_getServiceStateJson_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -733,8 +509,8 @@ HardwareService_GetServiceStateJson_result.prototype.read = function(input) {
   return;
 };
 
-HardwareService_GetServiceStateJson_result.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_GetServiceStateJson_result');
+HardwareService_getServiceStateJson_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_getServiceStateJson_result');
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.STRING, 0);
     output.writeString(this.success);
@@ -745,16 +521,16 @@ HardwareService_GetServiceStateJson_result.prototype.write = function(output) {
   return;
 };
 
-HardwareService_ping_args = function(args) {
-  this.arg = null;
+HardwareService_fillVisibleContainerMillilitres_args = function(args) {
+  this.amount = null;
   if (args) {
-    if (args.arg !== undefined) {
-      this.arg = args.arg;
+    if (args.amount !== undefined) {
+      this.amount = args.amount;
     }
   }
 };
-HardwareService_ping_args.prototype = {};
-HardwareService_ping_args.prototype.read = function(input) {
+HardwareService_fillVisibleContainerMillilitres_args.prototype = {};
+HardwareService_fillVisibleContainerMillilitres_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -769,7 +545,7 @@ HardwareService_ping_args.prototype.read = function(input) {
     {
       case 1:
       if (ftype == Thrift.Type.I32) {
-        this.arg = input.readI32();
+        this.amount = input.readI32();
       } else {
         input.skip(ftype);
       }
@@ -786,11 +562,11 @@ HardwareService_ping_args.prototype.read = function(input) {
   return;
 };
 
-HardwareService_ping_args.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_ping_args');
-  if (this.arg !== null && this.arg !== undefined) {
-    output.writeFieldBegin('arg', Thrift.Type.I32, 1);
-    output.writeI32(this.arg);
+HardwareService_fillVisibleContainerMillilitres_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_fillVisibleContainerMillilitres_args');
+  if (this.amount !== null && this.amount !== undefined) {
+    output.writeFieldBegin('amount', Thrift.Type.I32, 1);
+    output.writeI32(this.amount);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -798,10 +574,20 @@ HardwareService_ping_args.prototype.write = function(output) {
   return;
 };
 
-HardwareService_ping_result = function(args) {
+HardwareService_fillVisibleContainerMillilitres_result = function(args) {
+  this.ouch = null;
+  if (args instanceof ttypes.InvalidOperation) {
+    this.ouch = args;
+    return;
+  }
+  if (args) {
+    if (args.ouch !== undefined) {
+      this.ouch = args.ouch;
+    }
+  }
 };
-HardwareService_ping_result.prototype = {};
-HardwareService_ping_result.prototype.read = function(input) {
+HardwareService_fillVisibleContainerMillilitres_result.prototype = {};
+HardwareService_fillVisibleContainerMillilitres_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -812,15 +598,146 @@ HardwareService_ping_result.prototype.read = function(input) {
     if (ftype == Thrift.Type.STOP) {
       break;
     }
-    input.skip(ftype);
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.ouch = new ttypes.InvalidOperation();
+        this.ouch.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
     input.readFieldEnd();
   }
   input.readStructEnd();
   return;
 };
 
-HardwareService_ping_result.prototype.write = function(output) {
-  output.writeStructBegin('HardwareService_ping_result');
+HardwareService_fillVisibleContainerMillilitres_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_fillVisibleContainerMillilitres_result');
+  if (this.ouch !== null && this.ouch !== undefined) {
+    output.writeFieldBegin('ouch', Thrift.Type.STRUCT, 1);
+    this.ouch.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+HardwareService_emptyVisiableContainerMillilitres_args = function(args) {
+  this.amount = null;
+  if (args) {
+    if (args.amount !== undefined) {
+      this.amount = args.amount;
+    }
+  }
+};
+HardwareService_emptyVisiableContainerMillilitres_args.prototype = {};
+HardwareService_emptyVisiableContainerMillilitres_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.amount = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_emptyVisiableContainerMillilitres_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_emptyVisiableContainerMillilitres_args');
+  if (this.amount !== null && this.amount !== undefined) {
+    output.writeFieldBegin('amount', Thrift.Type.I32, 1);
+    output.writeI32(this.amount);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+HardwareService_emptyVisiableContainerMillilitres_result = function(args) {
+  this.ouch = null;
+  if (args instanceof ttypes.InvalidOperation) {
+    this.ouch = args;
+    return;
+  }
+  if (args) {
+    if (args.ouch !== undefined) {
+      this.ouch = args.ouch;
+    }
+  }
+};
+HardwareService_emptyVisiableContainerMillilitres_result.prototype = {};
+HardwareService_emptyVisiableContainerMillilitres_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.ouch = new ttypes.InvalidOperation();
+        this.ouch.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_emptyVisiableContainerMillilitres_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_emptyVisiableContainerMillilitres_result');
+  if (this.ouch !== null && this.ouch !== undefined) {
+    output.writeFieldBegin('ouch', Thrift.Type.STRUCT, 1);
+    this.ouch.write(output);
+    output.writeFieldEnd();
+  }
   output.writeFieldStop();
   output.writeStructEnd();
   return;
@@ -835,7 +752,7 @@ HardwareServiceClient = exports.Client = function(output, pClass) {
 HardwareServiceClient.prototype = {};
 HardwareServiceClient.prototype.seqid = function() { return this._seqid; }
 HardwareServiceClient.prototype.new_seqid = function() { return this._seqid += 1; }
-HardwareServiceClient.prototype.configure = function(jsonDocumentText, callback) {
+HardwareServiceClient.prototype.applyConfiguration = function(jsonDocumentText, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -846,25 +763,25 @@ HardwareServiceClient.prototype.configure = function(jsonDocumentText, callback)
         _defer.resolve(result);
       }
     };
-    this.send_configure(jsonDocumentText);
+    this.send_applyConfiguration(jsonDocumentText);
     return _defer.promise;
   } else {
     this._reqs[this.seqid()] = callback;
-    this.send_configure(jsonDocumentText);
+    this.send_applyConfiguration(jsonDocumentText);
   }
 };
 
-HardwareServiceClient.prototype.send_configure = function(jsonDocumentText) {
+HardwareServiceClient.prototype.send_applyConfiguration = function(jsonDocumentText) {
   var output = new this.pClass(this.output);
-  output.writeMessageBegin('configure', Thrift.MessageType.CALL, this.seqid());
-  var args = new HardwareService_configure_args();
+  output.writeMessageBegin('applyConfiguration', Thrift.MessageType.CALL, this.seqid());
+  var args = new HardwareService_applyConfiguration_args();
   args.jsonDocumentText = jsonDocumentText;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-HardwareServiceClient.prototype.recv_configure = function(input,mtype,rseqid) {
+HardwareServiceClient.prototype.recv_applyConfiguration = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -873,7 +790,7 @@ HardwareServiceClient.prototype.recv_configure = function(input,mtype,rseqid) {
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new HardwareService_configure_result();
+  var result = new HardwareService_applyConfiguration_result();
   result.read(input);
   input.readMessageEnd();
 
@@ -881,103 +798,6 @@ HardwareServiceClient.prototype.recv_configure = function(input,mtype,rseqid) {
     return callback(result.ouch);
   }
   callback(null)
-};
-HardwareServiceClient.prototype.pour = function(from, to, callback) {
-  this._seqid = this.new_seqid();
-  if (callback === undefined) {
-    var _defer = Q.defer();
-    this._reqs[this.seqid()] = function(error, result) {
-      if (error) {
-        _defer.reject(error);
-      } else {
-        _defer.resolve(result);
-      }
-    };
-    this.send_pour(from, to);
-    return _defer.promise;
-  } else {
-    this._reqs[this.seqid()] = callback;
-    this.send_pour(from, to);
-  }
-};
-
-HardwareServiceClient.prototype.send_pour = function(from, to) {
-  var output = new this.pClass(this.output);
-  output.writeMessageBegin('pour', Thrift.MessageType.CALL, this.seqid());
-  var args = new HardwareService_pour_args();
-  args.from = from;
-  args.to = to;
-  args.write(output);
-  output.writeMessageEnd();
-  return this.output.flush();
-};
-
-HardwareServiceClient.prototype.recv_pour = function(input,mtype,rseqid) {
-  var callback = this._reqs[rseqid] || function() {};
-  delete this._reqs[rseqid];
-  if (mtype == Thrift.MessageType.EXCEPTION) {
-    var x = new Thrift.TApplicationException();
-    x.read(input);
-    input.readMessageEnd();
-    return callback(x);
-  }
-  var result = new HardwareService_pour_result();
-  result.read(input);
-  input.readMessageEnd();
-
-  if (null !== result.ouch) {
-    return callback(result.ouch);
-  }
-  callback(null)
-};
-HardwareServiceClient.prototype.getInput = function(callback) {
-  this._seqid = this.new_seqid();
-  if (callback === undefined) {
-    var _defer = Q.defer();
-    this._reqs[this.seqid()] = function(error, result) {
-      if (error) {
-        _defer.reject(error);
-      } else {
-        _defer.resolve(result);
-      }
-    };
-    this.send_getInput();
-    return _defer.promise;
-  } else {
-    this._reqs[this.seqid()] = callback;
-    this.send_getInput();
-  }
-};
-
-HardwareServiceClient.prototype.send_getInput = function() {
-  var output = new this.pClass(this.output);
-  output.writeMessageBegin('getInput', Thrift.MessageType.CALL, this.seqid());
-  var args = new HardwareService_getInput_args();
-  args.write(output);
-  output.writeMessageEnd();
-  return this.output.flush();
-};
-
-HardwareServiceClient.prototype.recv_getInput = function(input,mtype,rseqid) {
-  var callback = this._reqs[rseqid] || function() {};
-  delete this._reqs[rseqid];
-  if (mtype == Thrift.MessageType.EXCEPTION) {
-    var x = new Thrift.TApplicationException();
-    x.read(input);
-    input.readMessageEnd();
-    return callback(x);
-  }
-  var result = new HardwareService_getInput_result();
-  result.read(input);
-  input.readMessageEnd();
-
-  if (null !== result.ouch) {
-    return callback(result.ouch);
-  }
-  if (null !== result.success) {
-    return callback(null, result.success);
-  }
-  return callback('getInput failed: unknown result');
 };
 HardwareServiceClient.prototype.startPump = function(pumpId, callback) {
   this._seqid = this.new_seqid();
@@ -1122,7 +942,7 @@ HardwareServiceClient.prototype.recv_getServiceStatus = function(input,mtype,rse
   }
   return callback('getServiceStatus failed: unknown result');
 };
-HardwareServiceClient.prototype.GetServiceStateJson = function(callback) {
+HardwareServiceClient.prototype.getServiceStateJson = function(callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -1133,24 +953,24 @@ HardwareServiceClient.prototype.GetServiceStateJson = function(callback) {
         _defer.resolve(result);
       }
     };
-    this.send_GetServiceStateJson();
+    this.send_getServiceStateJson();
     return _defer.promise;
   } else {
     this._reqs[this.seqid()] = callback;
-    this.send_GetServiceStateJson();
+    this.send_getServiceStateJson();
   }
 };
 
-HardwareServiceClient.prototype.send_GetServiceStateJson = function() {
+HardwareServiceClient.prototype.send_getServiceStateJson = function() {
   var output = new this.pClass(this.output);
-  output.writeMessageBegin('GetServiceStateJson', Thrift.MessageType.CALL, this.seqid());
-  var args = new HardwareService_GetServiceStateJson_args();
+  output.writeMessageBegin('getServiceStateJson', Thrift.MessageType.CALL, this.seqid());
+  var args = new HardwareService_getServiceStateJson_args();
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-HardwareServiceClient.prototype.recv_GetServiceStateJson = function(input,mtype,rseqid) {
+HardwareServiceClient.prototype.recv_getServiceStateJson = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -1159,16 +979,16 @@ HardwareServiceClient.prototype.recv_GetServiceStateJson = function(input,mtype,
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new HardwareService_GetServiceStateJson_result();
+  var result = new HardwareService_getServiceStateJson_result();
   result.read(input);
   input.readMessageEnd();
 
   if (null !== result.success) {
     return callback(null, result.success);
   }
-  return callback('GetServiceStateJson failed: unknown result');
+  return callback('getServiceStateJson failed: unknown result');
 };
-HardwareServiceClient.prototype.ping = function(arg, callback) {
+HardwareServiceClient.prototype.fillVisibleContainerMillilitres = function(amount, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -1179,25 +999,25 @@ HardwareServiceClient.prototype.ping = function(arg, callback) {
         _defer.resolve(result);
       }
     };
-    this.send_ping(arg);
+    this.send_fillVisibleContainerMillilitres(amount);
     return _defer.promise;
   } else {
     this._reqs[this.seqid()] = callback;
-    this.send_ping(arg);
+    this.send_fillVisibleContainerMillilitres(amount);
   }
 };
 
-HardwareServiceClient.prototype.send_ping = function(arg) {
+HardwareServiceClient.prototype.send_fillVisibleContainerMillilitres = function(amount) {
   var output = new this.pClass(this.output);
-  output.writeMessageBegin('ping', Thrift.MessageType.CALL, this.seqid());
-  var args = new HardwareService_ping_args();
-  args.arg = arg;
+  output.writeMessageBegin('fillVisibleContainerMillilitres', Thrift.MessageType.CALL, this.seqid());
+  var args = new HardwareService_fillVisibleContainerMillilitres_args();
+  args.amount = amount;
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-HardwareServiceClient.prototype.recv_ping = function(input,mtype,rseqid) {
+HardwareServiceClient.prototype.recv_fillVisibleContainerMillilitres = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -1206,10 +1026,60 @@ HardwareServiceClient.prototype.recv_ping = function(input,mtype,rseqid) {
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new HardwareService_ping_result();
+  var result = new HardwareService_fillVisibleContainerMillilitres_result();
   result.read(input);
   input.readMessageEnd();
 
+  if (null !== result.ouch) {
+    return callback(result.ouch);
+  }
+  callback(null)
+};
+HardwareServiceClient.prototype.emptyVisiableContainerMillilitres = function(amount, callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_emptyVisiableContainerMillilitres(amount);
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_emptyVisiableContainerMillilitres(amount);
+  }
+};
+
+HardwareServiceClient.prototype.send_emptyVisiableContainerMillilitres = function(amount) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('emptyVisiableContainerMillilitres', Thrift.MessageType.CALL, this.seqid());
+  var args = new HardwareService_emptyVisiableContainerMillilitres_args();
+  args.amount = amount;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+HardwareServiceClient.prototype.recv_emptyVisiableContainerMillilitres = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new HardwareService_emptyVisiableContainerMillilitres_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.ouch) {
+    return callback(result.ouch);
+  }
   callback(null)
 };
 HardwareServiceProcessor = exports.Processor = function(handler) {
@@ -1230,89 +1100,29 @@ HardwareServiceProcessor.prototype.process = function(input, output) {
   }
 }
 
-HardwareServiceProcessor.prototype.process_configure = function(seqid, input, output) {
-  var args = new HardwareService_configure_args();
+HardwareServiceProcessor.prototype.process_applyConfiguration = function(seqid, input, output) {
+  var args = new HardwareService_applyConfiguration_args();
   args.read(input);
   input.readMessageEnd();
-  if (this._handler.configure.length === 1) {
-    Q.fcall(this._handler.configure, args.jsonDocumentText)
+  if (this._handler.applyConfiguration.length === 1) {
+    Q.fcall(this._handler.applyConfiguration, args.jsonDocumentText)
       .then(function(result) {
-        var result = new HardwareService_configure_result({success: result});
-        output.writeMessageBegin("configure", Thrift.MessageType.REPLY, seqid);
+        var result = new HardwareService_applyConfiguration_result({success: result});
+        output.writeMessageBegin("applyConfiguration", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
-        var result = new HardwareService_configure_result(err);
-        output.writeMessageBegin("configure", Thrift.MessageType.REPLY, seqid);
+        var result = new HardwareService_applyConfiguration_result(err);
+        output.writeMessageBegin("applyConfiguration", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       });
   } else {
-    this._handler.configure(args.jsonDocumentText,  function (err, result) {
-      var result = new HardwareService_configure_result((err != null ? err : {success: result}));
-      output.writeMessageBegin("configure", Thrift.MessageType.REPLY, seqid);
-      result.write(output);
-      output.writeMessageEnd();
-      output.flush();
-    });
-  }
-}
-
-HardwareServiceProcessor.prototype.process_pour = function(seqid, input, output) {
-  var args = new HardwareService_pour_args();
-  args.read(input);
-  input.readMessageEnd();
-  if (this._handler.pour.length === 2) {
-    Q.fcall(this._handler.pour, args.from, args.to)
-      .then(function(result) {
-        var result = new HardwareService_pour_result({success: result});
-        output.writeMessageBegin("pour", Thrift.MessageType.REPLY, seqid);
-        result.write(output);
-        output.writeMessageEnd();
-        output.flush();
-      }, function (err) {
-        var result = new HardwareService_pour_result(err);
-        output.writeMessageBegin("pour", Thrift.MessageType.REPLY, seqid);
-        result.write(output);
-        output.writeMessageEnd();
-        output.flush();
-      });
-  } else {
-    this._handler.pour(args.from, args.to,  function (err, result) {
-      var result = new HardwareService_pour_result((err != null ? err : {success: result}));
-      output.writeMessageBegin("pour", Thrift.MessageType.REPLY, seqid);
-      result.write(output);
-      output.writeMessageEnd();
-      output.flush();
-    });
-  }
-}
-
-HardwareServiceProcessor.prototype.process_getInput = function(seqid, input, output) {
-  var args = new HardwareService_getInput_args();
-  args.read(input);
-  input.readMessageEnd();
-  if (this._handler.getInput.length === 0) {
-    Q.fcall(this._handler.getInput)
-      .then(function(result) {
-        var result = new HardwareService_getInput_result({success: result});
-        output.writeMessageBegin("getInput", Thrift.MessageType.REPLY, seqid);
-        result.write(output);
-        output.writeMessageEnd();
-        output.flush();
-      }, function (err) {
-        var result = new HardwareService_getInput_result(err);
-        output.writeMessageBegin("getInput", Thrift.MessageType.REPLY, seqid);
-        result.write(output);
-        output.writeMessageEnd();
-        output.flush();
-      });
-  } else {
-    this._handler.getInput( function (err, result) {
-      var result = new HardwareService_getInput_result((err != null ? err : {success: result}));
-      output.writeMessageBegin("getInput", Thrift.MessageType.REPLY, seqid);
+    this._handler.applyConfiguration(args.jsonDocumentText,  function (err, result) {
+      var result = new HardwareService_applyConfiguration_result((err != null ? err : {success: result}));
+      output.writeMessageBegin("applyConfiguration", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
       output.flush();
@@ -1410,29 +1220,29 @@ HardwareServiceProcessor.prototype.process_getServiceStatus = function(seqid, in
   }
 }
 
-HardwareServiceProcessor.prototype.process_GetServiceStateJson = function(seqid, input, output) {
-  var args = new HardwareService_GetServiceStateJson_args();
+HardwareServiceProcessor.prototype.process_getServiceStateJson = function(seqid, input, output) {
+  var args = new HardwareService_getServiceStateJson_args();
   args.read(input);
   input.readMessageEnd();
-  if (this._handler.GetServiceStateJson.length === 0) {
-    Q.fcall(this._handler.GetServiceStateJson)
+  if (this._handler.getServiceStateJson.length === 0) {
+    Q.fcall(this._handler.getServiceStateJson)
       .then(function(result) {
-        var result = new HardwareService_GetServiceStateJson_result({success: result});
-        output.writeMessageBegin("GetServiceStateJson", Thrift.MessageType.REPLY, seqid);
+        var result = new HardwareService_getServiceStateJson_result({success: result});
+        output.writeMessageBegin("getServiceStateJson", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
-        var result = new HardwareService_GetServiceStateJson_result(err);
-        output.writeMessageBegin("GetServiceStateJson", Thrift.MessageType.REPLY, seqid);
+        var result = new HardwareService_getServiceStateJson_result(err);
+        output.writeMessageBegin("getServiceStateJson", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       });
   } else {
-    this._handler.GetServiceStateJson( function (err, result) {
-      var result = new HardwareService_GetServiceStateJson_result((err != null ? err : {success: result}));
-      output.writeMessageBegin("GetServiceStateJson", Thrift.MessageType.REPLY, seqid);
+    this._handler.getServiceStateJson( function (err, result) {
+      var result = new HardwareService_getServiceStateJson_result((err != null ? err : {success: result}));
+      output.writeMessageBegin("getServiceStateJson", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
       output.flush();
@@ -1440,29 +1250,59 @@ HardwareServiceProcessor.prototype.process_GetServiceStateJson = function(seqid,
   }
 }
 
-HardwareServiceProcessor.prototype.process_ping = function(seqid, input, output) {
-  var args = new HardwareService_ping_args();
+HardwareServiceProcessor.prototype.process_fillVisibleContainerMillilitres = function(seqid, input, output) {
+  var args = new HardwareService_fillVisibleContainerMillilitres_args();
   args.read(input);
   input.readMessageEnd();
-  if (this._handler.ping.length === 1) {
-    Q.fcall(this._handler.ping, args.arg)
+  if (this._handler.fillVisibleContainerMillilitres.length === 1) {
+    Q.fcall(this._handler.fillVisibleContainerMillilitres, args.amount)
       .then(function(result) {
-        var result = new HardwareService_ping_result({success: result});
-        output.writeMessageBegin("ping", Thrift.MessageType.REPLY, seqid);
+        var result = new HardwareService_fillVisibleContainerMillilitres_result({success: result});
+        output.writeMessageBegin("fillVisibleContainerMillilitres", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
-        var result = new HardwareService_ping_result(err);
-        output.writeMessageBegin("ping", Thrift.MessageType.REPLY, seqid);
+        var result = new HardwareService_fillVisibleContainerMillilitres_result(err);
+        output.writeMessageBegin("fillVisibleContainerMillilitres", Thrift.MessageType.REPLY, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       });
   } else {
-    this._handler.ping(args.arg,  function (err, result) {
-      var result = new HardwareService_ping_result((err != null ? err : {success: result}));
-      output.writeMessageBegin("ping", Thrift.MessageType.REPLY, seqid);
+    this._handler.fillVisibleContainerMillilitres(args.amount,  function (err, result) {
+      var result = new HardwareService_fillVisibleContainerMillilitres_result((err != null ? err : {success: result}));
+      output.writeMessageBegin("fillVisibleContainerMillilitres", Thrift.MessageType.REPLY, seqid);
+      result.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+}
+
+HardwareServiceProcessor.prototype.process_emptyVisiableContainerMillilitres = function(seqid, input, output) {
+  var args = new HardwareService_emptyVisiableContainerMillilitres_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.emptyVisiableContainerMillilitres.length === 1) {
+    Q.fcall(this._handler.emptyVisiableContainerMillilitres, args.amount)
+      .then(function(result) {
+        var result = new HardwareService_emptyVisiableContainerMillilitres_result({success: result});
+        output.writeMessageBegin("emptyVisiableContainerMillilitres", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result = new HardwareService_emptyVisiableContainerMillilitres_result(err);
+        output.writeMessageBegin("emptyVisiableContainerMillilitres", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.emptyVisiableContainerMillilitres(args.amount,  function (err, result) {
+      var result = new HardwareService_emptyVisiableContainerMillilitres_result((err != null ? err : {success: result}));
+      output.writeMessageBegin("emptyVisiableContainerMillilitres", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
       output.flush();

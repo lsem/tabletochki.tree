@@ -1,20 +1,22 @@
 
 namespace cpp Tabletochki
 
-enum Container {
-	VISIBLE,
-	HIDDEN,
-}
 
 enum ErrorCode
 {
     INVALID_CONFIGURATION,
     DEVICE_ALREADY_IN_USE,
+    SERVICE_NOT_READY,
+    DEVICE_NOT_READY,
+    PUMP_NOT_READY,
 }
 
-/**
- * Structs can also be exceptions, if they are nasty.
- */
+enum PumpIdentifier
+{
+	INPUT_PUMP,
+	OUTPUT_PUMP
+}
+
 exception InvalidOperation {
     1: ErrorCode what,
     2: string why
@@ -24,29 +26,19 @@ struct StopPumpResult {
     1: i32 workingTimeSecond;
 }
 
-struct HardwareInput {
-    1: bool buttonPressed;
-}
-
-struct PumpConfiguration {
-    1: i32 productivityMillilitresPerSecond;
-}
-
-struct Configuration {
-    1: list<PumpConfiguration> pumpsConfiguration;
-}
-
 struct ServiceStatus {
     1: i32 statusCode;
 }
 
 service HardwareService {
-    void configure(1: string jsonDocumentText) throws (1:InvalidOperation ouch);
-    void pour(1:Container from, 2:Container to) throws (1:InvalidOperation ouch);
-    HardwareInput getInput() throws (1:InvalidOperation ouch);
-    void startPump(1: i32  pumpId) throws (1:InvalidOperation ouch);
-    StopPumpResult stopPump(1: i32  pumpId) throws (1:InvalidOperation ouch);
+    void applyConfiguration(1: string jsonDocumentText) throws (1:InvalidOperation ouch);
+
+    void startPump(1: PumpIdentifier  pumpId) throws (1:InvalidOperation ouch);
+    StopPumpResult stopPump(1: PumpIdentifier pumpId) throws (1:InvalidOperation ouch);
+
     ServiceStatus getServiceStatus();
-    string GetServiceStateJson();
-    void ping(1: i32 arg);
+    string getServiceStateJson();
+
+    void fillVisibleContainerMillilitres(1: i32 amount) throws (1:InvalidOperation ouch);
+    void emptyVisiableContainerMillilitres(1: i32 amount) throws (1:InvalidOperation ouch);   
 }

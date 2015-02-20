@@ -12,12 +12,11 @@
 #include <boost/thread.hpp>
 
 
-using Tabletochki::Container;
-using Tabletochki::HardwareInput;
 using Tabletochki::StopPumpResult;
-using Tabletochki::Configuration;
 using Tabletochki::ServiceStatus;
+using Tabletochki::PumpIdentifier;
 
+typedef boost::chrono::steady_clock::time_point time_point;
 
 class ICommunicationChannel;
 class IntervalTimer;
@@ -36,77 +35,73 @@ enum ESERVICESTATE
     SS__DEFAULT = SS_FAILED,
 };
 
-
-
-enum EJOBSSTATE
-{
-    JS_WATERING,
-};
-
 enum ECONNECTIONSTATE
 {
-    CS__BEGIN,
+    DS__BEGIN,
 
-    CS_CONNECTED = CS__BEGIN,
-    CS_DISCONNECTED,
-    CS_READY,
+    DS_CONNECTED = DS__BEGIN,
+    DS_DISCONNECTED,
+    DS_READY,
 
-    CS__END,
-    CS__DEFAULT = CS_DISCONNECTED,
+    DS__END,
+    DS__DEFAULT = DS_DISCONNECTED,
 };
 
-
-
-enum ESERVICETIMERS
+enum ESERVICETASKID
 {
-    ST__BEGIN,
+    TI__BEGIN,
     
-    ST_HEARTBEATTIMER = ST__BEGIN,
-    ST_STATUSTIMER,
+    TI_HEARTBEATTASK = TI__BEGIN,
+    TI_STATUSTASK,
 
-    ST__PUMPS_TIMERS_BEGIN,
-    ST_INPUTPUMPTIMER = ST__PUMPS_TIMERS_BEGIN,
-    ST_OUTPUTPUMPTIMER,
-    ST__PUMPS_TIMERS_END,
+    TI__PUMPS_TASKS_BEGIN,
+    TI_INPUTPUMPTASK = TI__PUMPS_TASKS_BEGIN,
+    TI_OUTPUTPUMTASK,
+    TI__PUMPS_TASKS_END,
 
-    ST__END = ST__PUMPS_TIMERS_END,
+    TI__END = TI__PUMPS_TASKS_END,
 };
 
 enum EPUMPSTATE
 {
     PS__BEGIN,
 
-    PS_STARTED = PS__BEGIN,
-    PS_READY,
+    PS_ENABLED = PS__BEGIN,
+    PS_DISABLED,
     PS_FAILED,
 
     PS__END,
     PS__DEFAULT = PS_FAILED
 };
 
-enum ESERVICEJOB
-{
-    SJ__BEGIN,
-
-    SJ_WATERINPUT = SJ__BEGIN,
-    SJ_WATEROUTPUT,
-
-    SJ__END,
-};
-
 
 struct PumpStateDescriptor
 {
-    void Assign(EPUMPSTATE state, boost::chrono::steady_clock::time_point startTime, unsigned workingTime)
+    void Assign(EPUMPSTATE state, const time_point &startTime, unsigned workingTime)
     {
         m_state = state;
         m_startTime = startTime;
         m_workingTime = workingTime;
     }
 
+    EPUMPSTATE GetState() const { return m_state; }
+    void SetState(EPUMPSTATE value) { m_state = value; }
+
+    void SetStartTimeNow() { m_startTime = boost::chrono::steady_clock::now(); }
+    const time_point &GetStartTime() const { return m_startTime; }
+
     EPUMPSTATE      m_state;
-    boost::chrono::steady_clock::time_point m_startTime;
+    time_point      m_startTime;
     unsigned        m_workingTime;
+};
+
+
+struct DeviceInputValues
+{
+    DeviceInputValues() {}
+    DeviceInputValues(void*) : ProximitySensorValue(~((unsigned)0)), MagicButtonPressed(false) {}
+    unsigned ProximitySensorValue;
+    bool     MagicButtonPressed;
 };
 
 
@@ -114,21 +109,29 @@ class HardwareServiceImplementation : public IPacketUnFramerListener
 {
 public:
     HardwareServiceImplementation();
+    ~HardwareServiceImplementation();
 
 public:
     void ApplyConfiguration(const string &jsonDocumentText);
-    void Pour(const Container::type from, const Container::type to);
-    void GetInput(HardwareInput& _return);
-    void StartPump(const int32_t pumpId);
-    void StopPump(StopPumpResult& _return, const int32_t pumpId);
+    void StartPump(const PumpIdentifier::type);
+    void StopPump(StopPumpResult& _return, const PumpIdentifier::type);
     void GetServiceStatus(ServiceStatus& _return);
     void GetServiceStateJson(string &jsonDocumentReceiver);
+    void FillVisibleContainerMillilitres(const int32_t amount);
+    void EmptyVisiableContainerMillilitres(const int32_t amount);
 
-public:
+private:
+    void InitializePumpsState(EPUMPSTATE initialState = PS__DEFAULT);
+    void InitializeServiceState();
+    void CreateTimerThreads();
+    void StartService();
+    void ShutdownService();
+    void LoadConfiguration();
     void StartBackgroundTasks();
     void CreateTasksTimers();
     void DestroyTasksTimers();
-    void RestartTask(ESERVICETIMERS timerId);
+    void RestartTask(ESERVICETASKID timerId);
+    void RestartTaskTimeSpecified(ESERVICETASKID timerId, unsigned timeFromNowMilliseconds);
 
 private:
     void HeartBeatTask();
@@ -137,14 +140,22 @@ private:
     void OutputPumpControlTask();
 
 private:
-    void DoHeartBeatTask();
-    void DoQueryInputTask();
+    void EnablePumpForSpecifiedTime(EPUMPIDENTIFIER pumpId, unsigned timeMilliseconds);
+    void EnsurePumpReadyForWork_RaiseExceptionIfNot(EPUMPIDENTIFIER pumpId);
+    void ProcessPumpControlActions(EPUMPIDENTIFIER pumpId);
+    void EmergencyStop();
 
 private:
-    bool DoConfigureDevice();
+    void DoHeartBeatTask();
+    void DoQueryInputTask();
     bool DoCheckDeviceConnection();
-    void DoEnablePump();
-    void DoDisablePump();
+    bool DoEnablePump(EPUMPIDENTIFIER pumpId);
+    bool DoDisablePump(EPUMPIDENTIFIER pumpId);
+
+private:
+    bool SendHeartbeatCommand(unsigned &out_deviceStatus);
+    bool SendReadIOCommand(DeviceInputValues &out_deviceInput);
+    bool SendConfigureDeviceCommand();
 
 private:
     template <class TRequest, class TResponse>
@@ -152,33 +163,26 @@ private:
     bool SendPacketData(const void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
     bool DoSendPacketData(const void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
 
-private:
-    bool SendHeartbeatCommand(unsigned &out_deviceStatus);
-
-    struct DeviceInputValues
-    {
-        DeviceInputValues() {}
-        DeviceInputValues(void*) : ProximitySensorValue(~((unsigned)0)), MagicButtonPressed(false) {}
-        unsigned ProximitySensorValue;
-        bool     MagicButtonPressed;
-    };
-
-    bool SendReadIOCommand(DeviceInputValues &out_deviceInput);
-    bool SendConfigureDeviceCommand();
-
-public:
+protected:
     virtual void PacketUnFramerListener_OnCommandParsed(const uint8_t* packetBuffer, size_t packetSize);
 
 private:
     bool UnsafeReceivePacket(uint8_t *buffer, const size_t size, size_t &out_size, unsigned timeoutMilliseconds);
     bool UnsafeSendPacket(const uint8_t *packetData, size_t packetDataSize);
     bool UnsafeResetCommunicationState();
+    void ResetUnframerState();
 
 private:
-    void InitializePumpsState();
-    void InitializeServiceState();
+    static string DecodeServiceState(ESERVICESTATE code);
+    static string DecodeDeviceConnectionState(ECONNECTIONSTATE code);
+    static string DecodePumpState(EPUMPSTATE code);
+    static string DecodePumpIdentifierName(EPUMPIDENTIFIER code);
+    static ESERVICETASKID DecodePumpTaskId(EPUMPIDENTIFIER code);
 
 private:
+    typedef lock_guard<mutex> ScopedLock;
+    typedef boost::asio::deadline_timer    DeadlineTimer;
+    typedef std::shared_ptr<DeadlineTimer> DeadlineTimerPtr;
     typedef void(HardwareServiceImplementation::*TimerExpiredActionType)();
     struct TableEntry
     {
@@ -187,79 +191,36 @@ private:
     };
 
 private:
-    void ResetUnframerState();
-
-private:
-    void SetDeviceState(ECONNECTIONSTATE value) { m_deviceState = value; }
-    ECONNECTIONSTATE GetDeviceState() const { return m_deviceState; }
-
-private:
-    string DecodeServiceState(ESERVICESTATE code) const;
-    string DecodeDeviceConnectionState(ECONNECTIONSTATE code) const;
-
-public:
     void SetServiceState(ESERVICESTATE state) { m_serviceState = state; }
     ESERVICESTATE GetServiceState() { return m_serviceState; }
-
-public:
-    void CreateTimerThreads();
-    void StartService();
-    void ShutdownService();
-
-private:
-    void LoadConfiguration();
-
-private:
+    void SetDeviceState(ECONNECTIONSTATE value) { m_deviceState = value; }
+    ECONNECTIONSTATE GetDeviceState() const { return m_deviceState; }
     void SetServiceConfiguration(const ServiceConfiguration  &value) { m_configuration = value; }
     const ServiceConfiguration  &GetServiceConfiguration() const { return m_configuration; }
-
-private:
     const DeviceInputValues &GetDeviceInputValues() const { return m_deviceInput; }
     void SetDeviceInputValues(const DeviceInputValues &value) { m_deviceInput = value; }
-
-private:
     PumpStateDescriptor &GetPumpDescriptorRef(EPUMPIDENTIFIER pumpId) { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
     const PumpStateDescriptor &GetPumpDescriptorRef(EPUMPIDENTIFIER pumpId) const { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
-
-private:
     mutex  &GetCommunicationLock() { return m_communicationLock; }
     SerialLibCommunicationChannel *GetCommunicationChannel() { return  &m_communicationChannel; }
-
-private:
-    typedef lock_guard<mutex> ScopedLock;
-
-private:
-    typedef boost::asio::deadline_timer    DeadlineTimer;
-    typedef std::shared_ptr<DeadlineTimer> DeadlineTimerPtr;
-
-private:
-    DeadlineTimer &GetTimerObjectById(ESERVICETIMERS timerId) { return *m_timers[timerId]; }
+    DeadlineTimer &GetTimerObjectById(ESERVICETASKID timerId) { return *m_timers[timerId]; }
 
 private:
     mutex                               m_communicationLock;
     int                                 m_currentTask;
     SerialLibCommunicationChannel       m_communicationChannel;
-
     uint8_t                             m_frameBuffer[128];
     size_t                              m_frameBufferSize;
-
     PacketUnFramer                      m_unframer;
-
     ECONNECTIONSTATE                    m_deviceState;
     ESERVICESTATE                       m_serviceState;
-
     boost::thread_group                 m_timerThreads;
     boost::asio::io_service             m_timersIOService;
     boost::asio::io_service::work       m_endlessWork;
-
     DeviceInputValues                   m_deviceInput;
-
-private:
-    DeadlineTimerPtr                    m_timers[ST__END];
+    DeadlineTimerPtr                    m_timers[TI__END];
     PumpStateDescriptor                 m_pumpsState[PI__END];
-
-private:
-    static const TableEntry             m_tasksDescriptors[ST__END];
+    static const TableEntry             m_tasksDescriptors[TI__END];
     ServiceConfiguration                m_configuration;
 };
 
@@ -273,7 +234,7 @@ STATIC_MAP(ServiceStateNames, ESERVICESTATE, string, SS__BEGIN, SS__END)
     "FAILED",           // SS_FAILED
 };
 
-STATIC_MAP(DeviceStateNames, ECONNECTIONSTATE, string, CS__BEGIN, CS__END)
+STATIC_MAP(DeviceStateNames, ECONNECTIONSTATE, string, DS__BEGIN, DS__END)
 {
     "CONNECTED",        // CS_CONNECTED
     "DISCONNECTED",     // CS_DISCONNECTED
@@ -282,7 +243,19 @@ STATIC_MAP(DeviceStateNames, ECONNECTIONSTATE, string, CS__BEGIN, CS__END)
 
 STATIC_MAP(PumpStateNames, EPUMPSTATE, string, PS__BEGIN, PS__END)
 {
-    "STARTED",      // PS_STARTED
-    "READY",         // PS_READY
+    "ENABLED",      // PS_ENABLED
+    "DISABLED",     // PS_DISABLED
     "FAILED",       // PS_FAILED
+};
+
+STATIC_MAP(PumpIdentifierNames, EPUMPIDENTIFIER, string, PI__BEGIN, PI__END)
+{
+    "INPUTPUMP",        // PI_INPUTPUMP
+    "OUTPUTPUMP"        // PI_OUTPUTPUMP,
+};
+
+STATIC_MAP(PumpsTasksIdentifiers, EPUMPIDENTIFIER, ESERVICETASKID, PI__BEGIN, PI__END)
+{
+    TI_INPUTPUMPTASK,       // PI_INPUTPUMP
+    TI_OUTPUTPUMTASK        // PI_OUTPUTPUMP,
 };

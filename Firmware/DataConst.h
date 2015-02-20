@@ -8,8 +8,8 @@ namespace Dataconst
     static const int InputBufferSize = 12;
     static const int CommandSendReceiveTimeout = 500;
 
-    static const int HearBeatCommandPeriodMs = 2000;
-    static const int QueryInputTaskPeriodMs = 100;
+    static const int HearBeatCommandPeriodMs = 5000;
+    static const int QueryInputTaskPeriodMs = 5000;
     static const int InputPipeTaskPeriodMs = 15000;
     static const int OutputPipeTaskPeriodMs = 15000;
     static const int DeviceStatusTaskPeriodMs = 15000;

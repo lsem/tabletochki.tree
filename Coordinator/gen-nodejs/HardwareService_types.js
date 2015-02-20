@@ -9,13 +9,16 @@ var Q = thrift.Q;
 
 
 var ttypes = module.exports = {};
-ttypes.Container = {
-  'VISIBLE' : 0,
-  'HIDDEN' : 1
-};
 ttypes.ErrorCode = {
   'INVALID_CONFIGURATION' : 0,
-  'DEVICE_ALREADY_IN_USE' : 1
+  'DEVICE_ALREADY_IN_USE' : 1,
+  'SERVICE_NOT_READY' : 2,
+  'DEVICE_NOT_READY' : 3,
+  'PUMP_NOT_READY' : 4
+};
+ttypes.PumpIdentifier = {
+  'INPUT_PUMP' : 0,
+  'OUTPUT_PUMP' : 1
 };
 InvalidOperation = module.exports.InvalidOperation = function(args) {
   Thrift.TException.call(this, "InvalidOperation")
@@ -132,188 +135,6 @@ StopPumpResult.prototype.write = function(output) {
   if (this.workingTimeSecond !== null && this.workingTimeSecond !== undefined) {
     output.writeFieldBegin('workingTimeSecond', Thrift.Type.I32, 1);
     output.writeI32(this.workingTimeSecond);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-HardwareInput = module.exports.HardwareInput = function(args) {
-  this.buttonPressed = null;
-  if (args) {
-    if (args.buttonPressed !== undefined) {
-      this.buttonPressed = args.buttonPressed;
-    }
-  }
-};
-HardwareInput.prototype = {};
-HardwareInput.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.BOOL) {
-        this.buttonPressed = input.readBool();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-HardwareInput.prototype.write = function(output) {
-  output.writeStructBegin('HardwareInput');
-  if (this.buttonPressed !== null && this.buttonPressed !== undefined) {
-    output.writeFieldBegin('buttonPressed', Thrift.Type.BOOL, 1);
-    output.writeBool(this.buttonPressed);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-PumpConfiguration = module.exports.PumpConfiguration = function(args) {
-  this.productivityMillilitresPerSecond = null;
-  if (args) {
-    if (args.productivityMillilitresPerSecond !== undefined) {
-      this.productivityMillilitresPerSecond = args.productivityMillilitresPerSecond;
-    }
-  }
-};
-PumpConfiguration.prototype = {};
-PumpConfiguration.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.I32) {
-        this.productivityMillilitresPerSecond = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-PumpConfiguration.prototype.write = function(output) {
-  output.writeStructBegin('PumpConfiguration');
-  if (this.productivityMillilitresPerSecond !== null && this.productivityMillilitresPerSecond !== undefined) {
-    output.writeFieldBegin('productivityMillilitresPerSecond', Thrift.Type.I32, 1);
-    output.writeI32(this.productivityMillilitresPerSecond);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-Configuration = module.exports.Configuration = function(args) {
-  this.pumpsConfiguration = null;
-  if (args) {
-    if (args.pumpsConfiguration !== undefined) {
-      this.pumpsConfiguration = args.pumpsConfiguration;
-    }
-  }
-};
-Configuration.prototype = {};
-Configuration.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.LIST) {
-        var _size0 = 0;
-        var _rtmp34;
-        this.pumpsConfiguration = [];
-        var _etype3 = 0;
-        _rtmp34 = input.readListBegin();
-        _etype3 = _rtmp34.etype;
-        _size0 = _rtmp34.size;
-        for (var _i5 = 0; _i5 < _size0; ++_i5)
-        {
-          var elem6 = null;
-          elem6 = new ttypes.PumpConfiguration();
-          elem6.read(input);
-          this.pumpsConfiguration.push(elem6);
-        }
-        input.readListEnd();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Configuration.prototype.write = function(output) {
-  output.writeStructBegin('Configuration');
-  if (this.pumpsConfiguration !== null && this.pumpsConfiguration !== undefined) {
-    output.writeFieldBegin('pumpsConfiguration', Thrift.Type.LIST, 1);
-    output.writeListBegin(Thrift.Type.STRUCT, this.pumpsConfiguration.length);
-    for (var iter7 in this.pumpsConfiguration)
-    {
-      if (this.pumpsConfiguration.hasOwnProperty(iter7))
-      {
-        iter7 = this.pumpsConfiguration[iter7];
-        iter7.write(output);
-      }
-    }
-    output.writeListEnd();
     output.writeFieldEnd();
   }
   output.writeFieldStop();

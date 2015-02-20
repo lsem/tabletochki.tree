@@ -40,7 +40,7 @@ setInterval(function () {
 
 
     if (serviceApiClient !== null) {
-        serviceApiClient.GetServiceStateJson(function (err, data) {
+        serviceApiClient.getServiceStateJson(function (err, data) {
                 if (err) {
                     logger.error('Error getting service detailed state (JSON)');
                 }
