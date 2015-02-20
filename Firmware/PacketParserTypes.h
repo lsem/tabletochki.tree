@@ -27,7 +27,10 @@ enum EPINFLAGS
     PF_PWM_HIGH     = 0x20,
     PF_NORMALIZED   = 0x40,
 
+    // ------------------------ NO MORE FLAGS!! 8 BITS ONLY 
+
     PF__PWM_ANY_MASK = PF_PWM_LOW | PF_PWM_HIGH,
+    PF__INPUTMASK = PF_INPUT | PF_INPUTPULLUP,
 };
 
 class PacketParserListener

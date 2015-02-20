@@ -61,7 +61,7 @@ private:
 
 private:
     void SetPinConfiguration(uint8_t pin, const IOPinConfiguration &configuration) { m_boardConfiguration.IOPins[pin] = configuration; }
-    const IOPinConfiguration &GetPinConfoguration(uint8_t pin) { return m_boardConfiguration.IOPins[pin]; }
+    const IOPinConfiguration &GetPinConfiguration(uint8_t pin) { return m_boardConfiguration.IOPins[pin]; }
 
 private:
     EPHYSICALDEVICESTATUS GetDeviceStatus() const { return m_deviceStatus; }
@@ -70,13 +70,15 @@ private:
 private:
     static bool IsValidPinNumber(uint8_t number)
     {
-        return Utils::InRange(number, (uint8_t)SelectedBoardTraits::DigitalPinsBeginIndex,
-                                      (uint8_t)SelectedBoardTraits::DigitalPinsEndIndex);
+        return Utils::InRange(number, (uint8_t)SelectedBoardTraits::DigitalPinsBeginIndex, (uint8_t)SelectedBoardTraits::DigitalPinsEndIndex) ||
+               Utils::InRange(number, (uint8_t)SelectedBoardTraits::AnalogPinsBeginIndex, (uint8_t)SelectedBoardTraits::AnalogPinsEndIndex);
     }
     static bool IsValidPinConfiguration(const Packets::IOPinConfiguration &configuration)
     {
-        // TODO: Add more checks
-        return IsValidPinNumber(configuration.PinNumber);
+        const uint8_t flags = configuration.Flags;
+        return IsValidPinNumber(configuration.PinNumber) &&
+            ((flags & (PF_INPUT | PF_INPUTPULLUP)) != (PF_INPUT | PF_INPUTPULLUP)) &&
+            (((flags & (PF_INPUT | PF_INPUTPULLUP)) != 0) != ((flags & PF_OUTPUT) != 0));
     }
 
 private:

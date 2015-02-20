@@ -1,3 +1,4 @@
+#include "Global.h"
 #include "CoreDefs.h"
 #include "InputOutputController.h"
 #include "Utils.h"

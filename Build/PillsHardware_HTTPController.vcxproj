@@ -34,6 +34,7 @@
     <ClInclude Include="..\Firmware\PacketsParser.h" />
     <ClInclude Include="..\Firmware\PacketUnFramer.h" />
     <ClInclude Include="..\HardwareService\CommunicationChannel.h" />
+    <ClInclude Include="..\HardwareService\DeviceIOMapping.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_constants.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_types.h" />

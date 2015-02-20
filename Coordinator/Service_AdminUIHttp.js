@@ -204,16 +204,16 @@ process.on('message', function(m) {
         //logger.info('sending back message to coordinator: ');
         coordinator.sendMessage(types.serviceEvents.StatusResponse, serviceState);
     } else if (m.eventId === types.serviceEvents.AggregatesServiceStatusResponse) {
-        logger.debug('received aggregates service status from coordinator: ' + JSON.stringify(m.eventData));
+        //logger.debug('received aggregates service status from coordinator: ' + JSON.stringify(m.eventData));
         servicesStatuses = m.eventData;
     }
 });
 
 // Aggregated status poller
 setInterval(function () {
-    logger.debug('updateting agregated state for dashboard');
+    //logger.debug('updateting agregated state for dashboard');
     coordinator.sendMessage(types.serviceEvents.AggregatedServicesStatus, null);
-}, 1000);
+}, 100);
 
 app.listen(4567);
 

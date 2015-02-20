@@ -36,8 +36,14 @@ struct ArduinoUnoTraits
     static const unsigned IOTotalPinsNumber = IOTotalDigitalPins + IOTotalAnalogPins;
 
     static const unsigned DigitalPinsBeginIndex = 0;
-    static const unsigned DigitalPinsEndIndex = IOTotalDigitalPins + IOTotalAnalogPins;
+    static const unsigned DigitalPinsEndIndex = IOTotalDigitalPins;
+    
+    static const unsigned AnalogPinsBeginIndex = DigitalPinsEndIndex;
+    static const unsigned AnalogPinsEndIndex = AnalogPinsBeginIndex + IOTotalAnalogPins;
+
+    static uint8_t DecodePinByLogicalIndex(uint8_t index)  {  return (index >= DigitalPinsEndIndex) ? index - DigitalPinsEndIndex : index; }
 };
+
 
 
 

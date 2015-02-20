@@ -63,7 +63,7 @@ exports.serviceController = function (basePath) {
 
     var statusPollingTimer = null;
     that.startServicesStatusPolling = function() {
-        statusPollingTimer = setInterval(doPollServicesStatus, 1000);
+        statusPollingTimer = setInterval(doPollServicesStatus, 100);
     };
     that.stopServicesStatusPolling = function() {
         if (statusPollingTimer !== null) {
@@ -96,21 +96,21 @@ exports.serviceController = function (basePath) {
                     //assert(isValidSenderId(m.sender));
                     that.services[m.sender].status = m.eventData;
                     that.services[m.sender].statusTimeStamp = Math.floor(new Date().getTime() / 1000);
-                    logger.debug('updated service status for: ' + m.sender);
+                    //logger.debug('updated service status for: ' + m.sender);
                 }
                 else if (m.eventId === types.serviceEvents.AggregatedServicesStatus) {
-                    logger.debug('got request for aggregated status: ' + JSON.stringify(m));
+                    //logger.debug('got request for aggregated status: ' + JSON.stringify(m));
                     assert(m.sender === types.Services.AdminUI);
                     var result = {};
                     _.each(that.services, function (svc, svcId) {
-                        logger.warning('status received from:' +svcId);
-                        logger.warning('status received ' + JSON.stringify(that.services[svcId].status));
+                        //logger.warning('status received from:' +svcId);
+                        //logger.warning('status received ' + JSON.stringify(that.services[svcId].status));
                         result[svcId] = {
                             status: that.services[svcId].status,
                             timestamp: that.services[svcId].statusTimeStamp
                         };
                     });
-                    logger.debug('sending aggregates service status to AdminUI service');
+                    //logger.debug('sending aggregates service status to AdminUI service');
                     doSendMessage(types.Services.Coordinator, that.services[types.Services.AdminUI].handle, types.serviceEvents.AggregatesServiceStatusResponse, result);
                 }
                 else {

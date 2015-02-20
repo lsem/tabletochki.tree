@@ -1,3 +1,4 @@
+#include "Global.h"
 #include "CoreDefs.h"
 #include "PacketsProcessor.h"
 #include "PacketFramer.h"
@@ -74,17 +75,18 @@ void PacketProcessor::ProcessSetConfigurationCommand(const Packets::IOPinConfigu
 
         const uint8_t pinNumber = pinConfig->PinNumber;
         const uint8_t flags = pinConfig->Flags;
+        const uint8_t defaultValue = pinConfig->DefaultValue;
+        const uint8_t specData = pinConfig->SpecData;
+        const uint8_t effectivePinNumber = SelectedBoardTraits::DecodePinByLogicalIndex(pinNumber);
 
         if (flags & PF_INPUT)
-            m_ioController->InputOutputController_ConfigurePin(pinNumber, IM_INPUT);
+            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUT);
         else if (flags & PF_INPUTPULLUP)
-            m_ioController->InputOutputController_ConfigurePin(pinNumber, IM_INPUTPULLUP);
+            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUTPULLUP);
         else if (flags & PF_OUTPUT)
-            m_ioController->InputOutputController_ConfigurePin(pinNumber, IM_OUTPUT);
+            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_OUTPUT);
 
-        SetPinConfiguration(pinNumber, IOPinConfiguration(configuration->Flags, 
-                                                          configuration->DefaultValue, 
-                                                          configuration->SpecData));
+        SetPinConfiguration(pinNumber, IOPinConfiguration(flags, defaultValue, specData));
     }
 
     if (anyFault)
@@ -144,14 +146,15 @@ void PacketProcessor::ProcessGetInputOutputCommand(const Packets::DigitalPinInpu
         const Packets::DigitalPinInputDescriptor *descriptor = &data[index];
 
         const uint8_t pin = descriptor->PinNumber;
-        const IOPinConfiguration &configuration = GetPinConfoguration(pin);
+        const IOPinConfiguration &configuration = GetPinConfiguration(pin);
         const uint8_t flags = configuration.Flags;
-        
+        const uint8_t effectivePinNumber = SelectedBoardTraits::DecodePinByLogicalIndex(pin);
+
         if ((flags & PF_ANALOG) != 0)
         {
             if ((flags & PF_NORMALIZED) == 0)
             {
-                m_ioController->InputOutputController_ReadAnalog(descriptor->PinNumber, pinData->Value);
+                m_ioController->InputOutputController_ReadAnalog(effectivePinNumber, pinData->Value);
             }
             else
             {
@@ -162,12 +165,13 @@ void PacketProcessor::ProcessGetInputOutputCommand(const Packets::DigitalPinInpu
                 uint16_t samplesData[MEDIAN_MAX_SAMPLES_COUNT];
 
                 for (uint8_t index = 0; index != ARRAY_SIZE(samplesData); ++index)
+                {
                     samplesData[index] = 0;
+                }
 
                 for (uint8_t index = 0; index != samplesCount; ++index)
                 {
-                    m_ioController->InputOutputController_ReadAnalog(descriptor->PinNumber, samplesData[index]);
-                    ::delay(1);
+                    m_ioController->InputOutputController_ReadAnalog(effectivePinNumber, samplesData[index]);
                 }
 
                 pinData->Value = Utils::QuickSelect(samplesData, samplesCount);
@@ -176,15 +180,18 @@ void PacketProcessor::ProcessGetInputOutputCommand(const Packets::DigitalPinInpu
         else if ((flags & PF__PWM_ANY_MASK) != 0)
         {
             const uint16_t timeoutMicroseconds = configuration.SpecData;
-            const uint8_t interestingLevel = flags & PF_PWM_HIGH ? HIGH : LOW;
-            m_ioController->InputOutputController_ReadPulse(descriptor->PinNumber, interestingLevel, pinData->Value, timeoutMicroseconds);
+            const uint8_t interestingLevel = ((flags & PF_PWM_HIGH) != 0) ? HIGH : LOW;
+            m_ioController->InputOutputController_ReadPulse(effectivePinNumber, interestingLevel, pinData->Value, timeoutMicroseconds);
+        }
+        else if (((flags & PF__INPUTMASK) != 0))
+        {
+            uint8_t value;
+            m_ioController->InputOutputController_ReadPinData(effectivePinNumber, value);
+            pinData->Value = value;
         }
         else
         {
-            assert((flags & PF_INPUT) != 0);
-            uint8_t value;
-            m_ioController->InputOutputController_ReadPinData(descriptor->PinNumber, value);
-            pinData->Value = value;
+            header->OperationResultCode = EC_FAILURE;
         }
         
         pinData->PinNumber = descriptor->PinNumber;

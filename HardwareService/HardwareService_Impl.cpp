@@ -10,7 +10,7 @@
 #include "PacketFramer.h"
 #include "DataConst.h"
 #include "ServiceConfiguration.h"
-
+#include "DeviceIOMapping.h"
 
 #include <easylogging++.h>
 
@@ -18,7 +18,7 @@
 const HardwareServiceImplementation::TableEntry HardwareServiceImplementation::m_tasksDescriptors[] = 
 {
     { &HardwareServiceImplementation::HeartBeatTask,         Dataconst::HearBeatCommandPeriodMs },     // ST_HEARTBEATTIMER
-    { &HardwareServiceImplementation::StatusTask,            Dataconst::StatusTaskPeriodMs },          // ST_STATUSTIMER
+    { &HardwareServiceImplementation::QueryInputTask,        Dataconst::QueryInputTaskPeriodMs },          // ST_STATUSTIMER
     { &HardwareServiceImplementation::InputPumpControlTask,  Dataconst::InputPipeTaskPeriodMs },       // ST_INPUTPUMPTIMER
     { &HardwareServiceImplementation::OutputPumpControlTask, Dataconst::OutputPipeTaskPeriodMs }       // ST_OUTPUTPUMPTIMER
 };
@@ -36,8 +36,8 @@ HardwareServiceImplementation::HardwareServiceImplementation() :
     m_timerThreads(),
     m_timersIOService(),
     m_endlessWork(m_timersIOService),
+    m_deviceInput(NULL),
     m_timers(),
-    m_pumpStartTime(),
     m_pumpsState(),
     m_configuration()
 {
@@ -67,42 +67,34 @@ void HardwareServiceImplementation::ApplyConfiguration(const string &jsonDocumen
     }
     else
     {
-        
+        LOG(ERROR) << "Failed applying configuration";
     }
 }
 
 void HardwareServiceImplementation::Pour(const Container::type from, const Container::type to)
 {
-    //try
-    //{
-    //    PourBegin();
-    //    SchedulePourEnd(10000);
-    //}
-    //catch (const std::runtime_error &e)
-    //{
-    //    Tabletochki::InvalidOperation exception;
-    //    exception.what = Tabletochki::ErrorCode::DEVICE_ALREADY_IN_USE;
-    //    exception.why = e.what();
-    //    throw exception;
-    //}
+    // ...
 }
 
 void HardwareServiceImplementation::GetInput(HardwareInput& _return)
 {
-
+    // ...
 }
 
 void HardwareServiceImplementation::StartPump(const int32_t pumpId)
 {
-    LOG(ERROR) << "HardwareServiceImplementation: PUMP ENABLED !!!!";
+    LOG(INFO) << "Start pump: " << pumpId;
 
-    m_pumpStartTime = boost::chrono::steady_clock::now();
+    auto &pumpDescriptor = GetPumpDescriptorRef((EPUMPIDENTIFIER)pumpId);
+    pumpDescriptor.m_startTime = boost::chrono::steady_clock::now();
 }
 
 void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const int32_t pumpId)
 {
-    const boost::chrono::duration<double> pumpWorkTime = 
-            boost::chrono::steady_clock::now() - m_pumpStartTime;
+    LOG(INFO) << "Stop pump: " << pumpId;
+
+    const auto &pumpDescriptor = GetPumpDescriptorRef((EPUMPIDENTIFIER)pumpId);
+    const boost::chrono::duration<double> pumpWorkTime = boost::chrono::steady_clock::now() - pumpDescriptor.m_startTime;
 
     _return.workingTimeSecond = (uint32_t)(pumpWorkTime.count() * 1000);
 }
@@ -125,6 +117,7 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
     const auto &outputPumpDescriptor = GetPumpDescriptorRef(PI_OUTPUTPUMP);
     const auto inputPumpStateName = PumpStateNames.GetMappedValue(inputPumpDescriptor.m_state);
     const auto outputPumpStateName = PumpStateNames.GetMappedValue(inputPumpDescriptor.m_state);
+    const auto inputValues = GetDeviceInputValues();
 
     j << "{ ";
         j << "\"general\": ";
@@ -141,17 +134,22 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
             j << "{ ";
                 j << "\"state\": " << inputPumpDescriptor.m_state << ",";
                 j << "\"stateStr\": \"" << inputPumpStateName << "\",";
-                j << "\"startTime\": " << inputPumpDescriptor.m_startTime << ",";
+                j << "\"startTime\": " << inputPumpDescriptor.m_startTime.time_since_epoch().count() << ",";
                 j << "\"workingTime\": " << inputPumpDescriptor.m_workingTime << "";
             j << "}, "; // input
             j << "\"output\":";
             j << "{ ";
                 j << "\"state\": " << outputPumpDescriptor.m_state << ",";
                 j << "\"stateStr\": \"" << outputPumpStateName << "\",";
-                j << "\"startTime\": " << outputPumpDescriptor.m_startTime << ",";
+                j << "\"startTime\": " << outputPumpDescriptor.m_startTime.time_since_epoch().count() << ",";
                 j << "\"workingTime\": " << outputPumpDescriptor.m_workingTime << "";
             j << "} "; // output
-        j << "} "; // pumps
+        j << "}, "; // pumps
+        j << "\"input\":";
+        j << "{ ";
+            j << "\"proximitySensor\": " << inputValues.ProximitySensorValue << ",";
+            j << "\"magicButton\": " << inputValues.MagicButtonPressed << "";
+        j << "} "; // input
     j << "} ";
 
     jsonDocumentReceiver = j.str();
@@ -201,7 +199,7 @@ void HardwareServiceImplementation::HeartBeatTask()
     RestartTask(ST_HEARTBEATTIMER);
 }
 
-void HardwareServiceImplementation::StatusTask()
+void HardwareServiceImplementation::QueryInputTask()
 {
     LOG(DEBUG) << "[STATUS] Activated";
 
@@ -247,7 +245,7 @@ void HardwareServiceImplementation::DoHeartBeatTask()
         }
         else if (currentState == CS_CONNECTED)
         {
-            if (DoConfigureDevice())
+            if (SendConfigureDeviceCommand())
             {
                 SetDeviceState(CS_READY);
 
@@ -275,43 +273,22 @@ void HardwareServiceImplementation::DoHeartBeatTask()
     }
 }
 
-void HardwareServiceImplementation::DoQueryStatusTask()
-{
-    
-    Packets::Templates::ConfigureIORequest<1> configureIORequest;
-
-}
-
 void HardwareServiceImplementation::DoQueryInputTask()
 {
-    //if (IsDeviceConnected())
-    //{
-    //    Packets::Templates::ConfigureIORequest<1> configureIORequest;
-    //    configureIORequest.Pins[0].Assign(0, PF_INPUTPULLUP | PF_ANALOG, 0, 10);
-    //    Packets::Templates::ConfigureIOResponse configureResponse;
-    //    if (SendPacketData(&configureIORequest, sizeof(configureIORequest), &configureResponse, sizeof(configureResponse)))
-    //    {
-    //        if (configureResponse.Status.Status == EC_OK)
-    //        {
-    //            
-    //            Packets::Templates::ReadIOCommandRequest<1> readIORequest;
-    //            readIORequest.Pins[0].PinNumber = 0;
-    //            Packets::Templates::ReadIOCommandResponse<1> readIOResponse;
-    //            std::memset(&readIOResponse, 0, sizeof(readIOResponse));
+    const auto deviceState = GetDeviceState();
+    
+    if (deviceState == CS_READY)
+    {
+        DeviceInputValues deviceInput;
 
-    //            if (SendPacketData(&readIORequest, sizeof(readIORequest), &readIOResponse, sizeof(readIOResponse)))
-    //            {
-    //                //LOG(INFO) << "VALUE: " << readIOResponse.Pins[0].Value;
-    //                
-    //                std::printf("\r                            \rDISTANCE: %d", readIOResponse.Pins[0].Value);
-    //            }
-    //        }
-    //    }
-    //}
-    ////else
-    //{
-    //    LOG(ERROR) << "WaterLevelTask: Device is not connected";
-    //}
+        if (SendReadIOCommand(deviceInput))
+        {
+            LOG(INFO) << "MagicButton pressed: " << (deviceInput.MagicButtonPressed ? "true" : "false");
+            LOG(INFO) << "Proximity sensor value: " << deviceInput.ProximitySensorValue;
+            
+            SetDeviceInputValues(deviceInput);
+        }
+    }
 }
 
 bool HardwareServiceImplementation::DoConfigureDevice()
@@ -391,8 +368,14 @@ void HardwareServiceImplementation::DoDisablePump()
     }
 }
 
+template <class TRequest, class TResponse>
+bool HardwareServiceImplementation::SendPacket(const TRequest &request, TResponse &out_response)
+{
+    return SendPacketData(&request, sizeof(request), &out_response, sizeof(out_response));
+}
 
-bool HardwareServiceImplementation::SendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
+
+bool HardwareServiceImplementation::SendPacketData(const void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
 {
     const auto sizeNeeded = PacketFramer::CalculatePacketTotalSize(packetDataSize);
     auto memory = ::alloca(sizeNeeded);
@@ -410,7 +393,7 @@ bool HardwareServiceImplementation::SendPacketData(void *packetData, size_t pack
     return result;
 }
 
-bool HardwareServiceImplementation::DoSendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
+bool HardwareServiceImplementation::DoSendPacketData(const void *packetData, size_t packetDataSize, void *buffer, size_t packetSize)
 {
     bool result = false;
 
@@ -451,7 +434,10 @@ bool HardwareServiceImplementation::DoSendPacketData(void *packetData, size_t pa
             LOG(ERROR) << "Failed receiving response packet. Error: '" << Utils::GetLastSystemErrorMessage() << "'";
 
             ResetUnframerState();
-            UnsafeResetCommunicationState();
+            if (UnsafeResetCommunicationState())
+            {
+                LOG(ERROR) << "Failed resetting communication state :(";
+            }
             break;
         }
 
@@ -477,12 +463,93 @@ bool HardwareServiceImplementation::SendHeartbeatCommand(unsigned &out_deviceSta
     Packets::Command heartbeatCommand(CMD_HEARTBEAT);
     Packets::Output::StatusResponse response(nullptr);
 
-    if (SendPacketData(&heartbeatCommand, sizeof(heartbeatCommand), &response, sizeof(response)))
+    if (SendPacket(heartbeatCommand, response))
     {
         if (response.OperationResultCode == EC_OK)
         {
             out_deviceStatus = response.DeviceStatus;
             result = true;
+        }
+    }
+
+    return result;
+}
+
+bool HardwareServiceImplementation::SendReadIOCommand(DeviceInputValues &out_deviceInput)
+{
+    bool result = false;
+    
+    unsigned requestPinWritten = 0;
+
+    Packets::Templates::ReadIOCommandRequest<INPUT_PINS_COUNT> readIORequest;
+
+    readIORequest.Pins[requestPinWritten].PinNumber = PROXIMITYSENSOR_PINNUMBER;
+    ++requestPinWritten;
+    readIORequest.Pins[requestPinWritten].PinNumber = MAGICBUTTON_PINNUMBER;
+    ++requestPinWritten;
+    
+    Packets::Templates::ReadIOCommandResponse<INPUT_PINS_COUNT> readIOResponse;
+    std::memset(&readIOResponse, 0, sizeof(readIOResponse));
+
+    if (SendPacket(readIORequest, readIOResponse))
+    {
+        if (readIOResponse.Header.OperationResultCode == EC_OK)
+        {
+            unsigned responsePinRead = 0;
+
+            out_deviceInput.ProximitySensorValue = readIOResponse.Pins[responsePinRead].Value;
+            ASSERT(readIOResponse.Pins[responsePinRead].PinNumber == PROXIMITYSENSOR_PINNUMBER);
+            ++responsePinRead;
+
+            out_deviceInput.MagicButtonPressed = readIOResponse.Pins[responsePinRead].Value;
+            ASSERT(readIOResponse.Pins[responsePinRead].PinNumber == MAGICBUTTON_PINNUMBER);
+            ++responsePinRead;
+
+            // ...
+
+            ASSERT(requestPinWritten == responsePinRead && responsePinRead == INPUT_PINS_COUNT);
+
+            result = true;
+        }
+        else
+        {
+            LOG(ERROR) << "Failed getting device input state. Device returned: " << ((unsigned)readIOResponse.Header.OperationResultCode) << ". " <<
+                                                             "Device status: " << ((unsigned)readIOResponse.Header.DeviceStatus);
+        }
+    }
+
+    return result;
+}
+
+bool HardwareServiceImplementation::SendConfigureDeviceCommand()
+{
+    bool result = false;
+
+    Packets::Templates::ConfigureIORequest<INPUT_PINS_COUNT + OUTPUT_PINS_COUNT> configureIORequest;
+
+    size_t pinNumber = 0;
+
+    configureIORequest.Pins[pinNumber].Assign(INPUTPUMP_PINNUMBER, INPUTPUMP_FLAGS, INPUTPUMP_DEFVALUE, INPUTPUMP_SPECDATA);
+    ++pinNumber;
+    configureIORequest.Pins[pinNumber].Assign(OUTPUTPUMP_PINNUMBER, OUTPUTPUMP_FLAGS, OUTPUTPUMP_DEFVALUE, OUTPUTPUMP_SPECDATA);
+    ++pinNumber;
+    configureIORequest.Pins[pinNumber].Assign(PROXIMITYSENSOR_PINNUMBER, PROXIMITYSENSOR_FLAGS, PROXIMITYSENSOR_DEFVALUE, PROXIMITYSENSOR_SPECDATA);
+    ++pinNumber;
+    configureIORequest.Pins[pinNumber].Assign(MAGICBUTTON_PINNUMBER, MAGICBUTTON_FLAGS, MAGICBUTTON_DEFVALUE, MAGICBUTTON_SPECDATA);
+    ++pinNumber;
+
+    assert(pinNumber == configureIORequest.PinsCount);
+
+    Packets::Templates::ConfigureIOResponse configureResponse;
+    if (SendPacket(configureIORequest, configureResponse))
+    {
+        if (configureResponse.Status.OperationResultCode == EC_OK)
+        {
+            result = true;
+        }
+        else
+        {
+            LOG(ERROR) << "Failed to configure device. Device respond with: " << (unsigned) configureResponse.Status.OperationResultCode;
         }
     }
 
@@ -550,7 +617,7 @@ void HardwareServiceImplementation::InitializePumpsState()
 {
     for (unsigned pumpIndex = 0; pumpIndex != PI__END; ++pumpIndex)
     {
-        m_pumpsState[pumpIndex].Assign(PS__DEFAULT, 0, 0);
+        m_pumpsState[pumpIndex].Assign(PS__DEFAULT, boost::chrono::steady_clock::time_point(), 0);
     }
 }
 

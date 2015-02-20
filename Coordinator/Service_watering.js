@@ -34,9 +34,9 @@ thriftConnection.on('error', function () {
 logger.info('starting service poller...');
 
 setInterval(function () {
-    logger.info('**************************');
-    logger.info('**************************');
-    logger.info('**************************');
+    //logger.info('**************************');
+    //logger.info('**************************');
+    //logger.info('**************************');
 
 
     if (serviceApiClient !== null) {
@@ -46,7 +46,7 @@ setInterval(function () {
                 }
                 else {
                     if (data) {
-                        logger.debug('state json received: '+ data);
+                        //logger.debug('state json received: '+ data);
                         stateJson = JSON.parse(data);
                         serviceState.details = stateJson;
                         //currentStatus.hardStatus = data.statusCode;
@@ -62,7 +62,7 @@ setInterval(function () {
         logger.error('Cannot update hardware service detailed status: no API connection');
     }
 
-}, 3000);
+}, 100);
 
 hardwareClient.connect({
     onConnected: function(client) {

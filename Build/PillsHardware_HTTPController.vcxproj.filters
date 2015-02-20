@@ -112,5 +112,8 @@
     <ClInclude Include="..\Firmware\Global.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\HardwareService\DeviceIOMapping.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

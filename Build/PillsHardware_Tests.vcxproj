@@ -40,8 +40,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\Artifacts\$(Configuration)\</OutDir>
-    <IntDir>..\Artifacts\Intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>..\Output\FirmwareTests</OutDir>
+    <IntDir>..\Output\Intermediate\FirmwareTests\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\Artifacts\$(Configuration)\</OutDir>
@@ -53,7 +53,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>TESTS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\;..\tests\gmock-1.7.0\include;..\tests\gmock-1.7.0\gtest\include;..\tests\gmock-1.7.0\gtest\;D:\Projects\tabletochki\hard\tests\gmock-1.7.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\Vendor\gmock-1.7.0\gtest\;..\Vendor\gmock-1.7.0\gtest\include;..\Vendor\gmock-1.7.0\;..\Vendor\gmock-1.7.0\include;..\Firmware;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -78,41 +78,42 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Firmware.cpp" />
-    <ClCompile Include="..\PacketFramer.cpp" />
-    <ClCompile Include="..\PacketUnFramer.cpp" />
-    <ClCompile Include="..\InputOutputController.cpp" />
-    <ClCompile Include="..\PacketsParser.cpp" />
-    <ClCompile Include="..\PacketsProcessor.cpp" />
-    <ClCompile Include="..\PersistentStorage.cpp" />
-    <ClCompile Include="..\SerialInterface.cpp" />
-    <ClCompile Include="..\tests\CommandListenerTests.cpp" />
-    <ClCompile Include="..\tests\gmock-1.7.0\gtest\src\gtest-all.cc" />
-    <ClCompile Include="..\tests\gmock-1.7.0\src\gmock-all.cc" />
-    <ClCompile Include="..\tests\PacketFramerTests.cpp" />
-    <ClCompile Include="..\tests\PacketsProcessorTests.cpp" />
-    <ClCompile Include="..\tests\PillsTestsRunner.cpp" />
-    <ClCompile Include="..\WatchDog.cpp" />
+    <ClCompile Include="..\Firmware\FirmwareController.cpp" />
+    <ClCompile Include="..\Firmware\InputOutputController.cpp" />
+    <ClCompile Include="..\Firmware\PacketFramer.cpp" />
+    <ClCompile Include="..\Firmware\PacketsParser.cpp" />
+    <ClCompile Include="..\Firmware\PacketsProcessor.cpp" />
+    <ClCompile Include="..\Firmware\PacketUnFramer.cpp" />
+    <ClCompile Include="..\Firmware\PersistentStorage.cpp" />
+    <ClCompile Include="..\Firmware\SerialInterface.cpp" />
+    <ClCompile Include="..\Firmware\tests\CommandListenerTests.cpp" />
+    <ClCompile Include="..\Firmware\tests\PacketFramerTests.cpp" />
+    <ClCompile Include="..\Firmware\tests\PacketsProcessorTests.cpp" />
+    <ClCompile Include="..\Firmware\tests\PillsTestsRunner.cpp" />
+    <ClCompile Include="..\Firmware\WatchDog.cpp" />
+    <ClCompile Include="..\Vendor\gmock-1.7.0\gtest\src\gtest-all.cc" />
+    <ClCompile Include="..\Vendor\gmock-1.7.0\src\gmock-all.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\BoardConfiguration.h" />
-    <ClInclude Include="..\CommonDefs.h" />
-    <ClInclude Include="..\Firmware.h" />
-    <ClInclude Include="..\PacketDefs.h" />
-    <ClInclude Include="..\PacketFramer.h" />
-    <ClInclude Include="..\PacketUnFramer.h" />
-    <ClInclude Include="..\coredefs.h" />
-    <ClInclude Include="..\dataconst.h" />
-    <ClInclude Include="..\InputOutputController.h" />
-    <ClInclude Include="..\PacketParserTypes.h" />
-    <ClInclude Include="..\PacketsParser.h" />
-    <ClInclude Include="..\PacketsProcessor.h" />
-    <ClInclude Include="..\PersistentStorage.h" />
-    <ClInclude Include="..\SerialInterface.h" />
-    <ClInclude Include="..\tests\TestUtils.h" />
-    <ClInclude Include="..\utils.h" />
-    <ClInclude Include="..\WatchDog.h" />
-    <ClInclude Include="CommonDefs.h" />
+    <ClInclude Include="..\Firmware\BoardConfiguration.h" />
+    <ClInclude Include="..\Firmware\BoardConst.h" />
+    <ClInclude Include="..\Firmware\CommonDefs.h" />
+    <ClInclude Include="..\Firmware\CoreDefs.h" />
+    <ClInclude Include="..\Firmware\DataConst.h" />
+    <ClInclude Include="..\Firmware\FirmwareController.h" />
+    <ClInclude Include="..\Firmware\Global.h" />
+    <ClInclude Include="..\Firmware\InputOutputController.h" />
+    <ClInclude Include="..\Firmware\PacketDefs.h" />
+    <ClInclude Include="..\Firmware\PacketFramer.h" />
+    <ClInclude Include="..\Firmware\PacketParserTypes.h" />
+    <ClInclude Include="..\Firmware\PacketsParser.h" />
+    <ClInclude Include="..\Firmware\PacketsProcessor.h" />
+    <ClInclude Include="..\Firmware\PacketUnFramer.h" />
+    <ClInclude Include="..\Firmware\PersistentStorage.h" />
+    <ClInclude Include="..\Firmware\SerialInterface.h" />
+    <ClInclude Include="..\Firmware\tests\TestUtils.h" />
+    <ClInclude Include="..\Firmware\Utils.h" />
+    <ClInclude Include="..\Firmware\WatchDog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

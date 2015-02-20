@@ -97,7 +97,7 @@ enum ESERVICEJOB
 
 struct PumpStateDescriptor
 {
-    void Assign(EPUMPSTATE state, unsigned startTime, unsigned workingTime)
+    void Assign(EPUMPSTATE state, boost::chrono::steady_clock::time_point startTime, unsigned workingTime)
     {
         m_state = state;
         m_startTime = startTime;
@@ -105,7 +105,7 @@ struct PumpStateDescriptor
     }
 
     EPUMPSTATE      m_state;
-    unsigned        m_startTime;
+    boost::chrono::steady_clock::time_point m_startTime;
     unsigned        m_workingTime;
 };
 
@@ -132,13 +132,12 @@ public:
 
 private:
     void HeartBeatTask();
-    void StatusTask();
+    void QueryInputTask();
     void InputPumpControlTask();
     void OutputPumpControlTask();
 
 private:
     void DoHeartBeatTask();
-    void DoQueryStatusTask();
     void DoQueryInputTask();
 
 private:
@@ -148,11 +147,24 @@ private:
     void DoDisablePump();
 
 private:
-    bool SendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
-    bool DoSendPacketData(void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
+    template <class TRequest, class TResponse>
+    bool SendPacket(const TRequest &request, TResponse &out_response);
+    bool SendPacketData(const void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
+    bool DoSendPacketData(const void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
 
 private:
     bool SendHeartbeatCommand(unsigned &out_deviceStatus);
+
+    struct DeviceInputValues
+    {
+        DeviceInputValues() {}
+        DeviceInputValues(void*) : ProximitySensorValue(~((unsigned)0)), MagicButtonPressed(false) {}
+        unsigned ProximitySensorValue;
+        bool     MagicButtonPressed;
+    };
+
+    bool SendReadIOCommand(DeviceInputValues &out_deviceInput);
+    bool SendConfigureDeviceCommand();
 
 public:
     virtual void PacketUnFramerListener_OnCommandParsed(const uint8_t* packetBuffer, size_t packetSize);
@@ -174,21 +186,16 @@ private:
         unsigned timeout;
     };
 
-
 private:
     void ResetUnframerState();
-
 
 private:
     void SetDeviceState(ECONNECTIONSTATE value) { m_deviceState = value; }
     ECONNECTIONSTATE GetDeviceState() const { return m_deviceState; }
-    bool IsDeviceConnected() const { return GetDeviceState() == CS_CONNECTED; }
 
 private:
     string DecodeServiceState(ESERVICESTATE code) const;
     string DecodeDeviceConnectionState(ECONNECTIONSTATE code) const;
-
-    //bool IsDeviceReady() const { return m_serviceState == SS_DEVICEREADY; }
 
 public:
     void SetServiceState(ESERVICESTATE state) { m_serviceState = state; }
@@ -207,7 +214,13 @@ private:
     const ServiceConfiguration  &GetServiceConfiguration() const { return m_configuration; }
 
 private:
+    const DeviceInputValues &GetDeviceInputValues() const { return m_deviceInput; }
+    void SetDeviceInputValues(const DeviceInputValues &value) { m_deviceInput = value; }
+
+private:
     PumpStateDescriptor &GetPumpDescriptorRef(EPUMPIDENTIFIER pumpId) { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
+    const PumpStateDescriptor &GetPumpDescriptorRef(EPUMPIDENTIFIER pumpId) const { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
+
 private:
     mutex  &GetCommunicationLock() { return m_communicationLock; }
     SerialLibCommunicationChannel *GetCommunicationChannel() { return  &m_communicationChannel; }
@@ -232,18 +245,17 @@ private:
 
     PacketUnFramer                      m_unframer;
 
-    ECONNECTIONSTATE                     m_deviceState;
+    ECONNECTIONSTATE                    m_deviceState;
     ESERVICESTATE                       m_serviceState;
 
-    boost::thread_group                m_timerThreads;
-    boost::asio::io_service            m_timersIOService;
-    boost::asio::io_service::work      m_endlessWork;
+    boost::thread_group                 m_timerThreads;
+    boost::asio::io_service             m_timersIOService;
+    boost::asio::io_service::work       m_endlessWork;
+
+    DeviceInputValues                   m_deviceInput;
 
 private:
-    DeadlineTimerPtr                       m_timers[ST__END];
-
-    boost::chrono::steady_clock::time_point     m_pumpStartTime;
-
+    DeadlineTimerPtr                    m_timers[ST__END];
     PumpStateDescriptor                 m_pumpsState[PI__END];
 
 private:
@@ -264,7 +276,8 @@ STATIC_MAP(ServiceStateNames, ESERVICESTATE, string, SS__BEGIN, SS__END)
 STATIC_MAP(DeviceStateNames, ECONNECTIONSTATE, string, CS__BEGIN, CS__END)
 {
     "CONNECTED",        // CS_CONNECTED
-    "DISCONNECTED"      // CS_DISCONNECTED
+    "DISCONNECTED",     // CS_DISCONNECTED
+    "READY"             // CS_READY
 };
 
 STATIC_MAP(PumpStateNames, EPUMPSTATE, string, PS__BEGIN, PS__END)
