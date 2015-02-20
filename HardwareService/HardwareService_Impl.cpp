@@ -1,10 +1,8 @@
 #include "Global.h"
 #include "CoreDefs.h"
 #include "CommonDefs.h"
-
 #include "HardwareService_Impl.h"
 #include "CommunicationChannel.h"
-#include "IntervalTimer.h"
 #include "PacketDefs.h"
 #include "PacketParserTypes.h"
 #include "PacketFramer.h"
@@ -12,7 +10,6 @@
 #include "ServiceConfiguration.h"
 #include "DeviceIOMapping.h"
 #include "ThriftHelpers.h"
-
 #include <easylogging++.h>
 
 
@@ -154,6 +151,20 @@ void HardwareServiceImplementation::EmptyVisiableContainerMillilitres(const int3
 }
 
 
+void HardwareServiceImplementation::StartService()
+{
+    LoadConfiguration();
+    CreateTimerThreads();
+    StartBackgroundTasks();
+}
+
+void HardwareServiceImplementation::ShutdownService()
+{
+    m_timersIOService.stop();
+    m_timerThreads.join_all();
+}
+
+
 void HardwareServiceImplementation::InitializePumpsState(EPUMPSTATE initialState/*=PS__DEFAULT*/)
 {
     for (unsigned pumpIndex = PI__BEGIN; pumpIndex != PI__END; ++pumpIndex)
@@ -174,19 +185,6 @@ void HardwareServiceImplementation::CreateTimerThreads()
     {
         m_timerThreads.create_thread(boost::bind(&boost::asio::io_service::run, &m_timersIOService));
     }
-}
-
-void HardwareServiceImplementation::StartService()
-{
-    LoadConfiguration();
-    CreateTimerThreads();
-    StartBackgroundTasks();
-}
-
-void HardwareServiceImplementation::ShutdownService()
-{
-    m_timersIOService.stop();
-    m_timerThreads.join_all();
 }
 
 void HardwareServiceImplementation::LoadConfiguration()

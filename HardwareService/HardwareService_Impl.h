@@ -2,12 +2,10 @@
 
 #include "HardwareService.h"
 #include "HardwareService_types.h"
-
 #include "ServiceConfiguration.h"
 #include "PacketUnFramer.h"
 #include "CommunicationChannel.h"
 #include "Utils.h"
-
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
@@ -19,7 +17,6 @@ using Tabletochki::PumpIdentifier;
 typedef boost::chrono::steady_clock::time_point time_point;
 
 class ICommunicationChannel;
-class IntervalTimer;
 
 
 enum ESERVICESTATE
@@ -120,12 +117,14 @@ public:
     void FillVisibleContainerMillilitres(const int32_t amount);
     void EmptyVisiableContainerMillilitres(const int32_t amount);
 
+public:
+    void StartService();
+    void ShutdownService();
+
 private:
     void InitializePumpsState(EPUMPSTATE initialState = PS__DEFAULT);
     void InitializeServiceState();
     void CreateTimerThreads();
-    void StartService();
-    void ShutdownService();
     void LoadConfiguration();
     void StartBackgroundTasks();
     void CreateTasksTimers();
