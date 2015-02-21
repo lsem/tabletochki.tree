@@ -100,13 +100,76 @@ struct PumpStateDescriptor
 struct DeviceInputValues
 {
     DeviceInputValues() {}
-    DeviceInputValues(void*) : ProximitySensorValue(~((unsigned)0)), MagicButtonPressed(false) {}
-    unsigned ProximitySensorValue;
-    bool     MagicButtonPressed;
+    DeviceInputValues(void*) : m_proximitySensorValue(~((unsigned)0)), m_magicButtonPressed(false), m_visibleContainerWaterLevelMillimeters(0) {}
+    
+    void Assign(unsigned proximitySensorValue, bool magicButtonPressed, unsigned visibleContainerWaterLevelMillimeters)
+    {
+        m_proximitySensorValue = proximitySensorValue;
+        m_magicButtonPressed = magicButtonPressed;
+        m_visibleContainerWaterLevelMillimeters = visibleContainerWaterLevelMillimeters;
+    }
+
+    unsigned m_proximitySensorValue;
+    bool     m_magicButtonPressed;
+    unsigned m_visibleContainerWaterLevelMillimeters;
+};
+
+struct ContainerStateData
+{
+    ContainerStateData() {}
+    ContainerStateData(void *): m_waterAmountMilliliters(0), m_waterLevelMillimeters(0) {}
+
+    void Assign(unsigned waterAmountMilliliters, unsigned waterLevelMillimeters)
+    {
+        m_waterAmountMilliliters = waterAmountMilliliters;
+        m_waterLevelMillimeters = waterLevelMillimeters;
+    }
+
+    unsigned        m_waterAmountMilliliters;
+    unsigned        m_waterLevelMillimeters;
+};
+
+enum ELEVELPUMPOUTSTATE
+{
+    LPS__BEGIN,
+
+    LPS_INPROGRESS = LPS__BEGIN,
+    LPS_DONE,
+
+    LPS__END,
+    LPS__DEFAULT = LPS_DONE,
+};
+
+struct LevelPumpOutStateData
+{
+    static const unsigned DefaultLastDiscreteLevelIndex = 0;
+
+    LevelPumpOutStateData() {}
+    LevelPumpOutStateData(void *) : m_state(LPS__DEFAULT), m_lastActivationTime(), m_lastDiscreteLevelIndex(DefaultLastDiscreteLevelIndex) {}
+
+    void SetState(ELEVELPUMPOUTSTATE state)  { m_state = state; }
+    ELEVELPUMPOUTSTATE GetState() const { return m_state; }
+
+    const time_point &GetLastActivationTime() const {return m_lastActivationTime; }
+    void SetLastActivationTimeNow() { m_lastActivationTime = boost::chrono::steady_clock::now(); }
+
+    unsigned GetLastDiscreteLevelIndex() const { return m_lastDiscreteLevelIndex; }
+    void SetLastDiscreteLevelIndex(unsigned value) { m_lastDiscreteLevelIndex = value; }
+
+    void Reset()
+    {
+        m_state = LPS__DEFAULT;
+        m_lastActivationTime = time_point();
+        m_lastDiscreteLevelIndex = DefaultLastDiscreteLevelIndex;
+    }
+
+    ELEVELPUMPOUTSTATE      m_state;
+    time_point              m_lastActivationTime;
+    unsigned                m_lastDiscreteLevelIndex;
 };
 
 
-// TODO: Add simple statistic agregator to able to see water level dynamics per month
+// TODO: Add simple statistic aggregator to able to see water level dynamics per month
 class HardwareServiceImplementation : public IPacketUnFramerListener
 {
 public:
@@ -178,6 +241,12 @@ private:
     void ResetUnframerState();
 
 private:
+    unsigned GetCurrentWaterLevelMillimiters() const;
+    unsigned DecodeDiscreteWaterLevelIndex(unsigned waterLevelMillimiters) const;
+    static const unsigned ItemNotFoundIndex = (~(unsigned)0);
+    const LevelConfiguration &GetLevelConfiguration(unsigned index) const;
+
+private:
     static string DecodeServiceState(ESERVICESTATE code);
     static string DecodeDeviceConnectionState(ECONNECTIONSTATE code);
     static string DecodePumpState(EPUMPSTATE code);
@@ -209,10 +278,15 @@ private:
     mutex  &GetCommunicationLock() { return m_communicationLock; }
     SerialLibCommunicationChannel *GetCommunicationChannel() { return  &m_communicationChannel; }
     DeadlineTimer &GetTimerObjectById(ESERVICETASKID timerId) { return *m_timers[timerId]; }
+    const ContainerStateData &GetVisibleContainerStateData() const { return m_visibleContainerStateData; }
+    ContainerStateData &GetVisibleContainerStateData() { return m_visibleContainerStateData; }
+    const ContainerStateData &GetHiddenContainerStateData() const { return m_hiddenContainerStateData; }
+    ContainerStateData &GetHiddenContainerStateDataRef() { return m_hiddenContainerStateData; }
+    const LevelPumpOutStateData &GetLevelPumpOutStateData() const { return m_levelPumpOutState; }
+    LevelPumpOutStateData &GetLevelPumpOutStateDataRef() { return m_levelPumpOutState; }
 
 private:
     mutex                               m_communicationLock;
-    int                                 m_currentTask;
     SerialLibCommunicationChannel       m_communicationChannel;
     uint8_t                             m_frameBuffer[128];
     size_t                              m_frameBufferSize;
@@ -227,6 +301,9 @@ private:
     PumpStateDescriptor                 m_pumpsState[PI__END];
     static const TableEntry             m_tasksDescriptors[TI__END];
     ServiceConfiguration                m_configuration;
+    ContainerStateData                  m_visibleContainerStateData;
+    ContainerStateData                  m_hiddenContainerStateData;
+    LevelPumpOutStateData               m_levelPumpOutState;
 };
 
 

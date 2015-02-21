@@ -15,12 +15,11 @@
 
 HardwareServiceImplementation::HardwareServiceImplementation() :
     m_communicationLock(),
-    m_currentTask(),
     m_communicationChannel(),
     m_frameBuffer(),
     m_frameBufferSize(0),
     m_unframer(this),
-    m_deviceState(),
+    m_deviceState(DS__DEFAULT),
     m_serviceState(SS__DEFAULT),
     m_timerThreads(),
     m_timersIOService(),
@@ -28,7 +27,11 @@ HardwareServiceImplementation::HardwareServiceImplementation() :
     m_deviceInput(NULL),
     m_timers(),
     m_pumpsState(),
-    m_configuration()
+//    m_tasksDescriptors(),
+    m_configuration(),
+    m_visibleContainerStateData(NULL),
+    m_hiddenContainerStateData(NULL),
+    m_levelPumpOutState(NULL)
 {
     CreateTasksTimers();
     InitializeServiceState();
@@ -129,8 +132,8 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
         j << "}, "; // pumps
         j << "\"input\":";
         j << "{ ";
-            j << "\"proximitySensor\": " << inputValues.ProximitySensorValue << ",";
-            j << "\"magicButton\": " << inputValues.MagicButtonPressed << "";
+            j << "\"proximitySensor\": " << inputValues.m_proximitySensorValue << ",";
+            j << "\"magicButton\": " << inputValues.m_magicButtonPressed << "";
         j << "} "; // input
     j << "} ";
 #pragma endregion Resultin Json Formatting
@@ -297,20 +300,39 @@ void HardwareServiceImplementation::WaterLevelManagerTask()
     /// 10-20               0.1
     //  0-10                0.00001                               (pump will ignore so small amount of work)
     //
-    // Further idea development is to add something like coefficient by which WaterToPumpOut is multiplied,
-    // to make possible faster pump out if needed. This parameter can be a number of pending water input tasks.
-    // By default it is equal to 1.
 
-    // const auto currentState = GetCurrentFillOutState();
-    // if (currentState == WORKING)
-    // {
-    //      const auto currentLevel = GetPublicContainerLevel();
-    //      const auto remainderForThisLevel = GetRemainderForCurrentLevel();
-    //      
-    //      if (outputPumpState.State == WORKING)
-    //      {
-    //      }
-    // }
+    auto &currentLevelPumpOutState = GetLevelPumpOutStateDataRef();
+    
+    const auto currentState = currentLevelPumpOutState.GetState();
+    if (currentState == LPS_INPROGRESS)
+    {
+        return;
+        #pragma message ("WARNING: Incorrect logic !!!")
+    }
+
+    const auto &lastActivationTimePoint = currentLevelPumpOutState.GetLastActivationTime();
+    const auto &nowTimePoint = boost::chrono::steady_clock::now();
+
+    static const auto OneHourDuration = boost::chrono::hours(1);
+
+    const auto currentWaterLevelMillimeters = GetCurrentWaterLevelMillimiters();
+    const auto currentDiscreteWaterLevelIndex = DecodeDiscreteWaterLevelIndex(currentWaterLevelMillimeters);
+    
+    ASSERT(levelConfiguration != ItemNotFoundIndex);
+
+    const bool levelChanged = currentLevelPumpOutState.GetLastDiscreteLevelIndex() != currentDiscreteWaterLevelIndex;
+
+    if ((lastActivationTimePoint + OneHourDuration > nowTimePoint) || levelChanged)
+    {
+        // time to pump out specified (in configuration as velocity at certain level) amount of water
+        const auto &levelConfiguration = GetLevelConfiguration(currentDiscreteWaterLevelIndex);
+
+        DoEmptyVisiableContainerMillilitresAsync(levelConfiguration.m_velocityMillilters);
+        
+        currentLevelPumpOutState.SetState(LPS_INPROGRESS);
+        currentLevelPumpOutState.SetLastActivationTimeNow();
+        currentLevelPumpOutState.SetLastDiscreteLevelIndex(currentDiscreteWaterLevelIndex);
+    }
     
     RestartTask(TI_LEVELMANAGERTASK);
 }
@@ -540,11 +562,11 @@ bool HardwareServiceImplementation::SendReadIOCommand(DeviceInputValues &out_dev
         {
             unsigned responsePinRead = 0;
 
-            out_deviceInput.ProximitySensorValue = readIOResponse.Pins[responsePinRead].Value;
+            out_deviceInput.m_proximitySensorValue = readIOResponse.Pins[responsePinRead].Value;
             ASSERT(readIOResponse.Pins[responsePinRead].PinNumber == PROXIMITYSENSOR_PINNUMBER);
             ++responsePinRead;
 
-            out_deviceInput.MagicButtonPressed = readIOResponse.Pins[responsePinRead].Value;
+            out_deviceInput.m_magicButtonPressed = readIOResponse.Pins[responsePinRead].Value;
             ASSERT(readIOResponse.Pins[responsePinRead].PinNumber == MAGICBUTTON_PINNUMBER);
             ++responsePinRead;
 
@@ -747,6 +769,34 @@ bool HardwareServiceImplementation::UnsafeResetCommunicationState()
 void HardwareServiceImplementation::ResetUnframerState()
 {
     m_unframer.Reset();
+}
+
+
+unsigned HardwareServiceImplementation::GetCurrentWaterLevelMillimiters() const
+{
+#pragma message ("WARNING: Not implemented")
+    return 0;
+}
+
+unsigned HardwareServiceImplementation::DecodeDiscreteWaterLevelIndex(unsigned waterLevelMillimiters) const
+{
+    const auto &serviceConfiguration = GetServiceConfiguration();
+    const auto &levelsDataVector = serviceConfiguration.PumpOutLevelsConfiguration.m_levelData;
+    
+    const auto positionIter = std::find_if(levelsDataVector.cbegin(), levelsDataVector.cend(), [waterLevelMillimiters](const LevelConfiguration &levelItem) {
+        return waterLevelMillimiters < levelItem.m_levelHeight;
+    });
+
+    const unsigned result = positionIter != levelsDataVector.cend() ? 
+            std::distance(levelsDataVector.cbegin(), positionIter) : ItemNotFoundIndex;
+    return result;
+}
+
+const LevelConfiguration &HardwareServiceImplementation::GetLevelConfiguration(unsigned index) const
+{
+    const auto &serviceConfiguration = GetServiceConfiguration();
+    ASSERT(index < serviceConfiguration.PumpOutLevelsConfiguration.m_levelData.size());
+    return serviceConfiguration.PumpOutLevelsConfiguration.m_levelData[index];
 }
 
 
