@@ -13,6 +13,7 @@ namespace Dataconst
     static const int InputPipeTaskPeriodMs = 15000;
     static const int OutputPipeTaskPeriodMs = 15000;
     static const int DeviceStatusTaskPeriodMs = 15000;
+    static const int LevelManagerTaskPeriodMs = 1000;
 
     static const int TimerThreadPoolSize = 4;
     static const char ServiceConfigurationFilePath[] = "ServiceConfiguration.json";

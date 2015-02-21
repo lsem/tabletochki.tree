@@ -1,0 +1,51 @@
+{
+	"pumps":
+	{
+		"inputPump":
+		{
+			"performance": 94
+		},
+		"outputPump":
+		{
+			"performance": 120
+		}
+	},
+	
+	"containers":
+	{
+		"visibleContainer":
+		{
+			"shape": "rectangular",
+			"height": 100,
+			"width": 200,
+			"depth": 300
+		},
+		
+		"hiddenContainer":
+		{
+			"shape": "rectangular",
+			"height": 100,
+			"width": 200,
+			"depth": 300
+		}
+	},
+
+	"pumpOutMap":
+	{
+		"levels":
+		[
+			{
+				"levelHeight": 100,
+				"velocityLitresPerHour": 200
+			},
+			{
+				"levelHeight": 200,
+				"velocityLitresPerHour": 0.234
+			},
+			{
+				"levelHeight": 300,
+				"velocityLitresPerHour":  200.34
+			}
+		]
+	}
+}

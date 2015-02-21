@@ -1,6 +1,19 @@
 #pragma once
 
+#include <json.h>
+
+
 #include "PumpTypes.h"
+
+
+enum ECONTAINERSHAPE
+{
+    CS__BEGIN,
+    
+    CS_RECTENGULAR = CS__BEGIN,
+
+    CS__END,
+};
 
 
 struct PumpConfiguration
@@ -8,9 +21,56 @@ struct PumpConfiguration
     unsigned m_performanceMlPerSecond;
 };
 
+struct LevelConfiguration
+{
+    LevelConfiguration(unsigned levelHeight, unsigned velocityMillilters):
+        m_levelHeight(levelHeight),
+        m_velocityMillilters(velocityMillilters)
+    {}
+
+    void Assign(unsigned levelHeight, unsigned velocityMillilters)
+    {
+        m_levelHeight = levelHeight;
+        m_velocityMillilters = velocityMillilters;
+    }
+
+    unsigned    m_levelHeight;
+    unsigned    m_velocityMillilters;
+};
+
+struct PumpOutLevelsMapConfiguration
+{
+    vector<LevelConfiguration>       m_levelData;
+};
+
+struct RectangularContainerConfiguration
+{
+    RectangularContainerConfiguration() {}
+
+    RectangularContainerConfiguration(unsigned width, unsigned height, unsigned depth) : 
+        m_width(width),
+        m_height(height),
+        m_depth(depth)
+    {}
+
+    void Assign(unsigned width, unsigned height, unsigned depth)
+    {
+        m_width = width;
+        m_height = height;
+        m_depth = depth;
+    }
+
+    unsigned    m_width;
+    unsigned    m_height;
+    unsigned    m_depth;
+};
+
 struct ServiceConfiguration
 {
-    PumpConfiguration   Pumps[PI__END];
+    PumpConfiguration                   Pumps[PI__END];
+    RectangularContainerConfiguration   VisibleContainerConfiguration;
+    RectangularContainerConfiguration   HiddenContainerConfiguration;
+    PumpOutLevelsMapConfiguration       PumpOutLevelsConfiguration;
 };
 
 
@@ -24,6 +84,9 @@ public:
     static bool ValidateJsonString(const string &documentContent, ServiceConfiguration &out_configuration);
 
 private:
+    static bool ParseContainerConfigurationNode(const json_value &containerNode, RectangularContainerConfiguration &out_result);
+
+
     static bool LoadFileToString(const string &fileName, string &out_fileContent);
     static bool SaveStringToFile(const string &fileName, const string &fileContent);
 };

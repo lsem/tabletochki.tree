@@ -50,6 +50,7 @@ enum ESERVICETASKID
     
     TI_HEARTBEATTASK = TI__BEGIN,
     TI_STATUSTASK,
+    TI_LEVELMANAGERTASK,
 
     TI__PUMPS_TASKS_BEGIN,
     TI_INPUTPUMPTASK = TI__PUMPS_TASKS_BEGIN,
@@ -83,13 +84,16 @@ struct PumpStateDescriptor
 
     EPUMPSTATE GetState() const { return m_state; }
     void SetState(EPUMPSTATE value) { m_state = value; }
-
+    
     void SetStartTimeNow() { m_startTime = boost::chrono::steady_clock::now(); }
     const time_point &GetStartTime() const { return m_startTime; }
+    
+    mutex           &GetAccessLock() const { return m_accessLock; }
 
     EPUMPSTATE      m_state;
     time_point      m_startTime;
     unsigned        m_workingTime;
+    mutable mutex   m_accessLock;
 };
 
 
@@ -102,6 +106,7 @@ struct DeviceInputValues
 };
 
 
+// TODO: Add simple statistic agregator to able to see water level dynamics per month
 class HardwareServiceImplementation : public IPacketUnFramerListener
 {
 public:
@@ -137,6 +142,7 @@ private:
     void QueryInputTask();
     void InputPumpControlTask();
     void OutputPumpControlTask();
+    void WaterLevelManagerTask();
 
 private:
     void EnablePumpForSpecifiedTime(EPUMPIDENTIFIER pumpId, unsigned timeMilliseconds);

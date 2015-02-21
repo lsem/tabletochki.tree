@@ -146,6 +146,10 @@ void HardwareServiceImplementation::FillVisibleContainerMillilitres(const int32_
 
 void HardwareServiceImplementation::EmptyVisiableContainerMillilitres(const int32_t amount)
 {
+    // TODO: Handle properly consistency with automated logic
+    // ...
+#pragma message ("WARNING: TODO: Handle properly consistency with automated logic")
+
     EnsurePumpReadyForWork_RaiseExceptionIfNot(PI_OUTPUTPUMP);
     EnablePumpForSpecifiedTime(PI_OUTPUTPUMP, 1000);
 }
@@ -261,7 +265,7 @@ void HardwareServiceImplementation::QueryInputTask()
 
 void HardwareServiceImplementation::InputPumpControlTask()
 {
-    LOG(INFO) << "[INPUT CONTROL PUMP] Activated";
+    LOG(DEBUG) << "[INPUT CONTROL PUMP] Activated";
 
     ProcessPumpControlActions(PI_INPUTPUMP);
 }
@@ -271,6 +275,44 @@ void HardwareServiceImplementation::OutputPumpControlTask()
     LOG(DEBUG) << "[OUTPUT CONTROL PUMP] Activated";
 
     ProcessPumpControlActions(PI_OUTPUTPUMP);
+}
+
+void HardwareServiceImplementation::WaterLevelManagerTask()
+{
+    LOG(DEBUG) << "[WATER LEVEL MANAGER] Activated";
+
+    // This task responsible for automatic pumping out the water from visible container.
+    // There is also manual triggering pumping out, but for the sake of simplicity water is 
+    // pumped out automatically without making business logic worry about it.
+    // The amounT of water to pump out, its period which could be called velocity is defined by configuration as 
+    // a set of levels (or milliliters) associated with amount of water to pump out per time unit. E.g.:
+    //
+    //  Level (liters)      WaterToPumpOut (liters per hour)      Comments
+    //  --------------------------------------------------------------------
+    //  100-120             1                                     Should be equal to performance of input pump
+    //  80-100              0.8
+    /// 60-80               0.6
+    /// 40-60               0.4
+    /// 20-40               0.2
+    /// 10-20               0.1
+    //  0-10                0.00001                               (pump will ignore so small amount of work)
+    //
+    // Further idea development is to add something like coefficient by which WaterToPumpOut is multiplied,
+    // to make possible faster pump out if needed. This parameter can be a number of pending water input tasks.
+    // By default it is equal to 1.
+
+    // const auto currentState = GetCurrentFillOutState();
+    // if (currentState == WORKING)
+    // {
+    //      const auto currentLevel = GetPublicContainerLevel();
+    //      const auto remainderForThisLevel = GetRemainderForCurrentLevel();
+    //      
+    //      if (outputPumpState.State == WORKING)
+    //      {
+    //      }
+    // }
+    
+    RestartTask(TI_LEVELMANAGERTASK);
 }
 
 
@@ -307,6 +349,7 @@ void HardwareServiceImplementation::EnsurePumpReadyForWork_RaiseExceptionIfNot(E
 
     if (pumpDescriptor.GetState() != PS_DISABLED)
     {
+        // TODO: Decide what to do when pump already enabled
         RaiseInvalidOperationException(Tabletochki::ErrorCode::PUMP_NOT_READY,
             "Actual state is: " + DecodePumpState(pumpDescriptor.m_state));
     }
@@ -745,8 +788,10 @@ ESERVICETASKID HardwareServiceImplementation::DecodePumpTaskId(EPUMPIDENTIFIER c
 
 const HardwareServiceImplementation::TableEntry HardwareServiceImplementation::m_tasksDescriptors[] =
 {
-    { &HardwareServiceImplementation::HeartBeatTask, Dataconst::HearBeatCommandPeriodMs },      // ST_HEARTBEATTIMER
-    { &HardwareServiceImplementation::QueryInputTask, Dataconst::QueryInputTaskPeriodMs },       // ST_STATUSTIMER
-    { &HardwareServiceImplementation::InputPumpControlTask, Dataconst::InputPipeTaskPeriodMs },        // ST_INPUTPUMPTIMER
-    { &HardwareServiceImplementation::OutputPumpControlTask, Dataconst::OutputPipeTaskPeriodMs }        // ST_OUTPUTPUMPTIMER
+    { &HardwareServiceImplementation::HeartBeatTask, Dataconst::HearBeatCommandPeriodMs },       // TI_HEARTBEATTASK
+    { &HardwareServiceImplementation::QueryInputTask, Dataconst::QueryInputTaskPeriodMs },       // TI_STATUSTASK
+    { &HardwareServiceImplementation::WaterLevelManagerTask, Dataconst::LevelManagerTaskPeriodMs },       // TI_LEVELMANAGERTASK
+    { &HardwareServiceImplementation::InputPumpControlTask, Dataconst::InputPipeTaskPeriodMs },  // TI_INPUTPUMPTASK
+    { &HardwareServiceImplementation::OutputPumpControlTask, Dataconst::OutputPipeTaskPeriodMs } // TI_OUTPUTPUMTASK
 };
+
