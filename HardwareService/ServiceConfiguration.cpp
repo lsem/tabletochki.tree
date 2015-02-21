@@ -89,7 +89,7 @@ bool ServiceConfigurationManager::ValidateJsonString(const string &documentConte
                 LOG(ERROR) << "hiddenContainerNode node missing";
                 break;
             }
-            if (!ParseContainerConfigurationNode(visibleContainerNode, parserdContainerConfiguration.HiddenContainerConfiguration))
+            if (!ParseContainerConfigurationNode(hiddenContainerNode, parserdContainerConfiguration.HiddenContainerConfiguration))
             {
                 LOG(ERROR) << "Failed parsing hidden container node configuration";
                 break;
