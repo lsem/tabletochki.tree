@@ -638,6 +638,10 @@ bool HardwareServiceImplementation::StartPumpingMilliliters(EPUMPIDENTIFIER pump
             out_result = false;
         }
     }
+    else
+    {
+
+    }
 
     return result;
 }
@@ -1106,7 +1110,7 @@ bool HardwareServiceImplementation::IsTimeToProcessLevel(unsigned waterLevel) co
 unsigned HardwareServiceImplementation::CalculateWorkTimeForSpecifiedPump(EPUMPIDENTIFIER pumpId, unsigned waterAmountMl)
 {
     const auto pumpPerformanceMillilitersPerHour = GetPumpPerformance(pumpId);
-    const double workTimeSec = (unsigned)((double)waterAmountMl / (double)pumpPerformanceMillilitersPerHour) * 3600.0;
+    const unsigned workTimeSec = (unsigned)(((double)waterAmountMl / (double)pumpPerformanceMillilitersPerHour) * 3600.0);
     return workTimeSec;
 }
 
