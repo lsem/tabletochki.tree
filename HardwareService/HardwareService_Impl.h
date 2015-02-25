@@ -14,7 +14,7 @@ using Tabletochki::StopPumpResult;
 using Tabletochki::ServiceStatus;
 using Tabletochki::PumpIdentifier;
 
-typedef boost::chrono::steady_clock::time_point time_point;
+typedef boost::chrono::steady_clock::time_point steady_time_point;
 
 class ICommunicationChannel;
 
@@ -51,6 +51,7 @@ enum ESERVICETASKID
     TI_HEARTBEATTASK = TI__BEGIN,
     TI_STATUSTASK,
     TI_LEVELMANAGERTASK,
+    TI_INPUTWATERPROCESSINGTASK,
 
     TI__PUMPS_TASKS_BEGIN,
     TI_INPUTPUMPTASK = TI__PUMPS_TASKS_BEGIN,
@@ -72,28 +73,48 @@ enum EPUMPSTATE
     PS__DEFAULT = PS_FAILED
 };
 
+enum ELEVELPUMPOUTSTATE
+{
+    LPS__BEGIN,
+
+    LPS_INPROGRESS = LPS__BEGIN,
+    LPS_IDLE,
+
+    LPS__END,
+    LPS__DEFAULT = LPS_IDLE,
+};
+
 
 struct PumpStateDescriptor
 {
-    void Assign(EPUMPSTATE state, const time_point &startTime, unsigned workingTime)
+    PumpStateDescriptor() {}
+    PumpStateDescriptor(void *): m_state(PS__DEFAULT), m_startTime(), m_scheduledStopTime() {}
+
+    void Assign(EPUMPSTATE state, const steady_time_point &startTime, const steady_time_point &scheduledStopTime)
     {
         m_state = state;
         m_startTime = startTime;
-        m_workingTime = workingTime;
+        m_scheduledStopTime = scheduledStopTime;
     }
 
     EPUMPSTATE GetState() const { return m_state; }
     void SetState(EPUMPSTATE value) { m_state = value; }
-    
-    void SetStartTimeNow() { m_startTime = boost::chrono::steady_clock::now(); }
-    const time_point &GetStartTime() const { return m_startTime; }
-    
-    mutex           &GetAccessLock() const { return m_accessLock; }
 
-    EPUMPSTATE      m_state;
-    time_point      m_startTime;
-    unsigned        m_workingTime;
-    mutable mutex   m_accessLock;
+    void SetStartTime(const steady_time_point &value) { m_startTime = value; }
+    void SetStartTimeNow() { m_startTime = boost::chrono::steady_clock::now(); }
+    const steady_time_point &GetStartTime() const { return m_startTime; }
+
+    unsigned CalcWorkTimeDurationSeconds() const { ASSERT(m_state == PS_ENABLED); return boost::chrono::duration_cast<boost::chrono::seconds>(boost::chrono::steady_clock::now() - m_startTime).count(); }
+    
+    const steady_time_point &GetScheduledStopTime() const { return m_scheduledStopTime; }
+    void SetScheduledStopTime(const steady_time_point &value) { m_scheduledStopTime = value; }
+    
+    void ResetStateData(EPUMPSTATE state) { Assign(state, steady_time_point(), steady_time_point()); }
+
+    EPUMPSTATE             m_state;
+    steady_time_point      m_startTime;
+    steady_time_point      m_scheduledStopTime;
+    steady_time_point      m_lastWorkingTimePoint;
 };
 
 
@@ -129,43 +150,43 @@ struct ContainerStateData
     unsigned        m_waterLevelMillimeters;
 };
 
-enum ELEVELPUMPOUTSTATE
-{
-    LPS__BEGIN,
-
-    LPS_INPROGRESS = LPS__BEGIN,
-    LPS_DONE,
-
-    LPS__END,
-    LPS__DEFAULT = LPS_DONE,
-};
 
 struct LevelPumpOutStateData
 {
-    static const unsigned DefaultLastDiscreteLevelIndex = 0;
+    static const unsigned InvalidIndexValue = ~((unsigned)0);
 
     LevelPumpOutStateData() {}
-    LevelPumpOutStateData(void *) : m_state(LPS__DEFAULT), m_lastActivationTime(), m_lastDiscreteLevelIndex(DefaultLastDiscreteLevelIndex) {}
+    LevelPumpOutStateData(void *) : m_state(LPS__DEFAULT), m_activationTime(), m_lastDiscreteLevelIndex(InvalidIndexValue) {}
 
     void SetState(ELEVELPUMPOUTSTATE state)  { m_state = state; }
     ELEVELPUMPOUTSTATE GetState() const { return m_state; }
 
-    const time_point &GetLastActivationTime() const {return m_lastActivationTime; }
-    void SetLastActivationTimeNow() { m_lastActivationTime = boost::chrono::steady_clock::now(); }
+    void SetActivationTimeNow() 
+    {
+
+
+
+
+        m_activationTime = boost::chrono::steady_clock::now();
+
+    }
+    void SetActivationTime(const steady_time_point  &value){ m_activationTime = value; }
+    steady_time_point GetActivationTime() const { return m_activationTime; }
 
     unsigned GetLastDiscreteLevelIndex() const { return m_lastDiscreteLevelIndex; }
     void SetLastDiscreteLevelIndex(unsigned value) { m_lastDiscreteLevelIndex = value; }
 
-    void Reset()
-    {
-        m_state = LPS__DEFAULT;
-        m_lastActivationTime = time_point();
-        m_lastDiscreteLevelIndex = DefaultLastDiscreteLevelIndex;
-    }
-
     ELEVELPUMPOUTSTATE      m_state;
-    time_point              m_lastActivationTime;
+    steady_time_point       m_activationTime;
     unsigned                m_lastDiscreteLevelIndex;
+};
+
+struct DefferedWaterInputItem
+{
+    DefferedWaterInputItem() {}
+    DefferedWaterInputItem(unsigned amount) : m_amount(amount) {}
+
+    unsigned        m_amount;
 };
 
 
@@ -184,6 +205,7 @@ public:
     void GetServiceStateJson(string &jsonDocumentReceiver);
     void FillVisibleContainerMillilitres(const int32_t amount);
     void EmptyVisiableContainerMillilitres(const int32_t amount);
+    void DbgSetContainerWaterLevel(const int32_t amount);
 
 public:
     void StartService();
@@ -206,24 +228,36 @@ private:
     void InputPumpControlTask();
     void OutputPumpControlTask();
     void WaterLevelManagerTask();
+    void ProcessWaterLevelManagerTaskActions();
+    void InputWaterPorcessManagerTask();
+
+private:
+    void OnPumpEndWorking();
+    void OnPumpStartedWorking();
 
 private:
     void EnablePumpForSpecifiedTime(EPUMPIDENTIFIER pumpId, unsigned timeMilliseconds);
     void EnsurePumpReadyForWork_RaiseExceptionIfNot(EPUMPIDENTIFIER pumpId);
     void ProcessPumpControlActions(EPUMPIDENTIFIER pumpId);
+    void ProcessPumpControlActions_ManagePumpControl(EPUMPIDENTIFIER pumpId);
+    void ProcessPumpControlActions_SimulatedSensors(EPUMPIDENTIFIER pumpId);
     void EmergencyStop();
+    bool StopPumpIfNecessary(EPUMPIDENTIFIER pumpId, bool &out_stopped);
+    bool StartPumpingMilliliters(EPUMPIDENTIFIER pumpId, unsigned millilitersToPump, bool &out_result);
 
 private:
     void DoHeartBeatTask();
     void DoQueryInputTask();
-    bool DoCheckDeviceConnection();
-    bool DoEnablePump(EPUMPIDENTIFIER pumpId);
-    bool DoDisablePump(EPUMPIDENTIFIER pumpId);
 
 private:
-    bool SendHeartbeatCommand(unsigned &out_deviceStatus);
-    bool SendReadIOCommand(DeviceInputValues &out_deviceInput);
-    bool SendConfigureDeviceCommand();
+    bool IsDeviceConnected();
+
+private:
+    bool ExecuteEnablePumpHardwareCommand(EPUMPIDENTIFIER pumpId);
+    bool ExecuteDisablePumpHardwareCommand(EPUMPIDENTIFIER pumpId);
+    bool ExecuteHeartbeatCommand(unsigned &out_deviceStatus);
+    bool ExecuteReadIOCommand(DeviceInputValues &out_deviceInput);
+    bool ExecuteConfigureDeviceCommand();
 
 private:
     template <class TRequest, class TResponse>
@@ -245,6 +279,14 @@ private:
     unsigned DecodeDiscreteWaterLevelIndex(unsigned waterLevelMillimiters) const;
     static const unsigned ItemNotFoundIndex = (~(unsigned)0);
     const LevelConfiguration &GetLevelConfiguration(unsigned index) const;
+    unsigned GetPumpingOutvelocityAtLevel(unsigned index);
+    unsigned GetPumpPerformance(EPUMPIDENTIFIER pumpId);
+    unsigned GetCurrentWaterLevelIndex() const { return DecodeDiscreteWaterLevelIndex(GetCurrentWaterLevelMillimiters()); }
+    bool IsTimeToProcessLevel(unsigned waterLevel) const;
+    unsigned CalculateWorkTimeForSpecifiedPump(EPUMPIDENTIFIER pumpId, unsigned waterAmountMl);
+
+private:
+    static steady_time_point GetNowSteadyClockTime() { return boost::chrono::steady_clock::now(); }
 
 private:
     static string DecodeServiceState(ESERVICESTATE code);
@@ -263,6 +305,7 @@ private:
         HardwareServiceImplementation::TimerExpiredActionType action;
         unsigned timeout;
     };
+    typedef list<DefferedWaterInputItem> DeferedInputsList;
 
 private:
     void SetServiceState(ESERVICESTATE state) { m_serviceState = state; }
@@ -272,9 +315,10 @@ private:
     void SetServiceConfiguration(const ServiceConfiguration  &value) { m_configuration = value; }
     const ServiceConfiguration  &GetServiceConfiguration() const { return m_configuration; }
     const DeviceInputValues &GetDeviceInputValues() const { return m_deviceInput; }
+    DeviceInputValues &GetDeviceInputValuesRef() { return m_deviceInput; }
     void SetDeviceInputValues(const DeviceInputValues &value) { m_deviceInput = value; }
-    PumpStateDescriptor &GetPumpDescriptorRef(EPUMPIDENTIFIER pumpId) { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
-    const PumpStateDescriptor &GetPumpDescriptorRef(EPUMPIDENTIFIER pumpId) const { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
+    PumpStateDescriptor &GetPumpStateDescriptorRef(EPUMPIDENTIFIER pumpId) { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
+    const PumpStateDescriptor &GetPumpStateDescriptorRef(EPUMPIDENTIFIER pumpId) const { ASSERT(Utils::InRange(pumpId, PI__BEGIN, PI__END));  return m_pumpsState[pumpId]; }
     mutex  &GetCommunicationLock() { return m_communicationLock; }
     SerialLibCommunicationChannel *GetCommunicationChannel() { return  &m_communicationChannel; }
     DeadlineTimer &GetTimerObjectById(ESERVICETASKID timerId) { return *m_timers[timerId]; }
@@ -284,6 +328,8 @@ private:
     ContainerStateData &GetHiddenContainerStateDataRef() { return m_hiddenContainerStateData; }
     const LevelPumpOutStateData &GetLevelPumpOutStateData() const { return m_levelPumpOutState; }
     LevelPumpOutStateData &GetLevelPumpOutStateDataRef() { return m_levelPumpOutState; }
+    DeferedInputsList &GetDefferedInputList() { return m_defferedInputList; }
+    mutex &GetDefferedInputListLock() { return m_defferedInputListLock; }
 
 private:
     mutex                               m_communicationLock;
@@ -304,6 +350,8 @@ private:
     ContainerStateData                  m_visibleContainerStateData;
     ContainerStateData                  m_hiddenContainerStateData;
     LevelPumpOutStateData               m_levelPumpOutState;
+    DeferedInputsList                   m_defferedInputList;
+    mutex                               m_defferedInputListLock;
 };
 
 
@@ -341,3 +389,16 @@ STATIC_MAP(PumpsTasksIdentifiers, EPUMPIDENTIFIER, ESERVICETASKID, PI__BEGIN, PI
     TI_INPUTPUMPTASK,       // PI_INPUTPUMP
     TI_OUTPUTPUMTASK        // PI_OUTPUTPUMP,
 };
+
+STATIC_MAP(PumpsTasksSimulatedSensorsMultipliers, EPUMPIDENTIFIER, int, PI__BEGIN, PI__END)
+{
+    +1,       // PI_INPUTPUMP
+    -1        // PI_OUTPUTPUMP,
+};
+
+STATIC_MAP(PumpingOutStateNames, ELEVELPUMPOUTSTATE, string, LPS__BEGIN, LPS__END)
+{
+     "INPROGRESS",      // LPS_INPROGRESS
+     "IDLE"             // LPS_IDLE,
+};
+

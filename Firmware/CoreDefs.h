@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 #include <limits.h>
+#include <cmath>
 
 #ifdef _WIN32
 #   define WIN32_LEAN_AND_MEAN
@@ -40,8 +41,8 @@
 
 
 // ASSERT
-#ifdef TESTS
-#   define ASSERT assert
+#ifdef _WIN32
+#   define ASSERT _ASSERTE
 #else
 #   define ASSERT 
 #endif // TESTS

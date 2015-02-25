@@ -82,6 +82,19 @@ body {
 
 }
 
+.progress-vertical-hack {
+    margin-top: 10px;
+    border: solid 1px grey;
+
+    position: absolute;
+    width: 100px;
+    left: 7px;
+    top: 67px;
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg); /* IE 9 */
+}
+
 pre {
     background-color: #1A1B20;
     color: #6B8071;
@@ -89,6 +102,6 @@ pre {
 }
 
 .inputGroup {
-    width: 210px;
+    width: 225px;
     margin-top: 10px;
 }

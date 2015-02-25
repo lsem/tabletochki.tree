@@ -1,8 +1,6 @@
 #pragma once
 
 #include <json.h>
-
-
 #include "PumpTypes.h"
 
 
@@ -18,7 +16,7 @@ enum ECONTAINERSHAPE
 
 struct PumpConfiguration
 {
-    unsigned m_performanceMlPerSecond;
+    unsigned m_performanceMlPerHour;
 };
 
 struct LevelConfiguration
@@ -81,11 +79,15 @@ public:
     static bool LoadFromJsonString(const string &documentContent, ServiceConfiguration &out_configuration);
     static bool LoadFromJsonFile(const string &fileName, ServiceConfiguration &out_configuration);
     static bool SaveToJsonFile(const string &fileName, const string &documentContent);
-    static bool ValidateJsonString(const string &documentContent, ServiceConfiguration &out_configuration);
+    static bool ParseConfiguration(const string &documentContent, ServiceConfiguration &out_configuration);
 
 private:
     static bool ParseContainerConfigurationNode(const json_value &containerNode, RectangularContainerConfiguration &out_result);
-
+    static bool ValidateConfiguration(const ServiceConfiguration &configuration);
+    static bool ValidatePumpsConfiguration(const ServiceConfiguration &configuration);
+    static bool ValidateSignlePumpConfiguration(const PumpConfiguration &configuration);
+    static bool ValidateContainersConfiguration(const ServiceConfiguration &configuration);
+    static bool ValidateLevelsConfiguration(const ServiceConfiguration &configuration);
 
     static bool LoadFileToString(const string &fileName, string &out_fileContent);
     static bool SaveStringToFile(const string &fileName, const string &fileContent);

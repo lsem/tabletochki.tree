@@ -743,6 +743,87 @@ HardwareService_emptyVisiableContainerMillilitres_result.prototype.write = funct
   return;
 };
 
+HardwareService_DbgSetContainerWaterLevel_args = function(args) {
+  this.amount = null;
+  if (args) {
+    if (args.amount !== undefined) {
+      this.amount = args.amount;
+    }
+  }
+};
+HardwareService_DbgSetContainerWaterLevel_args.prototype = {};
+HardwareService_DbgSetContainerWaterLevel_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.amount = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_DbgSetContainerWaterLevel_args.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_DbgSetContainerWaterLevel_args');
+  if (this.amount !== null && this.amount !== undefined) {
+    output.writeFieldBegin('amount', Thrift.Type.I32, 1);
+    output.writeI32(this.amount);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+HardwareService_DbgSetContainerWaterLevel_result = function(args) {
+};
+HardwareService_DbgSetContainerWaterLevel_result.prototype = {};
+HardwareService_DbgSetContainerWaterLevel_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    input.skip(ftype);
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+HardwareService_DbgSetContainerWaterLevel_result.prototype.write = function(output) {
+  output.writeStructBegin('HardwareService_DbgSetContainerWaterLevel_result');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 HardwareServiceClient = exports.Client = function(output, pClass) {
     this.output = output;
     this.pClass = pClass;
@@ -1082,6 +1163,50 @@ HardwareServiceClient.prototype.recv_emptyVisiableContainerMillilitres = functio
   }
   callback(null)
 };
+HardwareServiceClient.prototype.DbgSetContainerWaterLevel = function(amount, callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_DbgSetContainerWaterLevel(amount);
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_DbgSetContainerWaterLevel(amount);
+  }
+};
+
+HardwareServiceClient.prototype.send_DbgSetContainerWaterLevel = function(amount) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('DbgSetContainerWaterLevel', Thrift.MessageType.CALL, this.seqid());
+  var args = new HardwareService_DbgSetContainerWaterLevel_args();
+  args.amount = amount;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+HardwareServiceClient.prototype.recv_DbgSetContainerWaterLevel = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new HardwareService_DbgSetContainerWaterLevel_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  callback(null)
+};
 HardwareServiceProcessor = exports.Processor = function(handler) {
   this._handler = handler
 }
@@ -1303,6 +1428,36 @@ HardwareServiceProcessor.prototype.process_emptyVisiableContainerMillilitres = f
     this._handler.emptyVisiableContainerMillilitres(args.amount,  function (err, result) {
       var result = new HardwareService_emptyVisiableContainerMillilitres_result((err != null ? err : {success: result}));
       output.writeMessageBegin("emptyVisiableContainerMillilitres", Thrift.MessageType.REPLY, seqid);
+      result.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+}
+
+HardwareServiceProcessor.prototype.process_DbgSetContainerWaterLevel = function(seqid, input, output) {
+  var args = new HardwareService_DbgSetContainerWaterLevel_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.DbgSetContainerWaterLevel.length === 1) {
+    Q.fcall(this._handler.DbgSetContainerWaterLevel, args.amount)
+      .then(function(result) {
+        var result = new HardwareService_DbgSetContainerWaterLevel_result({success: result});
+        output.writeMessageBegin("DbgSetContainerWaterLevel", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result = new HardwareService_DbgSetContainerWaterLevel_result(err);
+        output.writeMessageBegin("DbgSetContainerWaterLevel", Thrift.MessageType.REPLY, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.DbgSetContainerWaterLevel(args.amount,  function (err, result) {
+      var result = new HardwareService_DbgSetContainerWaterLevel_result((err != null ? err : {success: result}));
+      output.writeMessageBegin("DbgSetContainerWaterLevel", Thrift.MessageType.REPLY, seqid);
       result.write(output);
       output.writeMessageEnd();
       output.flush();

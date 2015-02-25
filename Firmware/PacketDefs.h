@@ -26,7 +26,7 @@ namespace Packets
 
     struct DigitalPinOutputDescriptor
     {
-        void Assign(uint8_t    pinNumber, uint8_t  value)
+        void Assign(uint8_t pinNumber, uint8_t  value)
         {
             PinNumber = pinNumber;
             Value = value;

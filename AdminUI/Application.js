@@ -9,28 +9,49 @@
             '<div adminui service="vm.servicesStatuses.Svc_AdminUI"></div>');
 
         $templateCache.put("pill-services/watering.tmpl.html", [
-            '<div><div class="col-lg-6"><div class="well">',
-                  '<h2>Watering Service<span ng-class="[status.css]">{{status.label}}</span></h2>',
-                  '<p><a class="btn btn-default btn-sm" ng-click="onClick_Water();">Secret Button</a></p><pre> {{service | json}} </pre></div>'+
-            '</div></div>'
+            '<div>' +
+                '<div class="col-lg-8">' +
+                    '<div class="well clearfix">',
+                        '<div class="row">' +
+                            '<div class="col-lg-4">' +
+                                '<div class="input-group  input-group-sm inputGroup">'+
+                                '<span class="input-group-addon" id="basic-addon1">Manual level control (cm)</span>'+
+                                '<input  name="input" type="number" min="0" max="10000" required class="form-control waterAmountInput" ng-model="manualVisibleLevel"/>' +
+                                '<span class="error" ng-show="AmountInputForm.input.$error.number"> Not valid number!</span>'  +
+                                '</div>'+
+                        '<div style="height: 80px;" class="progress progress-striped  progress-vertical-hack">' +
+                        '<div class="progress-bar progress-bar-info active" role="progressbar" aria-valuenow="{{getPercentage()}}" aria-valuemin="0" aria-valuemax="100" ' +
+                            'ng-style="{width : ( getPercentage() + \'%\' ) }">' +
+                        '<span class="sr-only">45% Complete</span>' +
+                        '</div>' +
+                        '</div>' +
+
+                            '</div>' +
+                            '<div class="col-lg-8">' +
+                                '<pre> {{service | json}} </pre>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
         ].join(''));
 
         $templateCache.put("pill-services/httplistener.tmpl.html", [
-            '<div><div class="col-lg-6"><div class="well">',
+            '<div><div class="col-lg-4"><div class="well">',
                 '<h2>HttpListener Service<span ng-class="[status.css]">{{status.label}}</span></h2>',
                 '<p><a class="btn btn-default btn-sm">Secret Button</a></p><pre> {{service | json}} </pre></div>'+
             '</div></div>'
         ].join(''));
 
         $templateCache.put("pill-services/adminui.tmpl.html", [
-            '<div><div class="col-lg-6"><div class="well">',
+            '<div><div class="col-lg-4"><div class="well">',
                 '<h2>AdminUI Service<span ng-class="[status.css]">{{status.label}}</span></h2>',
                 '<p><a class="btn btn-default btn-sm">Secret Button</a></p><pre> {{service | json}} </pre></div>'+
             '</div></div>'
         ].join(''));
 
         $templateCache.put("pill-services/kinect.tmpl.html", [
-            '<div><div class="col-lg-6"><div class="well">',
+            '<div><div class="col-lg-4"><div class="well">',
                 '<h2>Kinect Service<span ng-class="[status.css]">{{status.label}}</span></h2>',
                 '<p><a class="btn btn-default btn-sm">Secret Button</a></p><pre> {{service | json}} </pre></div>'+
             '</div></div>'
@@ -214,7 +235,7 @@
             }, function(err) {
                 _this.servicesStatuses = null;
             });
-        }, 1000);
+        }, 300);
 
         $scope.$on(
             "$destroy",
@@ -472,6 +493,9 @@
            uploadConfig: { method: 'POST'}
         });
 
+        var debugInterfaceResource = $resource(buildUrl('debug_cmds/:action'), null, {
+            setVisibleLevel: { method: 'POST', params: {action: 'setVisible'}}
+        });
 
         var currentStatus = {status: 0, hardStatus: 0};
 
@@ -488,6 +512,9 @@
         }, 500);
 
         var _public = {
+            dbgSetVisibleWaterLevel: function(value) {
+                return debugInterfaceResource.setVisibleLevel({level: value}).$promise;
+            },
             uploadConfiguration: function(configJsonText) {
                 return configurationResource.uploadConfig({configJsonText: configJsonText}).$promise;
             },
@@ -551,12 +578,47 @@
     /// WATERING
 
     angular.module('pills.services', ['pills.watering.directive', 'pills.httplistener.directive', 'pills.adminui.directive', 'pills.kinect.directive']);
-    angular.module('pills.watering.directive', []).directive('watering', [function (){
+    angular.module('pills.watering.directive', []).directive('watering', ['CalibrationService', function (CalibrationService){
         return {
             resrict: 'A',
             replace: true,
             scope: { service: '=service' },
-            templateUrl: 'pill-services/watering.tmpl.html'
+            templateUrl: 'pill-services/watering.tmpl.html',
+            controller: function($scope) {
+
+
+                $scope.$watch("service", function(newValue, oldValue) {
+                    //console.log('oldvalue: ' + oldValue + ', newValue: ' + newValue);
+                    if (angular.isDefined(newValue )) {
+                        $scope.visibleActualLevel = $scope.service.status.details.input.visibleLevel;
+
+
+                        if ($scope.manualVisibleLevel === undefined)
+                            $scope.manualVisibleLevel = $scope.visibleActualLevel;
+                    }
+                    else {
+                        $scope.visibleActualLevel = 0;
+                        //$scope.visibleActualLevel
+                    }
+
+                });
+
+                var levelMax = 65;
+
+                $scope.getPercentage = function () {
+                    var result = (($scope.visibleActualLevel / levelMax) * 100).toFixed(2);
+                    return result;
+                };
+
+                $scope.$watch("manualVisibleLevel", function(newValue, oldValue) {
+                    if (newValue == undefined) {
+                        console.log('undefined !!!');
+                    }
+                    console.log('oldvalue: ' + oldValue + ', newValue: ' + newValue);
+                    if (newValue !== undefined)
+                        CalibrationService.dbgSetVisibleWaterLevel(newValue);
+                });
+            }
         }
     }]);
     angular.module('pills.httplistener.directive', []).directive('httplistener', [function (){

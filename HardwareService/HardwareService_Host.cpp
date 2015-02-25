@@ -65,14 +65,14 @@ public:
 
     virtual void getServiceStatus(ServiceStatus& _return)
     {
-        LOG(INFO) << "API: getServiceStatus";
+        //LOG(INFO) << "API: getServiceStatus";
 
         m_implementation->GetServiceStatus(_return);
     }
 
     virtual void getServiceStateJson(std::string& _return)
     {
-        LOG(INFO) << "API: getServiceStateJson";
+        //LOG(INFO) << "API: getServiceStateJson";
 
         m_implementation->GetServiceStateJson(_return);
     }
@@ -89,6 +89,11 @@ public:
         LOG(INFO) << "API: emptyVisiableContainerMillilitres";
 
         m_implementation->EmptyVisiableContainerMillilitres(amount);
+    }
+
+    virtual void DbgSetContainerWaterLevel(const int32_t amount)
+    {
+        m_implementation->DbgSetContainerWaterLevel(amount);
     }
 
 private:

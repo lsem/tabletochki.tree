@@ -184,6 +184,29 @@ app.get('/stop_result/:id', function(request, response) {
     response.end();
 });
 
+app.post('/debug_cmds/:action', function(request, response){
+
+    if (request.params.action === 'setVisible') {
+        console.log('level: ' + request.body.level);
+
+        var client = thrift.createClient(HardwareService, thriftConnection);
+        client.DbgSetContainerWaterLevel(request.body.level, function (err, data) {
+                if (err) {
+                    thriftConnection.end();
+                    thriftConnection = null;
+                }
+                else {
+                    console.log('level seems to be set');
+                }
+        });
+    }
+    else {
+
+    }
+
+    response.end();
+});
+
 app.get('/cluster_status', function (request, response) {
     if (servicesStatuses === null) {
         response.status(httpStatus.NOT_FOUND);

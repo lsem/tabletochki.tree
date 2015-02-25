@@ -41,4 +41,6 @@ service HardwareService {
 
     void fillVisibleContainerMillilitres(1: i32 amount) throws (1:InvalidOperation ouch);
     void emptyVisiableContainerMillilitres(1: i32 amount) throws (1:InvalidOperation ouch);   
+
+    void DbgSetContainerWaterLevel(1: i32 amount);
 }

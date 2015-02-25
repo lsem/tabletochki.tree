@@ -19,6 +19,7 @@
     using std::unique_ptr;
     using std::vector;
     using std::string;
+    using std::list;
 
 #endif //  _WIN32
 #pragma warning(disable : 4351)

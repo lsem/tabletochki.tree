@@ -100,6 +100,12 @@ namespace Utils
         return (value >= min) && (value < max);
     }
 
+    template <class T>
+    static inline bool InRangeIncluding(T value, T min, T max)
+    {
+        return (value >= min) && (value <= max);
+    }
+
     template <class FromType, class ToType, FromType RangeBegin, FromType RangeEnd>
     class StaticMap
     {
