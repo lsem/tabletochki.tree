@@ -3,7 +3,12 @@ var types  = require('./types');
 var master = require('./svcutils').master;
 var logger = require('./log_manager.js').loggerFor(types.Services.HttpListener);
 var coordinator = require('./svcutils').coordinator(types.Services.HttpListener);
+var siteConfiguration = require('./configuration');
 var _ = require('underscore');
+
+var thisJsUnitServiceState = {
+    health: 'green'
+};
 
 var commandListener = function(pollingPrams) {
     var that = {};
@@ -23,18 +28,15 @@ var commandListener = function(pollingPrams) {
             result.on('end', function() {
                 try {
                     var bodyAsObject = JSON.parse(body);
-                    if (_.isObject(bodyAsObject) && _.isEmpty(bodyAsObject) && !stopPollingFlag) {
-                        // try again
-                    }
-                    else {
+                    if (_.isObject(bodyAsObject) && !_.isEmpty(bodyAsObject) && !stopPollingFlag) {
                         onResultCallback(body);
                     }
+                } catch (err) {
+                    logger.error('failed parsing request body: \'' + body + '\'');
                 }
-                catch (err) {
-                    logger.error('failed parsing: \'' + body + '\'');
+                if (!stopPollingFlag) {
+                    doPolling(params);
                 }
-
-                doPolling(params);
             });
         }).on('error', function (e) {
                 onErrorCallback(e);
@@ -48,11 +50,9 @@ var commandListener = function(pollingPrams) {
     return that;
 };
 
-// example usage
 var cmdListener = commandListener({
-    hostURL: 'http://127.0.0.1:1337',
-    reconnectTimeout: 500,
-
+    hostURL: siteConfiguration.commandsProviderHttpURI,
+    reconnectTimeout: siteConfiguration.commandsProviderReconnectionTimeot,
     onErrorCallback: function(errorMessage) {
         logger.warning('Polling problem: ' + errorMessage);
     },
@@ -61,31 +61,21 @@ var cmdListener = commandListener({
         try {
             var commandObject = JSON.parse(body);
             if (_.isObject(commandObject)) {
-                //master.sendMessage(commandObject);
                 master.raiseMessage(types.Messages.HttpListener.DonationCommited);
-            }
-            else {
+            } else {
                 logger.warning('Received body is not valid command object');
             }
-        }
-        catch (error) {
+        } catch (error) {
             logger.error('Failed decoding command object got from server');
         }
     }
 });
 
-
-var serviceState = {
-    health: 'green'
-
-};
 process.on('message', function(m) {
     if (m.eventId === types.serviceEvents.GetStatus) {
-        coordinator.sendMessage(types.serviceEvents.StatusResponse, serviceState);
+        coordinator.sendMessage(types.serviceEvents.StatusResponse, thisJsUnitServiceState);
     }
 });
-
-
 
 cmdListener.startListener();
 master.raiseMessage(types.Messages.Service.ServiceStarted);

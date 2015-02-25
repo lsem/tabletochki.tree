@@ -11,7 +11,7 @@ var logger = require('./log_manager.js').loggerFor(types.Services.Watering);
 var transport = ThriftTransports.TFramedTransport();
 var protocol = ThriftProtocols.TBinaryProtocol();
 
-var jsUnitServiceState = {
+var thisJsUnitServiceState = {
     health: 'green',
     details: {}
 };
@@ -19,7 +19,7 @@ var jsUnitServiceState = {
 var thriftConnection = null;
 
 setInterval(function () {
-    jsUnitServiceState.details = {};
+    thisJsUnitServiceState.details = {};
 
     if (thriftConnection === null || (typeof thriftConnection == 'undefined')) {
         logger.error('establishing thrift connection');
@@ -35,7 +35,7 @@ setInterval(function () {
             if (err) {
                 logger.error('Error getting service detailed state (JSON)');
             } else if (data) {
-                jsUnitServiceState.details = JSON.parse(data);
+                thisJsUnitServiceState.details = JSON.parse(data);
             } else {
                 logger.error('Detailed service state returned data in unsupported format');
             }
@@ -47,7 +47,7 @@ setInterval(function () {
 
 process.on('message', function(m) {
     if (m.eventId === types.serviceEvents.GetStatus) {
-        coordinator.sendMessage(types.serviceEvents.StatusResponse, jsUnitServiceState);
+        coordinator.sendMessage(types.serviceEvents.StatusResponse, thisJsUnitServiceState);
     } else {
         logger.warning('Unhandled message: ' + JSON.stringify(m));
     }
