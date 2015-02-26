@@ -130,7 +130,7 @@
         $templateCache.put("settings/settings-step2.tmpl.html", [
             '<h1>Configuration acceptance</h1>',
             '<div class="well">' +
-                '<pre> {{vm.configurationJsonDocument | json:4}} </pre>' +
+                '<pre contenteditable="true"> {{vm.configurationJsonDocument | json:4}} </pre>' +
             '</div>' +
             '<a role="button" eat-click-if="vm.steps.step1.canGo()" ui-sref="^.step1" type="button" class="btn btn-default">Previous</button>',
             '<a role="button"  ng-click="vm.steps.step2.uploadClicked()" ng-disabled="!vm.steps.step2.uploadAllowed()" type="button" class="btn btn-success">Upload</button>',
@@ -344,6 +344,55 @@
                                 outputPump: {
                                     performance: Math.round(pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000))
                                 }
+                            },
+                            "containers":
+                            {
+                                "visibleContainer":
+                                {
+                                    "shape": "rectangular",
+                                    "height": 100,
+                                    "width": 30,
+                                    "depth": 65
+                                },
+
+                                "hiddenContainer":
+                                {
+                                    "shape": "rectangular",
+                                    "height": 110,
+                                    "width": 80,
+                                    "depth": 35
+                                }
+                            },
+
+                            "pumpOutMap":
+                            {
+                                "levels":
+                                    [
+                                        {
+                                            "levelHeight": 10,
+                                            "velocityLitresPerHour": 0
+                                        },
+                                        {
+                                            "levelHeight": 10,
+                                            "velocityLitresPerHour": 2
+                                        },
+                                        {
+                                            "levelHeight": 10,
+                                            "velocityLitresPerHour": 80
+                                        },
+                                        {
+                                            "levelHeight": 10,
+                                            "velocityLitresPerHour": 120
+                                        },
+                                        {
+                                            "levelHeight": 10,
+                                            "velocityLitresPerHour": 150
+                                        },
+                                        {
+                                            "levelHeight": 15,
+                                            "velocityLitresPerHour":  600
+                                        }
+                                    ]
                             }
                         };
                     },
@@ -587,10 +636,10 @@
             controller: function($scope) {
 
 
-                $scope.$watch("service", function(newValue, oldValue) {
+                $scope.$watch("service.status.details.input.visibleLevel", function(newValue, oldValue) {
                     //console.log('oldvalue: ' + oldValue + ', newValue: ' + newValue);
                     if (angular.isDefined(newValue )) {
-                        $scope.visibleActualLevel = $scope.service.status.details.input.visibleLevel;
+                        $scope.visibleActualLevel = newValue;
 
 
                         if ($scope.manualVisibleLevel === undefined)

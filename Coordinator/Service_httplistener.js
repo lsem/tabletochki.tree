@@ -72,10 +72,17 @@ var cmdListener = commandListener({
 });
 
 process.on('message', function(m) {
-    if (m.eventId === types.serviceEvents.GetStatus) {
-        coordinator.sendMessage(types.serviceEvents.StatusResponse, thisJsUnitServiceState);
+    var message = m.message;
+    var data = m.data;
+
+    if (message === 'status') {
+        coordinator.raiseMessage('status', thisJsUnitServiceState);
+    } else {
+        // ...
     }
 });
 
 cmdListener.startListener();
-master.raiseMessage(types.Messages.Service.ServiceStarted);
+coordinator.raiseMessage('connected');
+
+
