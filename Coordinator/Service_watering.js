@@ -47,20 +47,26 @@ setInterval(function () {
                 thisJsUnitServiceState.details = JSON.parse(data);
             } else {
                 logger.error('Detailed service state returned data in unsupported format');
+                thisJsUnitServiceState.details = {};
             }
         });
     } else {
         logger.error('Cannot update hardware service detailed status: no API connection');
+        thisJsUnitServiceState.details = {};
     }
 
     if (serviceApiClient !== null) {
         serviceApiClient.getServiceStatus(function (err, data) {
             if (err) {
                 logger.error('Error getting service status code (JSON)');
+                serviceHardwareStatus = { hardStatus: -1};
             } else if (data) {
-                serviceHardwareStatus = data;
+                serviceHardwareStatus = { hardStatus: data.statusCode };
             }
         });
+    } else {
+        logger.error('no connection ...');
+        serviceHardwareStatus = { hardStatus: -1};
     }
 
 }, siteConfiguration.wateringHardwareServiceStatusRefreshPeriodMs);
@@ -81,7 +87,10 @@ process.on('message', function(m) {
         coordinator.raiseMessage('closed')
     // -----------------------------------------------------------------
     } else {
-        if (serviceApiClient === null) return;
+        if (serviceApiClient === null) {
+            logger.error('no API connection');
+            return;
+        }
 
         if (message === 'dbg.setvsbl') {
             serviceApiClient.DbgSetContainerWaterLevel(data.amount, function (err, data) {
@@ -112,6 +121,7 @@ process.on('message', function(m) {
             });
         // -----------------------------------------------------------------
         } else if (message === 'stopPump') {
+            logger.debug('stopPump rquested');
             var responseId = data.responseId;
             serviceApiClient.stopPump(data.pumpId - 1, function (err, data) {
                 if (err) {

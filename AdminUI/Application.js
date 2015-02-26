@@ -314,7 +314,65 @@
                 }
             };
             this.pumpData = pumpData;
-            this.configurationJsonDocument = {};
+            this.configurationJsonDocument = {
+                pumps: {
+                    inputPump: {
+                        performance: null
+                    },
+                    outputPump: {
+                        performance: null
+                    }
+                },
+                "containers":
+                {
+                    "visibleContainer":
+                    {
+                        "shape": "rectangular",
+                        "height": 100,
+                        "width": 30,
+                        "depth": 65
+                    },
+
+                    "hiddenContainer":
+                    {
+                        "shape": "rectangular",
+                        "height": 110,
+                        "width": 80,
+                        "depth": 35
+                    }
+                },
+
+                "pumpOutMap":
+                {
+                    "levels":
+                        [
+                            {
+                                "levelHeight": 10,
+                                "velocityLitresPerHour": 0
+                            },
+                            {
+                                "levelHeight": 10,
+                                "velocityLitresPerHour": 2
+                            },
+                            {
+                                "levelHeight": 10,
+                                "velocityLitresPerHour": 80
+                            },
+                            {
+                                "levelHeight": 10,
+                                "velocityLitresPerHour": 120
+                            },
+                            {
+                                "levelHeight": 10,
+                                "velocityLitresPerHour": 150
+                            },
+                            {
+                                "levelHeight": 15,
+                                "velocityLitresPerHour":  600
+                            }
+                        ]
+                }
+            };
 
             this.steps =
             {
@@ -336,65 +394,12 @@
 
                     completedCallback: function() {
                         _this.steps.step1.completed = true;
-                        _this.configurationJsonDocument = {
-                            pumps: {
-                                inputPump: {
-                                    performance: Math.round(pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000))
-                                },
-                                outputPump: {
-                                    performance: Math.round(pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000))
-                                }
-                            },
-                            "containers":
-                            {
-                                "visibleContainer":
-                                {
-                                    "shape": "rectangular",
-                                    "height": 100,
-                                    "width": 30,
-                                    "depth": 65
-                                },
 
-                                "hiddenContainer":
-                                {
-                                    "shape": "rectangular",
-                                    "height": 110,
-                                    "width": 80,
-                                    "depth": 35
-                                }
-                            },
-
-                            "pumpOutMap":
-                            {
-                                "levels":
-                                    [
-                                        {
-                                            "levelHeight": 10,
-                                            "velocityLitresPerHour": 0
-                                        },
-                                        {
-                                            "levelHeight": 10,
-                                            "velocityLitresPerHour": 2
-                                        },
-                                        {
-                                            "levelHeight": 10,
-                                            "velocityLitresPerHour": 80
-                                        },
-                                        {
-                                            "levelHeight": 10,
-                                            "velocityLitresPerHour": 120
-                                        },
-                                        {
-                                            "levelHeight": 10,
-                                            "velocityLitresPerHour": 150
-                                        },
-                                        {
-                                            "levelHeight": 15,
-                                            "velocityLitresPerHour":  600
-                                        }
-                                    ]
-                            }
-                        };
+                        var pump1PerformanceMlPerHr = Math.round(pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000)) * 3600;
+                        var pump2PerformanceMlPerHr = Math.round(pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000)) * 3600;
+                        _this.configurationJsonDocument.pumps.inputPump.performance = pump1PerformanceMlPerHr;
+                        _this.configurationJsonDocument.pumps.outputPump.performance = pump2PerformanceMlPerHr;
+                        _this.configurationJsonDocument.pumpOutMap.levels[_this.configurationJsonDocument.pumpOutMap.levels.length - 1].velocityLitresPerHour = pump1PerformanceMlPerHr / 1000;
                     },
 
                     startButtonClicked: function(pumpNumber) {

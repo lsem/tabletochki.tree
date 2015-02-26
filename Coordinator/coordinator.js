@@ -17,6 +17,7 @@ var _ = require('underscore');
         var clusterStatus= {};
         var all = {};
         var statusPoller = setInterval(function() { _.each(all, function (svc, svcId) { svc.send('status'); });}, siteConfiguration.coordinatorStatusPollerPeriodMs);
+        var hardConnectionStatus = { status: -1, hardStatus: -2 };
 
         return {
             'default': {
@@ -30,6 +31,10 @@ var _ = require('underscore');
                 'connected': function (who, data){
                     logger.info('service connected: ' + who);
                     all[who] = servicesController.communicator(who);
+
+                    if (Object.keys(all).length === 4) { // all services started (todo: get rid of magic number)
+                        hardConnectionStatus.status = 0;
+                    }
                 }
             },
             watering: {
@@ -37,8 +42,9 @@ var _ = require('underscore');
                     logger.info('watering closed');
                 },
                 'hardwareConnectionStatus': function (data) {
+                    hardConnectionStatus.hardStatus = data.hardStatus;
                     if (all[Services.AdminUI]) {
-                        all[Services.AdminUI].send('hardwareConnectionStatus', data);
+                        all[Services.AdminUI].send('hardwareConnectionStatus', hardConnectionStatus);
                     }
                 },
                 'pumpStopped': function (data) {
@@ -66,7 +72,7 @@ var _ = require('underscore');
                 },
                 'getHardwareConnectionStatus': function(data) {
                     if (all[Services.Watering]) {
-                        all[Services.Watering].send('getHardwareConnectionStatus', clusterStatus);
+                        all[Services.Watering].send('getHardwareConnectionStatus');
                     }
                 },
                 'dbg.setvsbl': function(data) {
@@ -85,6 +91,7 @@ var _ = require('underscore');
                     }
                 },
                 'stopPump': function(data) {
+                    logger.debug('stopPump rquested');
                     if (all[Services.Watering]) {
                         all[Services.Watering].send('stopPump', data);
                     }

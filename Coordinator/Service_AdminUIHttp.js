@@ -152,11 +152,7 @@ process.on('message', function(m) {
         servicesStatuses = m.data;
     // -----------------------------------------------------------------
     } else if (message === 'hardwareConnectionStatus') {
-        if (!_.isUndefined(data.statusCode)) {
-            currentStatus.hardStatus = data.statusCode;
-        } else {
-            logger.error('hardwareConnectionStatus data has invalid format');
-        }
+        currentStatus = data;
     // -----------------------------------------------------------------
     } else if (message === 'pumpStopped') {
         if (!_.isUndefined(data.responseId)) {
