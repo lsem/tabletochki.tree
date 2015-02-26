@@ -23,7 +23,8 @@ setInterval(function () {
 
     if (thriftConnection === null || (typeof thriftConnection === 'undefined')) {
         logger.error('establishing thrift connection');
-        thriftConnection = thrift.createConnection("localhost", 9090, {transport: transport, protocol: protocol});
+        thriftConnection = thrift.createConnection(siteConfiguration.hardwareServiceApiHost,
+                siteConfiguration.hardwareServiceApiPort, {transport: transport, protocol: protocol});
         thriftConnection.on('error', function() {
             logger.error('thrift tcp connection error');
             thriftConnection = null;
@@ -76,67 +77,50 @@ process.on('message', function(m) {
         coordinator.raiseMessage('hardwareConnectionStatus', serviceHardwareStatus);
     // -----------------------------------------------------------------
     } else if (message === 'close') {
-        logger.info('close received');
+        logger.debug('close received');
         coordinator.raiseMessage('closed')
     // -----------------------------------------------------------------
-    } else if (message === 'dbg.setvsbl') {
-        logger.info('dbg.setvsbl requested');
-        if (serviceApiClient !== null) {
+    } else {
+        if (serviceApiClient === null) return;
+
+        if (message === 'dbg.setvsbl') {
             serviceApiClient.DbgSetContainerWaterLevel(data.amount, function (err, data) {
                 if (err) {
-                    // ...
-                    log.error('cannot handle dbg.donation command: thrift returend error');
+                    log.error('cannot handle dbg.donation command: thrift returend error: ' + err);
                 } else if (data) {
-                    // ...
-                    log.error('cannot handle dbg.donation success');
+                    log.debug('dbg.donation success');
                 }
             });
-        } else {
-            logger.info('no thrift connection available');
-        }
-    // -----------------------------------------------------------------
-    } else if (message === 'uploadConfig') {
-        if (serviceApiClient !== null) {
+        // -----------------------------------------------------------------
+        } else if (message === 'uploadConfig') {
             serviceApiClient.applyConfiguration(data.text, function (err, data) {
                 if (err) {
-                    logger.error('config uploading failed');
+                    logger.error('config uploading failed: ' + err);
                 }
                 else if (data) {
                     logger.debug('config uploaded');
                 }
             });
-        } else {
-            logger.info('no thrift connection available');
-        }
-    // -----------------------------------------------------------------
-    } else if (message === 'startPump') {
-        if (serviceApiClient !== null) {
+        // -----------------------------------------------------------------
+        } else if (message === 'startPump') {
             serviceApiClient.startPump(data.pumpId - 1, function (err, data) {
                 if (err) {
-                    // ...
+                    logger.error('startPump failed: ' + err);
                 } else if (data) {
                     logger.debug('pump started');
                 }
             });
-
-        } else {
-            logger.info('no thrift connection available');
-        }
-    // -----------------------------------------------------------------
-    } else if (message === 'stopPump') {
-        var responseId = data.responseId;
-        if (serviceApiClient !== null) {
+        // -----------------------------------------------------------------
+        } else if (message === 'stopPump') {
+            var responseId = data.responseId;
             serviceApiClient.stopPump(data.pumpId - 1, function (err, data) {
                 if (err) {
-                    // ...
+                    logger.error('stopPump failed: ' + err);
                 } else if (data) {
                     logger.debug('pump stopped, responseId: ' + responseId);
                     coordinator.raiseMessage('pumpStopped', {workingTimeSecond: data.workingTimeSecond, responseId: responseId});
                 }
             });
-
-        } else {
-            logger.info('no thrift connection available');
         }
     }
 });

@@ -19,7 +19,7 @@ var _ = require('underscore');
         var statusPoller = setInterval(function() { _.each(all, function (svc, svcId) { svc.send('status'); });}, siteConfiguration.coordinatorStatusPollerPeriodMs);
 
         return {
-            default: {
+            'default': {
                 'status': function(from, data) {
                     clusterStatus[from] = data;
                 },
