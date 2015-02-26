@@ -8,7 +8,6 @@
 #include "PacketFramer.h"
 #include "DataConst.h"
 #include "ServiceConfiguration.h"
-#include "DeviceIOMapping.h"
 #include "ThriftHelpers.h"
 #include <easylogging++.h>
 
@@ -77,6 +76,15 @@ void HardwareServiceImplementation::StartPump(const PumpIdentifier::type pumpId)
 
     auto &pumpDescriptor = GetPumpStateDescriptorRef((EPUMPIDENTIFIER)pumpId);
     pumpDescriptor.m_startTime = boost::chrono::steady_clock::now();
+
+    if (ExecuteEnablePumpHardwareCommand((EPUMPIDENTIFIER)pumpId))
+    {
+        LOG(INFO) << "EnablePump command executed";
+    }
+    else
+    {
+        LOG(ERROR) << "Failed executing EnablePump command";
+    }
 }
 
 void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId)
@@ -87,6 +95,15 @@ void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const Pump
     const boost::chrono::duration<double> pumpWorkTime = boost::chrono::steady_clock::now() - pumpDescriptor.m_startTime;
 
     _return.workingTimeSecond = (uint32_t)(pumpWorkTime.count() * 1000);
+
+    if (ExecuteDisablePumpHardwareCommand((EPUMPIDENTIFIER)pumpId))
+    {
+        LOG(INFO) << "DisablePump command executed";
+    }
+    else
+    {
+        LOG(ERROR) << "Failed executing EnablePump command";
+    }
 }
 
 void HardwareServiceImplementation::GetServiceStatus(ServiceStatus& _return)
@@ -612,7 +629,7 @@ bool HardwareServiceImplementation::StartPumpingMilliliters(EPUMPIDENTIFIER pump
     {
         const unsigned workTimeSeconds = CalculateWorkTimeForSpecifiedPump(pumpId, millilitersToPump);
 
-        static const unsigned minimumWorkTimeSeconds = 3;
+        static const unsigned minimumWorkTimeSeconds = 1;
 
         if (workTimeSeconds >= minimumWorkTimeSeconds)
         {
@@ -734,7 +751,9 @@ bool HardwareServiceImplementation::ExecuteEnablePumpHardwareCommand(EPUMPIDENTI
 
     unsigned requestPinUsed = 0;
 
-    outputRequest.Pins[requestPinUsed].Assign(INPUTPUMP_PINNUMBER, 1);
+    const unsigned pinNumber = PumpsPinsNumbers.GetMappedValue(pumpId);
+
+    outputRequest.Pins[requestPinUsed].Assign(pinNumber, 1);
     ++requestPinUsed;
 
     Packets::Templates::WriteIOCommandResponse outputResponse;
@@ -762,7 +781,9 @@ bool HardwareServiceImplementation::ExecuteDisablePumpHardwareCommand(EPUMPIDENT
 
     unsigned requestPinUsed = 0;
 
-    outputRequest.Pins[requestPinUsed].Assign(OUTPUTPUMP_PINNUMBER, 0);
+    const unsigned pinNumber = PumpsPinsNumbers.GetMappedValue(pumpId);
+
+    outputRequest.Pins[requestPinUsed].Assign(pinNumber, 0);
     ++requestPinUsed;
 
     Packets::Templates::WriteIOCommandResponse outputResponse;

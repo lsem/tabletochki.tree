@@ -87,6 +87,8 @@ void PacketProcessor::ProcessSetConfigurationCommand(const Packets::IOPinConfigu
             m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_OUTPUT);
 
         SetPinConfiguration(pinNumber, IOPinConfiguration(flags, defaultValue, specData));
+
+        m_ioController->InputOutputController_WritePinData(effectivePinNumber, defaultValue);
     }
 
     if (anyFault)
@@ -120,7 +122,8 @@ void PacketProcessor::ProcessSetOutputCommand(const Packets::DigitalPinOutputDes
     for (size_t index = 0; index != count; ++index)
     {
         const Packets::DigitalPinOutputDescriptor *descriptor = &data[index];
-        m_ioController->InputOutputController_WritePinData(descriptor->PinNumber, descriptor->Value);
+        const uint8_t effectivePinNumber = SelectedBoardTraits::DecodePinByLogicalIndex(descriptor->PinNumber);
+        m_ioController->InputOutputController_WritePinData(effectivePinNumber, descriptor->Value);
     }
 
     RespondGeneric_OK();

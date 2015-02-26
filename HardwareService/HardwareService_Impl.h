@@ -5,6 +5,7 @@
 #include "ServiceConfiguration.h"
 #include "PacketUnFramer.h"
 #include "CommunicationChannel.h"
+#include "DeviceIOMapping.h"
 #include "Utils.h"
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
@@ -402,3 +403,8 @@ STATIC_MAP(PumpingOutStateNames, ELEVELPUMPOUTSTATE, string, LPS__BEGIN, LPS__EN
      "IDLE"             // LPS_IDLE,
 };
 
+STATIC_MAP(PumpsPinsNumbers, EPUMPIDENTIFIER, unsigned, PI__BEGIN, PI__END)
+{
+    INPUTPUMP_PINNUMBER,       // PI_INPUTPUMP
+    OUTPUTPUMP_PINNUMBER        // PI_OUTPUTPUMP,
+};
