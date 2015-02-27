@@ -1,9 +1,9 @@
 #ifndef __DATACONST_H_INCLUDED
 #define __DATACONST_H_INCLUDED
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(TESTS)
 #include <boost/chrono.hpp>
-#endif // _WIN32
+#endif // _WIN32 && TESTS
 
 namespace Dataconst
 {
@@ -12,7 +12,7 @@ namespace Dataconst
     static const int InputBufferSize = 12;
     static const int CommandSendReceiveTimeout = 500;
 
-    static const int HearBeatCommandPeriodMs = 1000;
+    static const int HearBeatCommandPeriodMs = 500;
     static const int QueryInputTaskPeriodMs = 1000;
     static const int InputPipeTaskPeriodMs = 100;
     static const int OutputPipeTaskPeriodMs = 100;
@@ -23,9 +23,9 @@ namespace Dataconst
     static const int TimerThreadPoolSize = 1;
     static const char ServiceConfigurationFilePath[] = "ServiceConfiguration.json";
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(TESTS)
     static const auto PumpOutActivationPeriod = boost::chrono::minutes(60);
-#endif 
+#endif // _WIN32 && TESTS
 }
 
 #endif // __DATACONST_H_INCLUDED

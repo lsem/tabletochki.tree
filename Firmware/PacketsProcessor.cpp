@@ -7,12 +7,14 @@
 #define MEDIAN_MAX_SAMPLES_COUNT 12
 
 
+
 /*virtual */
 void PacketProcessor::PacketParserListener_ConfigurePins(const Packets::IOPinConfiguration *configuration, size_t count)
 {
     if (ValidateSetConfigurationCommand(configuration, count))
     {
         ProcessSetConfigurationCommand(configuration, count);
+        m_iwatchDogManager->EnableWatchdog();
     }
     else
     {
@@ -23,26 +25,86 @@ void PacketProcessor::PacketParserListener_ConfigurePins(const Packets::IOPinCon
 /*virtual */
 void PacketProcessor::PacketParserListener_Input(const Packets::DigitalPinInputDescriptor *data, size_t count)
 {
+    if (m_deviceStatus != PDS_CONFIGURED) return;
+
     ProcessGetInputOutputCommand(data, count);
 }
 
 /*virtual */
 void PacketProcessor::PacketParserListener_Output(const Packets::DigitalPinOutputDescriptor *data, size_t count)
 {
+    if (m_deviceStatus != PDS_CONFIGURED) return;
+
     ProcessSetOutputCommand(data, count);
 }
 
 /*virtual */
 void PacketProcessor::PacketParserListener_GetConfiguration()
 {
+    if (m_deviceStatus != PDS_CONFIGURED) return;
+
     ProcessGetConfigurationCommand();
 }
 
 /*virtual */
 void PacketProcessor::PacketParserListener_HeartBeat()
 {
+    m_iwatchDogManager->ResetWatchdog();
+
     ProcessHeartBeatCommand();
 }
+
+/*virtual */
+void PacketProcessor::WatchDogManagerListener_OnWatchdogTimerExpired()
+{
+    if (m_deviceStatus == PDS_CONFIGURED)
+    {
+        ResetStateToConfiguration();
+    }
+    else
+    {
+        ResetStateToFactoryDefaults();
+    }
+    
+    m_iwatchDogManager->DisableWatchdog();
+}
+
+void PacketProcessor::ResetStateToConfiguration()
+{
+    for (unsigned pinNumber = 0; pinNumber != SelectedBoardTraits::IOTotalPinsNumber; ++pinNumber)
+    {
+        const IOPinConfiguration &configuration = GetPinConfiguration(pinNumber);
+        
+        const uint8_t effectivePinNumber = SelectedBoardTraits::DecodePinByLogicalIndex(pinNumber);
+        const uint8_t defaultValue = configuration.DefaultValue;
+        const uint8_t flags = configuration.Flags;
+
+        if (flags & PF_INPUT)
+            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUT);
+        else if (flags & PF_INPUTPULLUP)
+            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUTPULLUP);
+        else if (flags & PF_OUTPUT)
+            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_OUTPUT);
+
+        m_ioController->InputOutputController_WritePinData(effectivePinNumber, defaultValue);
+    }
+
+    m_deviceStatus = PDS_UNCONFIGURED;
+}
+
+void PacketProcessor::ResetStateToFactoryDefaults()
+{
+    for (unsigned pinNumber = SelectedBoardTraits::DigitalPinsBeginIndex;
+                              SelectedBoardTraits::DigitalPinsEndIndex;
+                              ++pinNumber)
+    {
+        m_ioController->InputOutputController_ConfigurePin(pinNumber, IM_OUTPUT);
+        m_ioController->InputOutputController_WritePinData(pinNumber, LOW);
+    }
+
+    m_deviceStatus = PDS_UNCONFIGURED;
+}
+
 
 void PacketProcessor::RespondGeneric_OK()
 {

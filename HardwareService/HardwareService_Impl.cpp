@@ -769,6 +769,10 @@ bool HardwareServiceImplementation::ExecuteEnablePumpHardwareCommand(EPUMPIDENTI
                 "Device status: " << ((unsigned)outputResponse.Status.DeviceStatus);
         }
     }
+    else
+    {
+        LOG(ERROR) << "Failed sending/receiving 'enable pump' command.";
+    }
 
     return result;
 }
@@ -800,6 +804,10 @@ bool HardwareServiceImplementation::ExecuteDisablePumpHardwareCommand(EPUMPIDENT
                 "Device status: " << ((unsigned)outputResponse.Status.DeviceStatus);
         }
     }
+    else
+    {
+        LOG(ERROR) << "Failed sending/receiving 'disable pump' command.";
+    }
 
     return result;
 }
@@ -823,6 +831,10 @@ bool HardwareServiceImplementation::ExecuteHeartbeatCommand(unsigned &out_device
             LOG(ERROR) << "Failed executing 'heartbeat' command. Device returned: " << ((unsigned)response.OperationResultCode) << ". " <<
                 "Device status: " << ((unsigned)response.DeviceStatus);
         }
+    }
+    else
+    {
+        LOG(ERROR) << "Failed sending/receiving 'heartbeat' command.";
     }
 
     return result;
@@ -870,6 +882,10 @@ bool HardwareServiceImplementation::ExecuteReadIOCommand(DeviceInputValues &out_
                                                              "Device status: " << ((unsigned)readIOResponse.Header.DeviceStatus);
         }
     }
+    else
+    {
+        LOG(ERROR) << "Failed sending/receiving 'read io' command.";
+    }
 
     return result;
 }
@@ -898,12 +914,17 @@ bool HardwareServiceImplementation::ExecuteConfigureDeviceCommand()
     {
         if (configureResponse.Status.OperationResultCode == EC_OK)
         {
+            LOG(INFO) << "'configure device' command sent. New device status is: " << (unsigned) configureResponse.Status.DeviceStatus;
             result = true;
         }
         else
         {
             LOG(ERROR) << "Failed to configure device. Device respond with: " << (unsigned) configureResponse.Status.OperationResultCode;
         }
+    }
+    else
+    {
+        LOG(ERROR) << "Failed sending/receiving 'configure device' command.";
     }
 
     return result;

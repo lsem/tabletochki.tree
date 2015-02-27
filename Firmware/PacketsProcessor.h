@@ -9,23 +9,26 @@
 #include "Utils.h"
 #include "PacketsParser.h"
 #include "BoardConfiguration.h"
+#include "WatchDog.h"
 
 
-class PacketProcessor : public PacketParserListener
+class PacketProcessor : public PacketParserListener, public IWatchDogManagerListener
 {
 public:
     PacketProcessor(ISerialInterface  *serialInterface, 
                     IInputOutputController *ioController, 
-                    IPersistentStorage *persistentStorage):
+                    IPersistentStorage *persistentStorage,
+                    IWatchDogManager *watchDogManager):
         m_serialInterface(serialInterface),
         m_ioController(ioController),
         m_persistentStorage(persistentStorage),
         m_boardConfiguration(),
-        m_deviceStatus(PDS_UNCONFIGURED)
+        m_deviceStatus(PDS_UNCONFIGURED),
+        m_iwatchDogManager(watchDogManager)
     {
     }
 
-public:
+public: // PacketParserListener
     virtual void PacketParserListener_ConfigurationBegin() {}
     virtual void PacketParserListener_ConfigurationEnd() {}
     virtual void PacketParserListener_ConfigurePins(const Packets::IOPinConfiguration *configuration, size_t count);
@@ -41,6 +44,13 @@ public:
     virtual void PacketParserListener_GetConfiguration();
 
     virtual void PacketParserListener_HeartBeat();
+
+public: // IWatchDogManagerListener
+    virtual void WatchDogManagerListener_OnWatchdogTimerExpired();
+
+private:
+    void ResetStateToConfiguration();
+    void ResetStateToFactoryDefaults();
 
 private:
     void RespondGeneric_OK();
@@ -89,4 +99,5 @@ private:
 
     SelectedBoardConfiguration      m_boardConfiguration;
     EPHYSICALDEVICESTATUS           m_deviceStatus;
+    IWatchDogManager               *m_iwatchDogManager;
 };

@@ -29,7 +29,7 @@ protected:
         serialInterface(),
         ioController(),
         persistantStorage(),
-        packetProcessor(&serialInterface, &ioController, &persistantStorage),
+        packetProcessor(&serialInterface, &ioController, &persistantStorage, NULL),
         packetParser(&packetProcessor),
         unframer(&packetParser)
     {}
