@@ -1,0 +1,2 @@
+cd Coordinator
+npm install
