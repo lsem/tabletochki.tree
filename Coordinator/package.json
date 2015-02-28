@@ -2,6 +2,7 @@
   "dependencies": {
     "body-parser": "^1.11.0",
     "colors": "*",
+    "deasync": "0.0.10",
     "express": "^4.11.2",
     "http-status-codes": "^1.0.4",
     "node-simple-router": "*",

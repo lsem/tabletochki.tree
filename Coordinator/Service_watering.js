@@ -22,11 +22,12 @@ var serviceApiClient = null;
 setInterval(function () {
 
     if (thriftConnection === null || (typeof thriftConnection === 'undefined')) {
-        logger.error('establishing thrift connection');
+        logger.error('Trying to establish hardware service API connection');
         thriftConnection = thrift.createConnection(siteConfiguration.hardwareServiceApiHost,
-                siteConfiguration.hardwareServiceApiPort, {transport: transport, protocol: protocol});
+                                                   siteConfiguration.hardwareServiceApiPort,
+                                                   {transport: transport, protocol: protocol});
         thriftConnection.on('error', function() {
-            logger.error('thrift tcp connection error');
+            logger.error('Failed establishing hardware service API connection');
             thriftConnection = null;
             serviceApiClient = null;
         });
@@ -46,7 +47,7 @@ setInterval(function () {
             } else if (data) {
                 thisJsUnitServiceState.details = JSON.parse(data);
             } else {
-                logger.error('Detailed service state returned data in unsupported format');
+                logger.error('Detailed service state returned data of unsupported format');
                 thisJsUnitServiceState.details = {};
             }
         });
@@ -58,7 +59,7 @@ setInterval(function () {
     if (serviceApiClient !== null) {
         serviceApiClient.getServiceStatus(function (err, data) {
             if (err) {
-                logger.error('Error getting service status code (JSON)');
+                logger.error('Error getting hardware service status code');
                 serviceHardwareStatus = { hardStatus: -1};
             } else if (data) {
                 serviceHardwareStatus = { hardStatus: data.statusCode };

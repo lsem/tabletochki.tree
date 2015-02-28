@@ -33,6 +33,7 @@ void PacketProcessor::PacketParserListener_Input(const Packets::DigitalPinInputD
 /*virtual */
 void PacketProcessor::PacketParserListener_Output(const Packets::DigitalPinOutputDescriptor *data, size_t count)
 {
+#pragma message ("WARNING: Invlaid logic: should response anyway")    
     if (m_deviceStatus != PDS_CONFIGURED) return;
 
     ProcessSetOutputCommand(data, count);
@@ -41,6 +42,8 @@ void PacketProcessor::PacketParserListener_Output(const Packets::DigitalPinOutpu
 /*virtual */
 void PacketProcessor::PacketParserListener_GetConfiguration()
 {
+#pragma message ("WARNING: Invlaid logic: should response anyway")
+
     if (m_deviceStatus != PDS_CONFIGURED) return;
 
     ProcessGetConfigurationCommand();
