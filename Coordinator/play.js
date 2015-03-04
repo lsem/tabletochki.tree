@@ -16,32 +16,6 @@ var serviceApiClient = null;
 var transport = ThriftTransports.TFramedTransport();
 var protocol = ThriftProtocols.TBinaryProtocol();
 
-//var doReconnectLoop = function() {
-//
-//    pollerTimer = setInterval(function() {
-//        if (thriftConnection === null || (typeof thriftConnection === 'undefined')) {
-//            //logger.error('Trying to establish hardware service API connection');
-//            thriftConnection = thrift.createConnection('localhost',
-//                9090,
-//                {transport: transport, protocol: protocol});
-//            thriftConnection.on('error', function() {
-//                //logger.error('Failed establishing hardware service API connection');
-//                thriftConnection = null;
-//                serviceApiClient = null;
-//            });
-//            thriftConnection.on('connect', function() {
-//                serviceApiClient = thrift.createClient(HardwareService, thriftConnection);
-//                if (onConnect) onConnect();
-//            });
-//            thriftConnection.on('close', function() {
-//                serviceApiClient = null;
-//                thriftConnection = null;
-//                if (onDisconnect) onDisconnect();
-//            });
-//        }
-//    }, 1000);
-//};
-
 var tryConnectSync = function(options) {
     options = options || {};
 
@@ -163,6 +137,3 @@ exports.getInput = function() {
 exports.getStateDetails = function() {
     return implFunc('getServiceStateJson');
 };
-
-tryConnectSync();
-implFunc('fillVisibleContainerMillilitres', 100);

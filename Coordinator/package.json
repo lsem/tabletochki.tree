@@ -8,7 +8,9 @@
     "node-simple-router": "*",
     "node-thrift": "*",
     "thrift": "*",
-    "underscore": "*"
+    "underscore": "*",
+    "formidable": "*",
+    "form-data": "*"
   },
   "description": "Coordinator service for Tabletochki project"
 }
