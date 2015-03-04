@@ -26,6 +26,7 @@ enum EPINFLAGS
     PF_PWM_LOW      = 0x10,
     PF_PWM_HIGH     = 0x20,
     PF_NORMALIZED   = 0x40,
+    PF_GNDDRIVENOUT     = 0x80,         // Special mode for controlling devices by connection to GND
 
     // ------------------------ NO MORE FLAGS!! 8 BITS ONLY 
 

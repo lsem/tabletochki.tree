@@ -42,6 +42,7 @@ struct ArduinoUnoTraits
     static const unsigned AnalogPinsEndIndex = AnalogPinsBeginIndex + IOTotalAnalogPins;
 
     static uint8_t DecodePinByLogicalIndex(uint8_t index)  {  return (index >= DigitalPinsEndIndex) ? index - DigitalPinsEndIndex : index; }
+    static bool IsDigital(uint8_t index) { return Utils::InRangeIncluding((unsigned int)index, DigitalPinsBeginIndex, DigitalPinsEndIndex); }
 };
 
 

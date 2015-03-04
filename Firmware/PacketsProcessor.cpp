@@ -78,18 +78,14 @@ void PacketProcessor::ResetStateToConfiguration()
     {
         const IOPinConfiguration &configuration = GetPinConfiguration(pinNumber);
         
-        const uint8_t effectivePinNumber = SelectedBoardTraits::DecodePinByLogicalIndex(pinNumber);
         const uint8_t defaultValue = configuration.DefaultValue;
         const uint8_t flags = configuration.Flags;
+        const uint16_t specData = configuration.SpecData;
 
-        if (flags & PF_INPUT)
-            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUT);
-        else if (flags & PF_INPUTPULLUP)
-            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUTPULLUP);
-        else if (flags & PF_OUTPUT)
-            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_OUTPUT);
-
-        m_ioController->InputOutputController_WritePinData(effectivePinNumber, defaultValue);
+        if (SelectedBoardTraits::IsDigital(pinNumber))
+        {
+            ConfigurePin(pinNumber, flags, defaultValue, specData); // Result should be ignored
+        }
     }
 
     m_deviceStatus = PDS_UNCONFIGURED;
@@ -97,12 +93,11 @@ void PacketProcessor::ResetStateToConfiguration()
 
 void PacketProcessor::ResetStateToFactoryDefaults()
 {
-    for (unsigned pinNumber = SelectedBoardTraits::DigitalPinsBeginIndex;
-                              SelectedBoardTraits::DigitalPinsEndIndex;
-                              ++pinNumber)
+    for (unsigned pinNumber = SelectedBoardTraits::DigitalPinsBeginIndex; pinNumber != SelectedBoardTraits::DigitalPinsEndIndex; ++pinNumber)
     {
         m_ioController->InputOutputController_ConfigurePin(pinNumber, IM_OUTPUT);
         m_ioController->InputOutputController_WritePinData(pinNumber, LOW);
+        m_ioController->InputOutputController_ConfigurePin(pinNumber, IM_INPUT);
     }
 
     m_deviceStatus = PDS_UNCONFIGURED;
@@ -142,18 +137,14 @@ void PacketProcessor::ProcessSetConfigurationCommand(const Packets::IOPinConfigu
         const uint8_t flags = pinConfig->Flags;
         const uint8_t defaultValue = pinConfig->DefaultValue;
         const uint8_t specData = pinConfig->SpecData;
-        const uint8_t effectivePinNumber = SelectedBoardTraits::DecodePinByLogicalIndex(pinNumber);
-
-        if (flags & PF_INPUT)
-            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUT);
-        else if (flags & PF_INPUTPULLUP)
-            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUTPULLUP);
-        else if (flags & PF_OUTPUT)
-            m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_OUTPUT);
+        
+        if (!ConfigurePin(pinNumber, flags, defaultValue, specData))
+        {
+            anyFault = true;
+            break;
+        }
 
         SetPinConfiguration(pinNumber, IOPinConfiguration(flags, defaultValue, specData));
-
-        m_ioController->InputOutputController_WritePinData(effectivePinNumber, defaultValue);
     }
 
     if (anyFault)
@@ -166,6 +157,43 @@ void PacketProcessor::ProcessSetConfigurationCommand(const Packets::IOPinConfigu
         RespondGeneric_OK();
     }
 }
+
+bool PacketProcessor::ConfigurePin(uint8_t pinNumber, uint8_t flags, uint8_t defaultValue, uint16_t specData)
+{
+    bool anyFault = false;
+
+    const uint8_t effectivePinNumber = SelectedBoardTraits::DecodePinByLogicalIndex(pinNumber);
+
+    if ((flags & PF_INPUT) != 0)
+    {
+        m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUT);
+    }
+    else if ((flags & PF_INPUTPULLUP) != 0)
+    {
+        m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUTPULLUP);
+    }
+    else if ((flags & PF_OUTPUT) != 0)
+    {
+        m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_OUTPUT);
+        m_ioController->InputOutputController_WritePinData(effectivePinNumber, defaultValue);
+    }
+    else if ((flags & PF_GNDDRIVENOUT) != 0)
+    {
+        m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_OUTPUT);
+        m_ioController->InputOutputController_WritePinData(effectivePinNumber, LOW);
+
+        // Disable (actually, disconnection from control register takes place here)
+        // Arduino hides AVR architecture peculiarities by handy abstraction, so, just believe this works
+        m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUT);
+    }
+    else
+    {
+        anyFault = true;
+    }
+
+    return !anyFault;
+}
+    //SetPinConfiguration(pinNumber, IOPinConfiguration(flags, defaultValue, specData));
 
 bool PacketProcessor::ValidateSetConfigurationCommand(const Packets::IOPinConfiguration *configuration, size_t count)
 {
@@ -184,14 +212,49 @@ void PacketProcessor::ProcessGetConfigurationCommand()
 
 void PacketProcessor::ProcessSetOutputCommand(const Packets::DigitalPinOutputDescriptor *data, size_t count)
 {
+    bool anyFault = false;
+
     for (size_t index = 0; index != count; ++index)
     {
         const Packets::DigitalPinOutputDescriptor *descriptor = &data[index];
+        const IOPinConfiguration &configuration = GetPinConfiguration(descriptor->PinNumber);
         const uint8_t effectivePinNumber = SelectedBoardTraits::DecodePinByLogicalIndex(descriptor->PinNumber);
-        m_ioController->InputOutputController_WritePinData(effectivePinNumber, descriptor->Value);
+        const uint8_t flags = configuration.Flags;
+
+        if ((flags & PF_OUTPUT) != 0)
+        {
+            m_ioController->InputOutputController_WritePinData(effectivePinNumber, descriptor->Value);
+        }
+        else if ((flags & PF_GNDDRIVENOUT) != 0)
+        {
+            if (descriptor->Value == 0)
+            {
+                m_ioController->InputOutputController_WritePinData(effectivePinNumber, LOW);  // This actually not needed in all subsequent writes (writing once at configuration is enough)
+                m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_INPUT);
+            }
+            else
+            {
+                m_ioController->InputOutputController_WritePinData(effectivePinNumber, LOW);    // This actually not needed in all subsequent writes (writing once at configuration is enough)
+                m_ioController->InputOutputController_ConfigurePin(effectivePinNumber, IM_OUTPUT);
+            }
+        }
+        else
+        {
+            // TODO: Rollback previously written values needed here
+            anyFault = true;
+            break;
+        }
+        
     }
 
-    RespondGeneric_OK();
+    if (!anyFault)
+    {
+        RespondGeneric_OK();
+    }
+    else
+    {
+        RespondGeneric_Fail(EC_INVALIDCONFIGURATION);
+    }
 }
 
 void PacketProcessor::ProcessGetInputOutputCommand(const Packets::DigitalPinInputDescriptor *data, size_t count)
@@ -227,9 +290,7 @@ void PacketProcessor::ProcessGetInputOutputCommand(const Packets::DigitalPinInpu
             else
             {
                 uint16_t samplesCount = configuration.SpecData;
-
-                assert(samplesCount <= MEDIAN_MAX_SAMPLES_COUNT);
-
+                ASSERT(samplesCount <= MEDIAN_MAX_SAMPLES_COUNT);
                 uint16_t samplesData[MEDIAN_MAX_SAMPLES_COUNT];
 
                 for (uint8_t index = 0; index != ARRAY_SIZE(samplesData); ++index)
@@ -261,6 +322,7 @@ void PacketProcessor::ProcessGetInputOutputCommand(const Packets::DigitalPinInpu
         {
             header->OperationResultCode = EC_FAILURE;
         }
+        
         
         pinData->PinNumber = descriptor->PinNumber;
 

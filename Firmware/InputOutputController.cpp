@@ -36,7 +36,9 @@ void ArduinoStdIOController::InputOutputController_WritePinData(uint8_t pinNumbe
 /*virtual */
 void ArduinoStdIOController::InputOutputController_ReadAnalog(uint8_t pinNumber, uint16_t &out_value)
 {
-    out_value = ::analogRead(pinNumber);
+    int value;
+    value = ::analogRead(pinNumber);
+    out_value = value;
 }
 
 /*virtual */

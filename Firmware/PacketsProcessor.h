@@ -58,6 +58,8 @@ private:
 
 private:
     void ProcessSetConfigurationCommand(const Packets::IOPinConfiguration *configuration, size_t count);
+    bool ConfigurePin(uint8_t pinNumber, uint8_t flags, uint8_t defaultValue, uint16_t specData);
+
     bool ValidateSetConfigurationCommand(const Packets::IOPinConfiguration *configuration, size_t count);
     void ProcessInvalidConfigurationCommand();
 
@@ -88,7 +90,7 @@ private:
         const uint8_t flags = configuration.Flags;
         return IsValidPinNumber(configuration.PinNumber) &&
             ((flags & (PF_INPUT | PF_INPUTPULLUP)) != (PF_INPUT | PF_INPUTPULLUP)) &&
-            (((flags & (PF_INPUT | PF_INPUTPULLUP)) != 0) != ((flags & PF_OUTPUT) != 0));
+            (((flags & (PF_INPUT | PF_INPUTPULLUP)) != 0) != ((flags & (PF_OUTPUT | PF_GNDDRIVENOUT)) != 0));
     }
 
 private:
