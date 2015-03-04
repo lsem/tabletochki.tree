@@ -1,21 +1,14 @@
-var _ = require('underscore');
 var http = require('http');
 var types  = require('./types');
-var master = require('./svcutils').master;
 var logger = require('./log_manager.js').loggerFor(types.Services.HttpListener);
 var coordinator = require('./svcutils').coordinator(types.Services.HttpListener);
 var siteConfiguration = require('./configuration');
-var express = require('express');
-var util = require('util');
-var formidable = require('formidable');
-
-
-var app = express();
-
 
 var thisJsUnitServiceState = {
     health: 'green'
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 var commandListener = function(pollingPrams) {
     var that = {};
@@ -57,47 +50,6 @@ var commandListener = function(pollingPrams) {
     return that;
 };
 
-app.get('/', function (req, res) {
-    res.send('Hello World!')
-})
-
-// Receives uploaded file
-app.post('/treeUpload', function (request, response) {
-    logger.debug('POST /treeUpload');
-    var form = formidable.IncomingForm();
-    form.parse(request, function(error, fields, files) {
-        logger.debug('complete parsing upload request.');
-        if (error) {
-            logger.error('error while parsing occured');
-            response.status(400);
-        } else {
-            logger.debug('seems like upload request parsed successfully');
-            response.end();
-        }
-    });
-
-
-});
-
-// Uploads file
-app.get('/uploadTest', function(request, response) {
-    var form = new FormData();
-    form.append('my_field', 'my value');
-    form.append('my_buffer', new Buffer(10));
-    form.append('my_file', fs.createReadStream('d:/ImageExtractionSample_0.jpg'));
-
-    form.submit('http://localhost:3000/treeUpload', function (submitError, submitResult) {
-        if (submitError) {
-            logger.debug('error: failed uploading');
-            response.end();
-        } else {
-            logger.debug('submitResult: ' + util.inspect(submitResult));
-            response.end();
-        }
-    });
-});
-
-
 var cmdListener = commandListener({
     hostURL: siteConfiguration.commandsProviderHttpURI,
     reconnectTimeout: siteConfiguration.commandsProviderReconnectionTimeot,
@@ -119,6 +71,9 @@ var cmdListener = commandListener({
     }
 });
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 process.on('message', function(m) {
     var message = m.message;
     var data = m.data;
@@ -132,7 +87,6 @@ process.on('message', function(m) {
 
 
 cmdListener.startListener();
-app.listen(3000);
 
 coordinator.raiseMessage('connected');
 
