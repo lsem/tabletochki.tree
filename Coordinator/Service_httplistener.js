@@ -61,7 +61,7 @@ var cmdListener = commandListener({
         try {
             var commandObject = JSON.parse(body);
             if (_.isObject(commandObject)) {
-                master.raiseMessage(types.Messages.HttpListener.DonationCommited);
+                coordinator.raiseMessage('waterInputTaskCommitted', body.amount);
             } else {
                 logger.warning('Received body is not valid command object');
             }
