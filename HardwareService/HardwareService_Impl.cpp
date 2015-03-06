@@ -36,7 +36,8 @@ HardwareServiceImplementation::HardwareServiceImplementation() :
     m_defferedInputListLock(),
     m_levelHeighsMinMaxTable(),
     m_previousWaterLevelIndex(InvalidIndex),
-    m_emergencyStopMessage()
+    m_emergencyStopMessage(),
+    m_deviceComportId()
 {
     CreateTasksTimers();
     InitializeServiceState();
@@ -210,6 +211,13 @@ void HardwareServiceImplementation::DbgSetContainerWaterLevel(const int32_t amou
 void HardwareServiceImplementation::StartService()
 {
     LoadConfiguration();
+    
+    while (!FindDevicePort())
+    {
+        LOG(ERROR) << "Device disconnected";
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
     CreateTimerThreads();
     StartBackgroundTasks();
 }
@@ -303,6 +311,66 @@ void HardwareServiceImplementation::PreparePeripheral()
 {
     SetPreviousWaterLevelIndex(InvalidIndex);
 }
+
+bool HardwareServiceImplementation::FindDevicePort()
+{
+    bool result = false;
+
+
+    string comportId;
+    unsigned comportNumberToTry = 0;
+    bool found = false;
+
+    while (true)
+    {
+        found = false;
+
+        {
+            ScopedLock locked(GetCommunicationLock());
+            auto *communicationChannel = GetCommunicationChannel();
+
+            comportId = "COM" + std::to_string(comportNumberToTry);
+
+            if (communicationChannel->Open(comportId.c_str()))
+            {
+                communicationChannel->Close();
+                found = true;
+            }
+        }
+
+        if (found)
+        {
+            SetDeviceomportId(comportId);
+            
+            unsigned deviceStatus;
+            if (ExecuteHeartbeatCommand(deviceStatus))
+            {
+                LOG(INFO) << "Found device at: " << comportId;
+
+                SetDeviceomportId(comportId);
+                
+                result = true;
+                break;
+            }
+        }
+
+        if (!result)
+        {
+            LOG(DEBUG) << "Failed opening device at port: " << comportId;
+
+            ++comportNumberToTry;
+
+            if (comportNumberToTry == MAXIMUM_DEVICEOPEN_COMPORTNUMBER)
+            {
+                break;
+            }
+        }
+    }
+
+    return result;
+}
+
+
 
 
 void HardwareServiceImplementation::HeartBeatTask()
@@ -1071,7 +1139,7 @@ bool HardwareServiceImplementation::DoSendPacketData(const void *packetData, siz
 
     LOG(DEBUG) << "Acquiring communication channel lock";
 
-    auto communicationChannel = GetCommunicationChannel();
+    auto *communicationChannel = GetCommunicationChannel();
 
     ScopedLock locked(GetCommunicationLock());
 
@@ -1081,8 +1149,7 @@ bool HardwareServiceImplementation::DoSendPacketData(const void *packetData, siz
     {
         LOG(DEBUG) << "Opening communication channel on COM4";
 
-
-        if (!communicationChannel->Open("COM4"))
+        if (!communicationChannel->Open(GetDeviceomportId().c_str()))
         {
             LOG(ERROR) << "Failed opening device port. Error: '" << Utils::GetLastSystemErrorMessage() << "'";
             break;

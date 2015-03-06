@@ -7,7 +7,7 @@
 
 namespace Dataconst
 {
-    static const int APIDefaultPortNumber = 9090;
+    static const int APIDefaultPortNumber = 35001;
 	static const int PacketMaxSizeBytes = 256;
     static const int InputBufferSize = 12;
     static const int CommandSendReceiveTimeout = 500;

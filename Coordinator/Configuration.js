@@ -7,8 +7,8 @@ exports.commandsProviderReconnectionTimeot = 500;
 
 // watering
 exports.wateringHardwareServiceStatusRefreshPeriodMs = 300;
-exports.hardwareServiceApiHost = 'localhost';
-exports.hardwareServiceApiPort = 9090;
+exports.hardwareServiceApiHost = '127.0.0.1';
+exports.hardwareServiceApiPort = 35001;
 
 
 // adminui

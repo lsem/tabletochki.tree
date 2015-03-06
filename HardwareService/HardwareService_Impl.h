@@ -212,6 +212,7 @@ private:
     void RestartTask(ESERVICETASKID timerId);
     void RestartTaskTimeSpecified(ESERVICETASKID timerId, unsigned timeFromNowMilliseconds);
     void PreparePeripheral();
+    bool FindDevicePort();
 
 private:
     void HeartBeatTask();
@@ -345,6 +346,8 @@ private:
     PumpoutLevelHeightsMinMaxTable &GetLevelHeightsMinMaxTable()  { return m_levelHeighsMinMaxTable; }
     unsigned GetPreviousWaterLevelIndex() const { return m_previousWaterLevelIndex; }
     void SetPreviousWaterLevelIndex(unsigned value) { m_previousWaterLevelIndex = value; }
+    void SetDeviceomportId(const string &value) { m_deviceComportId = value; }
+    const string &GetDeviceomportId() const { return m_deviceComportId; }
 
 private:
     mutex                               m_communicationLock;
@@ -370,6 +373,7 @@ private:
     PumpoutLevelHeightsMinMaxTable      m_levelHeighsMinMaxTable;
     unsigned                            m_previousWaterLevelIndex;
     string                              m_emergencyStopMessage;
+    string                              m_deviceComportId;
 };
 
 
@@ -431,3 +435,4 @@ struct Range
     unsigned Min;
     unsigned Max;
 };
+

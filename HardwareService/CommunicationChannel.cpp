@@ -2,6 +2,8 @@
 
 #include "CommunicationChannel.h"
 
+#include "PacketDefs.h"
+
 #include <serialib.h>
 #include <easylogging++.h>
 
@@ -17,7 +19,7 @@ bool SerialLibCommunicationChannel::Open(const char *comportDescriptor)
 
     LOG(DEBUG) << "SerialLibCommunicationChannel: Opening the channel";
 
-    const auto result = m_serialLibInstance->Open(comportDescriptor, 9600);
+    const unsigned  result = m_serialLibInstance->Open(comportDescriptor, 9600);
     if (result != 1)
     {
         anyFault = true;
@@ -32,6 +34,7 @@ void SerialLibCommunicationChannel::Close()
 
     m_serialLibInstance->Close();
 }
+
 
 /*virtual */
 bool SerialLibCommunicationChannel::CommunicationChannel_SerialWrite(const void *data, size_t dataSize)
