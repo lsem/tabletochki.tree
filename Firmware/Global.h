@@ -20,6 +20,7 @@
     using std::vector;
     using std::string;
     using std::list;
+    using std::pair;
 
 #endif //  _WIN32
 #pragma warning(disable : 4351)

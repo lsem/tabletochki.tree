@@ -33,7 +33,10 @@ HardwareServiceImplementation::HardwareServiceImplementation() :
     m_hiddenContainerStateData(NULL),
     m_levelPumpOutState(NULL),
     m_defferedInputList(),
-    m_defferedInputListLock()
+    m_defferedInputListLock(),
+    m_levelHeighsMinMaxTable(),
+    m_previousWaterLevelIndex(InvalidIndex),
+    m_emergencyStopMessage()
 {
     CreateTasksTimers();
     InitializeServiceState();
@@ -83,7 +86,7 @@ void HardwareServiceImplementation::StartPump(const PumpIdentifier::type pumpId)
     }
     else
     {
-        LOG(ERROR) << "Failed executing EnablePump command";
+        LOG(ERROR) << "Failed executing StartPump command";
     }
 }
 
@@ -102,7 +105,7 @@ void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const Pump
     }
     else
     {
-        LOG(ERROR) << "Failed executing EnablePump command";
+        LOG(ERROR) << "Failed executing StopPump command";
     }
 }
 
@@ -124,17 +127,17 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
     const auto outputPumpStateName = DecodePumpState(outputPumpDescriptor.m_state);
     const auto inputValues = GetDeviceInputValues();
 
-    const auto currentLevelPumpOutState = GetLevelPumpOutStateData().GetState();
+    const auto &pumpOutStateData = GetLevelPumpOutStateData();
+    const auto currentLevelPumpOutState = pumpOutStateData.GetState();
     const auto currentLevelPumpOutStateStr = PumpingOutStateNames.GetMappedValue(currentLevelPumpOutState);
+    const auto pendingInputTasksCount = GetWaterInputPendingTasksCount();
+    const auto nowTime = GetNowSteadyClockTime();
+#pragma message ("WARNING: Thread-unsafe ecode")
+    const steady_time_point activationTime = pumpOutStateData.GetActivationTime();
+    const auto nextPumpOutTimeLeftSec = activationTime > nowTime 
+        ? boost::chrono::duration_cast<boost::chrono::seconds>(activationTime - nowTime).count() : 0;
 
-    size_t pendingInputTasksCount = 0;
-    {
-        ScopedLock locked(GetDefferedInputListLock());
-        auto &defferedTasksList = GetDefferedInputList();
-        pendingInputTasksCount = defferedTasksList.size();
-    }
-
-#pragma region ResultinJsonFormatting
+#pragma region ResultingJsonFormatting
     j << "{ ";
         j << "\"general\": ";
         j << "{ ";
@@ -163,13 +166,14 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
         j << "}, "; // pumps
         j << "\"input\":";
         j << "{ ";
-            j << "\"proximitySensor\": " << inputValues.m_proximitySensorValue << ","; 
+        j << "\"m_visibleWaterLevelSensorRaw\": " << inputValues.m_visibleWaterLevelSensorRaw << ",";
             j << "\"magicButton\": " << inputValues.m_magicButtonPressed << ", ";
             j << "\"visibleLevel\": " << inputValues.m_visibleContainerWaterLevelMillimeters<< ", ";
-            j << "\"visibleLevelIndex\": " << GetCurrentWaterLevelIndex() << "";
+            j << "\"visibleLevelIndex\": " << GetCurrentWaterLevelIndex() << ", ";
+            j << "\"nextPumpOutTimeLeft\": " << nextPumpOutTimeLeftSec << "";
         j << "} "; // input
     j << "} ";
-#pragma endregion Resultin Json Formatting
+#pragma endregion Resulting Json Formatting
 
     jsonDocumentReceiver = j.str();
 }
@@ -177,28 +181,21 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
 void HardwareServiceImplementation::FillVisibleContainerMillilitres(const int32_t amount)
 {
     EnsurePumpReadyForWork_RaiseExceptionIfNot(PI_INPUTPUMP);
-    EnablePumpForSpecifiedTime(PI_INPUTPUMP, 1000);
+    ScheduleWaterInputTask(amount);
 }
 
 void HardwareServiceImplementation::EmptyVisiableContainerMillilitres(const int32_t amount)
 {
-    // TODO: Handle properly consistency with automated logic
-    // ...
 #pragma message ("WARNING: TODO: Handle properly consistency with automated logic")
 
     EnsurePumpReadyForWork_RaiseExceptionIfNot(PI_OUTPUTPUMP);
-    EnablePumpForSpecifiedTime(PI_OUTPUTPUMP, 1000);
+    EnsureOutputPumpIsAvailableForFork_RaiseIfNot();
+    ScheduleWaterInputTask(amount);
 }
 
 void HardwareServiceImplementation::DbgSetContainerWaterLevel(const int32_t amount)
 {
-    //auto &inputValues = GetDeviceInputValuesRef();
-    //inputValues.m_visibleContainerWaterLevelMillimeters = amount;
-
-    ScopedLock locked(GetDefferedInputListLock());
-    auto &inputList = GetDefferedInputList();
-    inputList.push_back(DefferedWaterInputItem(1000));
-
+    ScheduleWaterInputTask(1000);
     LOG(INFO) << "Scheduled task for processing";
 }
 
@@ -248,6 +245,7 @@ void HardwareServiceImplementation::LoadConfiguration()
     if (ServiceConfigurationManager::LoadFromJsonFile(Dataconst::ServiceConfigurationFilePath, /*out*/loadedConfiguration))
     {
         SetServiceConfiguration(loadedConfiguration);
+        BuildFixedWaterLevelHeightsTable();
         SetServiceState(SS_READY);
     }
     else
@@ -292,6 +290,11 @@ void HardwareServiceImplementation::RestartTaskTimeSpecified(ESERVICETASKID time
     auto &timerObject = GetTimerObjectById(timerId);
     timerObject.expires_from_now(boost::posix_time::milliseconds(timeFromNowMilliseconds));
     timerObject.async_wait(std::bind(actionMethod, this));
+}
+
+void HardwareServiceImplementation::PreparePeripheral()
+{
+    SetPreviousWaterLevelIndex(InvalidIndex);
 }
 
 
@@ -348,78 +351,121 @@ void HardwareServiceImplementation::WaterLevelManagerTask()
     //  0-10                0.00001                               (pump will ignore so small amount of work)
     //
 
-    //
-
     ProcessWaterLevelManagerTaskActions();
     RestartTask(TI_LEVELMANAGERTASK);
 }
 
 void HardwareServiceImplementation::ProcessWaterLevelManagerTaskActions()
 {
-    if (GetServiceState() != SS_READY) return;
-    if (GetDeviceState() != DS_READY) return;
-    
-    auto &stateDataRef = GetLevelPumpOutStateDataRef();
+    if (GetServiceState() != SS_READY)
+    {
+        return;
+    }
+    if (GetDeviceState() != DS_READY)
+    {
+        return;
+    }
+    if (GetCurrentWaterLevelIndex() == InvalidIndex)
+    {
+        LOG(ERROR) << "Output pumping maintenance activity is not possible due to invalid water level. "
+                        "Check the configuration or hardware";
 
+        EmergencyStop();
+        return;
+    }
+
+    DoProcessWaterLevelManagerTaskActions();
+}
+
+void HardwareServiceImplementation::DoProcessWaterLevelManagerTaskActions()
+{
+    ProcessLevelIndexChangeIfNecessary();
+    ActivateOutomatedOutputPumpingIfNecessary();
+}
+
+void HardwareServiceImplementation::ProcessLevelIndexChangeIfNecessary()
+{
     const auto currentWaterLevelIndex = GetCurrentWaterLevelIndex();
-    const auto lastLevelIndex = stateDataRef.GetLastDiscreteLevelIndex();
+
+    LOG(DEBUG) << "Sensor value: " << GetDeviceInputValues().m_visibleWaterLevelSensorRaw;
+    LOG(DEBUG) << "Level Index: " << currentWaterLevelIndex;
+
+    const auto lastLevelIndex = GetPreviousWaterLevelIndex();
     const bool waterLevelChanged = (lastLevelIndex == ItemNotFoundIndex) || (lastLevelIndex != currentWaterLevelIndex);
 
     if (waterLevelChanged)
     {
-        LOG(INFO) << "Level changed to: " << currentWaterLevelIndex;
-        stateDataRef.SetLastDiscreteLevelIndex(currentWaterLevelIndex);
+        SetPreviousWaterLevelIndex(currentWaterLevelIndex);
 
-        if (currentWaterLevelIndex != ItemNotFoundIndex)
+        LOG(DEBUG) << "Level changed to: " << currentWaterLevelIndex;
+
+        if (StopPumpIfNecessary(PI_OUTPUTPUMP))
         {
-            bool stopped;
-
-            if (StopPumpIfNecessary(PI_OUTPUTPUMP, stopped))
-            {
-                const auto amountToPumpOutMl = GetPumpingOutvelocityAtLevel(currentWaterLevelIndex);
-                const unsigned workTimeSec = CalculateWorkTimeForSpecifiedPump(PI_OUTPUTPUMP, amountToPumpOutMl);
-                unsigned unsigned hourCenteredTimeOffsetSec = (3600 / 2) - (workTimeSec / 2);
-                stateDataRef.SetActivationTime(GetNowSteadyClockTime() + boost::chrono::seconds(hourCenteredTimeOffsetSec));
-            }
-        }
-    }
-    
-    if (stateDataRef.GetActivationTime() <= GetNowSteadyClockTime())
-    {
-        bool stopped;
-
-        if (StopPumpIfNecessary(PI_OUTPUTPUMP, stopped))
-        {
-            if (currentWaterLevelIndex != ItemNotFoundIndex)
-            {
-                const auto amountToPumpOutMl = GetPumpingOutvelocityAtLevel(currentWaterLevelIndex);
-                stateDataRef.SetActivationTime(GetNowSteadyClockTime() + Dataconst::PumpOutActivationPeriod);
-
-                bool started;
-                if (StartPumpingMilliliters(PI_OUTPUTPUMP, amountToPumpOutMl, started))
-                {
-                    if (started)
-                    {
-                        stateDataRef.SetState(LPS_INPROGRESS);
-                    }
-                    else
-                    {
-                        stateDataRef.SetState(LPS_IDLE);
-                        auto &pumpDescriptorRef = GetPumpStateDescriptorRef(PI_OUTPUTPUMP);
-                        pumpDescriptorRef.SetScheduledStopTime(GetNowSteadyClockTime());
-                    }
-                }
-            }
-            else
-            {
-                LOG(ERROR) << "Invalid index reached. Seems like a problem with level sensor or pumps; raising emergency stop exception";
-
-                stateDataRef.SetState(LPS_IDLE);
-                EmergencyStop();
-            }
+            ShceduleFirstPlannedPumpOutActivation();
         }
     }
 }
+
+void HardwareServiceImplementation::ActivateOutomatedOutputPumpingIfNecessary()
+{
+    auto &stateDataRef = GetLevelPumpOutStateDataRef();
+    if (stateDataRef.GetActivationTime() <= GetNowSteadyClockTime())
+    {
+        ActivateOutomatedOutputPumping();
+    }
+}
+
+void HardwareServiceImplementation::ShceduleNextPlannedPumpOutActivation()
+{
+    auto &stateDataRef = GetLevelPumpOutStateDataRef();
+    stateDataRef.SetActivationTime(GetNowSteadyClockTime() + Dataconst::PumpOutActivationPeriod);
+}
+
+void HardwareServiceImplementation::ShceduleFirstPlannedPumpOutActivation()
+{
+    const auto currentWaterLevelIndex = GetCurrentWaterLevelIndex();
+    auto &stateDataRef = GetLevelPumpOutStateDataRef();
+    const auto amountToPumpOutMl = GetPumpingOutvelocityAtLevel(currentWaterLevelIndex);
+    const unsigned workTimeSec = CalculateWorkTimeForSpecifiedPump(PI_OUTPUTPUMP, amountToPumpOutMl);
+    unsigned hourCenteredTimeOffsetSec = (3600 / 2) - (workTimeSec / 2);
+    stateDataRef.SetActivationTime(GetNowSteadyClockTime() + boost::chrono::seconds(hourCenteredTimeOffsetSec));
+}
+
+void HardwareServiceImplementation::PerformPlannedPumpOutActivation()
+{
+    auto &stateDataRef = GetLevelPumpOutStateDataRef();
+    const auto currentWaterLevelIndex = GetCurrentWaterLevelIndex();
+    const auto amountToPumpOutMl = GetPumpingOutvelocityAtLevel(currentWaterLevelIndex);
+
+    bool started;
+    if (StartPumpingMilliliters(PI_OUTPUTPUMP, amountToPumpOutMl, started))
+    {
+        if (started)
+        {
+            stateDataRef.SetState(LPS_INPROGRESS);
+        }
+        else
+        {
+            stateDataRef.SetState(LPS_IDLE);
+            auto &pumpDescriptorRef = GetPumpStateDescriptorRef(PI_OUTPUTPUMP);
+            pumpDescriptorRef.SetScheduledStopTime(GetNowSteadyClockTime());
+        }
+    }
+}
+
+void HardwareServiceImplementation::ActivateOutomatedOutputPumping()
+{
+    if (StopPumpIfNecessary(PI_OUTPUTPUMP))
+    {
+        ShceduleNextPlannedPumpOutActivation();
+        PerformPlannedPumpOutActivation();
+    }
+    else
+    {
+        LOG(ERROR) << "Failed to stop output pump that needed for starting planned water output";
+    }
+}
+
 
 void HardwareServiceImplementation::InputWaterPorcessManagerTask()
 {
@@ -448,13 +494,13 @@ void HardwareServiceImplementation::InputWaterPorcessManagerTask()
 }
 
 
-void HardwareServiceImplementation::OnPumpEndWorking()
+void HardwareServiceImplementation::OnOutputPumpEndedWorking()
 {
     auto &currentLevelPumpOutState = GetLevelPumpOutStateDataRef();
     currentLevelPumpOutState.SetState(LPS_IDLE);
 }
 
-void HardwareServiceImplementation::OnPumpStartedWorking()
+void HardwareServiceImplementation::OnOutputPumpStartedWorking()
 {
     // Do nothing
 }
@@ -499,10 +545,20 @@ void HardwareServiceImplementation::EnsurePumpReadyForWork_RaiseExceptionIfNot(E
     }
 }
 
+void HardwareServiceImplementation::EnsureOutputPumpIsAvailableForFork_RaiseIfNot()
+{
+    const auto &atomatedPumpOutState = GetLevelPumpOutStateData();
+    if (atomatedPumpOutState.GetState() != LPS_IDLE)
+    {
+        RaiseInvalidOperationException(Tabletochki::ErrorCode::PUMP_NOT_READY,
+            "Pump is used by automated pumping out service");
+    }
+}
+
 void HardwareServiceImplementation::ProcessPumpControlActions(EPUMPIDENTIFIER pumpId)
 {
     ProcessPumpControlActions_ManagePumpControl(pumpId);
-    ProcessPumpControlActions_SimulatedSensors(pumpId);
+    //ProcessPumpControlActions_SimulatedSensors(pumpId);
 }
 
 
@@ -523,7 +579,11 @@ void HardwareServiceImplementation::ProcessPumpControlActions_ManagePumpControl(
                     pumpDescriptor.CalcWorkTimeDurationSeconds() << " seconds";
 
                 pumpDescriptor.ResetStateData(PS_DISABLED);
-                OnPumpEndWorking();
+
+                if (pumpId == PI_OUTPUTPUMP)
+                {
+                    OnOutputPumpEndedWorking();
+                }
             }
             else
             {
@@ -549,31 +609,36 @@ void HardwareServiceImplementation::ProcessPumpControlActions_SimulatedSensors(E
         }
 
         const auto nowTime = GetNowSteadyClockTime();
-        const auto timeElapsedFromPrevioisCall = boost::chrono::duration_cast<boost::chrono::seconds>(nowTime - lastWorkingTimePointRef).count();
+        const auto timeElapsedFromPrevioisCallMsec = boost::chrono::duration_cast<boost::chrono::milliseconds>(nowTime - lastWorkingTimePointRef).count();
+        
+        const auto &configuration = GetServiceConfiguration();
+        const unsigned pumpPerformancePerSecondsMl = configuration.Pumps[pumpId].m_performanceMlPerHour / 3600;
+        const unsigned millitersPumpedOut = static_cast<unsigned>(pumpPerformancePerSecondsMl * timeElapsedFromPrevioisCallMsec) / 1000;
+        const auto visibleHeight = configuration.VisibleContainerConfiguration.m_depth;
+        const auto visibleWidth = configuration.VisibleContainerConfiguration.m_width;
 
-        {
-            const auto &configuration = GetServiceConfiguration();
-            const unsigned pumpPerformancePerSecondsMl = configuration.Pumps[pumpId].m_performanceMlPerHour / 3600;
-            const unsigned millitersPumpedOut = pumpPerformancePerSecondsMl * timeElapsedFromPrevioisCall;
+        const double levelDecraseCm = (double)millitersPumpedOut / (configuration.VisibleContainerConfiguration.m_width * configuration.VisibleContainerConfiguration.m_depth);
 
-            const double levelDecraseCm = (double)millitersPumpedOut / (configuration.VisibleContainerConfiguration.m_width * configuration.VisibleContainerConfiguration.m_height);
-
-            auto &inputValuesReference = GetDeviceInputValuesRef();
+        auto &inputValuesReference = GetDeviceInputValuesRef();
             
-            if (levelDecraseCm >= 0.1)
+        if (levelDecraseCm >= 0.1)
+        {
+            const unsigned levelDecraseml = static_cast<unsigned>(std::rint(levelDecraseCm * 10.0));
+
+            LOG(INFO) << "Level decreased/increased for " << levelDecraseml << " ml by " << DecodePumpIdentifierName(pumpId) << "pump";
+
+            const auto multiplier = PumpsTasksSimulatedSensorsMultipliers.GetMappedValue(pumpId);
+            const auto increaseValue = levelDecraseml * multiplier;
+            
+            static const auto MaximumValue = GetServiceConfiguration().PumpOutLevelsConfiguration.m_levelData[GetServiceConfiguration().PumpOutLevelsConfiguration.m_levelData.size()-1].m_levelHeight - 1;
+            if ((inputValuesReference.m_visibleContainerWaterLevelMillimeters + increaseValue) <= MaximumValue)
             {
-                const unsigned levelDecraseml = std::rint(levelDecraseCm * 10.0);
-
-                LOG(INFO) << "Level decreased/increased for " << levelDecraseml << " ml by " << DecodePumpIdentifierName(pumpId) << "pump";
-
-                //if (inputValuesReference.m_visibleContainerWaterLevelMillimeters >= 0)
-                {
-                    const auto multiplier = PumpsTasksSimulatedSensorsMultipliers.GetMappedValue(pumpId);
-                    inputValuesReference.m_visibleContainerWaterLevelMillimeters += (levelDecraseml * multiplier);
-                    lastWorkingTimePointRef = nowTime;
-                }
+                inputValuesReference.m_visibleContainerWaterLevelMillimeters += increaseValue;
             }
+
+            lastWorkingTimePointRef = nowTime;
         }
+       
     }
     else
     {
@@ -583,8 +648,15 @@ void HardwareServiceImplementation::ProcessPumpControlActions_SimulatedSensors(E
 
 void HardwareServiceImplementation::EmergencyStop()
 {
-#pragma message("WARNING:  Emergeny stop is not implemented")
-    // ...
+    // By setting this state, heartbeat task should be suppressed which in turn should 
+    // activate fault tolerance in Arduino which should stop all hardware
+    //SetServiceState(SS_EMERGENCYSTOPPED);
+
+    //// Reset all states to failed
+    //GetLevelPumpOutStateDataRef().SetState(LPS_IDLE);
+    //GetPumpStateDescriptorRef(PI_INPUTPUMP).SetState(PS_FAILED);
+    //GetPumpStateDescriptorRef(PI_OUTPUTPUMP).SetState(PS_FAILED);
+    //SetDeviceState(DS_DISCONNECTED);
 }
 
 
@@ -599,7 +671,14 @@ bool HardwareServiceImplementation::StopPumpIfNecessary(EPUMPIDENTIFIER pumpId, 
         if (ExecuteDisablePumpHardwareCommand(pumpId))
         {
             LOG(INFO) << "Work time duration: " << pumpStateDescriptor.CalcWorkTimeDurationSeconds();
+
             pumpStateDescriptor.ResetStateData(PS_DISABLED);
+
+            if (pumpId == PI_OUTPUTPUMP)
+            {
+                OnOutputPumpEndedWorking();
+            }
+
             out_stopped = true;
             result = true;
         }
@@ -616,6 +695,13 @@ bool HardwareServiceImplementation::StopPumpIfNecessary(EPUMPIDENTIFIER pumpId, 
 
     return result;
 }
+
+bool HardwareServiceImplementation::StopPumpIfNecessary(EPUMPIDENTIFIER pumpId)
+{
+    bool dontCare;
+    return StopPumpIfNecessary(pumpId, dontCare);
+}
+
 
 bool HardwareServiceImplementation::StartPumpingMilliliters(EPUMPIDENTIFIER pumpId, unsigned millilitersToPump, bool &out_result)
 {
@@ -646,7 +732,7 @@ bool HardwareServiceImplementation::StartPumpingMilliliters(EPUMPIDENTIFIER pump
             }
             else
             {
-                EmergencyStop();
+                EmergencyStopMsg("Failed start pump");
             }
         }
         else
@@ -657,7 +743,7 @@ bool HardwareServiceImplementation::StartPumpingMilliliters(EPUMPIDENTIFIER pump
     }
     else
     {
-
+        LOG(ERROR) << "Failed to enable pump " << DecodePumpIdentifierName(pumpId) << ". Already working";
     }
 
     return result;
@@ -680,6 +766,7 @@ void HardwareServiceImplementation::DoHeartBeatTask()
             if (deviceStatus == PDS_UNCONFIGURED)
             {
                 LOG(INFO) << "Seems like device was restarted; forcing reconfiguration";
+                PreparePeripheral();
                 SetDeviceState(DS_CONNECTED);
             }
             else
@@ -728,7 +815,26 @@ void HardwareServiceImplementation::DoQueryInputTask()
 
         if (ExecuteReadIOCommand(deviceInput))
         {
-            
+            const unsigned levelSensorRaw = deviceInput.m_visibleWaterLevelSensorRaw;
+            double levelSensorValue = (levelSensorRaw / 107.0);
+
+            if (levelSensorValue > 1.0)
+            {
+                if (levelSensorValue > 1.15)
+                {
+                    EmergencyStopMsg("Level sensor invalid value");
+                    LOG(ERROR) << "Level sensor invalid value!!";
+                }
+                else
+                {
+                    levelSensorValue = 1.0;
+                }
+            }
+
+            const unsigned containerHeight = GetServiceConfiguration().VisibleContainerConfiguration.m_depth;
+            const unsigned levelContainerMm = levelSensorValue * (containerHeight - 1);
+
+            deviceInput.m_visibleContainerWaterLevelMillimeters = levelContainerMm;
             SetDeviceInputValues(deviceInput);
         }
     }
@@ -781,7 +887,7 @@ bool HardwareServiceImplementation::ExecuteDisablePumpHardwareCommand(EPUMPIDENT
 {
     bool result = false;
 
-    Packets::Templates::WriteIOCommandRequest<2> outputRequest;
+    Packets::Templates::WriteIOCommandRequest<1> outputRequest;
 
     unsigned requestPinUsed = 0;
 
@@ -848,7 +954,7 @@ bool HardwareServiceImplementation::ExecuteReadIOCommand(DeviceInputValues &out_
 
     Packets::Templates::ReadIOCommandRequest<INPUT_PINS_COUNT> readIORequest;
 
-    readIORequest.Pins[requestPinWritten].PinNumber = PROXIMITYSENSOR_PINNUMBER;
+    readIORequest.Pins[requestPinWritten].PinNumber = WATERLEVELSENSOR_PINNUMBER;
     ++requestPinWritten;
     readIORequest.Pins[requestPinWritten].PinNumber = MAGICBUTTON_PINNUMBER;
     ++requestPinWritten;
@@ -862,11 +968,11 @@ bool HardwareServiceImplementation::ExecuteReadIOCommand(DeviceInputValues &out_
         {
             unsigned responsePinRead = 0;
 
-            out_deviceInput.m_proximitySensorValue = readIOResponse.Pins[responsePinRead].Value;
-            ASSERT(readIOResponse.Pins[responsePinRead].PinNumber == PROXIMITYSENSOR_PINNUMBER);
+            out_deviceInput.m_visibleWaterLevelSensorRaw = readIOResponse.Pins[responsePinRead].Value;
+            ASSERT(readIOResponse.Pins[responsePinRead].PinNumber == WATERLEVELSENSOR_PINNUMBER);
             ++responsePinRead;
 
-            out_deviceInput.m_magicButtonPressed = readIOResponse.Pins[responsePinRead].Value;
+            out_deviceInput.m_magicButtonPressed = readIOResponse.Pins[responsePinRead].Value > 0;
             ASSERT(readIOResponse.Pins[responsePinRead].PinNumber == MAGICBUTTON_PINNUMBER);
             ++responsePinRead;
 
@@ -902,7 +1008,7 @@ bool HardwareServiceImplementation::ExecuteConfigureDeviceCommand()
     ++pinNumber;
     configureIORequest.Pins[pinNumber].Assign(OUTPUTPUMP_PINNUMBER, OUTPUTPUMP_FLAGS, OUTPUTPUMP_DEFVALUE, OUTPUTPUMP_SPECDATA);
     ++pinNumber;
-    configureIORequest.Pins[pinNumber].Assign(PROXIMITYSENSOR_PINNUMBER, PROXIMITYSENSOR_FLAGS, PROXIMITYSENSOR_DEFVALUE, PROXIMITYSENSOR_SPECDATA);
+    configureIORequest.Pins[pinNumber].Assign(WATERLEVELSENSOR_PINNUMBER, WATERLEVELSENSOR_FLAGS, WATERLEVELSENSOR_DEFVALUE, WATERLEVELSENSOR_SPECDATA);
     ++pinNumber;
     configureIORequest.Pins[pinNumber].Assign(MAGICBUTTON_PINNUMBER, MAGICBUTTON_FLAGS, MAGICBUTTON_DEFVALUE, MAGICBUTTON_SPECDATA);
     ++pinNumber;
@@ -1083,25 +1189,46 @@ void HardwareServiceImplementation::ResetUnframerState()
 
 unsigned HardwareServiceImplementation::GetCurrentWaterLevelMillimiters() const
 {
-#pragma message ("WARNING: Not implemented")
-    //return 0;
     return GetDeviceInputValues().m_visibleContainerWaterLevelMillimeters;
 }
 
-unsigned HardwareServiceImplementation::DecodeDiscreteWaterLevelIndex(unsigned waterLevelMillimiters) const
+unsigned HardwareServiceImplementation::DecodeDiscreteWaterLevelIndex(unsigned waterLevelMm) const
 {
     const auto &serviceConfiguration = GetServiceConfiguration();
     const auto &levelsDataVector = serviceConfiguration.PumpOutLevelsConfiguration.m_levelData;
     
     const auto positionIter = std::find_if(levelsDataVector.cbegin(), levelsDataVector.cend(), 
-        [waterLevelMillimiters](const LevelConfiguration &levelItem) {
-            return waterLevelMillimiters < levelItem.m_levelHeight;
+        [waterLevelMm](const LevelConfiguration &levelItem) {
+            return waterLevelMm < levelItem.m_levelHeight;
         }
     );
 
     const unsigned result = positionIter != levelsDataVector.cend() ? 
             std::distance(levelsDataVector.cbegin(), positionIter) : ItemNotFoundIndex;
     return result;
+}
+
+unsigned HardwareServiceImplementation::DecodeFixedWaterLevelIndex(unsigned waterLevelMm) const
+{
+    const auto &waterLevelTable = GetLevelHeightsMinMaxTable();
+
+    unsigned resultIndex = InvalidIndex;
+    for (unsigned index = 0; index != waterLevelTable.size(); ++index)
+    {
+        const auto &levelPair = waterLevelTable[index];
+        if (Utils::InRange(waterLevelMm, levelPair.first, levelPair.second))
+        {
+            resultIndex = index;
+            break;
+        }
+    }
+    
+    if (resultIndex == InvalidIndex)
+    {
+        resultIndex = GetPreviousWaterLevelIndex();
+    }
+
+    return resultIndex;
 }
 
 const LevelConfiguration &HardwareServiceImplementation::GetLevelConfiguration(unsigned index) const
@@ -1126,27 +1253,55 @@ unsigned HardwareServiceImplementation::GetPumpPerformance(EPUMPIDENTIFIER pumpI
     return result;
 }
 
-
-bool HardwareServiceImplementation::IsTimeToProcessLevel(unsigned waterLevel) const
+unsigned HardwareServiceImplementation::GetCurrentWaterLevelIndex()
 {
+    unsigned resultIndex = InvalidIndex;
 
-    //#pragma message ("WARNING: Not implemented")
-    const auto &stateData =  GetLevelPumpOutStateData();
+    const auto waterLevelValue = GetCurrentWaterLevelMillimiters();    
+    const auto unfixedWaterLevelIndex = DecodeDiscreteWaterLevelIndex(waterLevelValue);
+    const auto previousIndex = GetPreviousWaterLevelIndex();
 
-    const auto nowTime = GetNowSteadyClockTime();
+    LOG(DEBUG) << "waterLevelValue: " << waterLevelValue;
+    LOG(DEBUG) << "unfixedWaterLevelIndex: " << unfixedWaterLevelIndex;
+    LOG(DEBUG) << "previousIndex: " << previousIndex;
 
-    if (stateData.GetActivationTime() <= nowTime)
+    if (previousIndex == InvalidIndex)
     {
-        return true;
+        resultIndex = unfixedWaterLevelIndex;
     }
     else
     {
-        auto left = boost::chrono::duration_cast<boost::chrono::seconds>(stateData.GetActivationTime() - nowTime);
-        LOG(INFO) << "left: " << left.count();
-        return false;
+        resultIndex = DecodeFixedWaterLevelIndex(waterLevelValue);
     }
-    
-    return false;
+
+    LOG(DEBUG) << "resultIndex: " << resultIndex;
+
+    return resultIndex;
+}
+
+void HardwareServiceImplementation::BuildFixedWaterLevelHeightsTable()
+{
+    auto &waterLevelTableRef = GetLevelHeightsMinMaxTable();
+
+    const auto &serviceConfiguration = GetServiceConfiguration();
+    const auto &levelsDataVector = serviceConfiguration.PumpOutLevelsConfiguration.m_levelData;
+
+    const unsigned levelDataVectorSize = levelsDataVector.size();
+    waterLevelTableRef.reserve(levelDataVectorSize);
+
+    unsigned previosLevelHeight = 0;
+    for (unsigned index = 0; index != levelDataVectorSize; ++index)
+    {        
+        const auto &levelData = levelsDataVector[index];
+        const unsigned currentLevelHeight = levelData.m_levelHeight;
+
+        const unsigned effectiveDeltaMin = index == 0 ? 0 : Dataconst::PumpoutTableFixDeltaMm;
+        const unsigned effectiveDeltaMax = index == (levelDataVectorSize- 1) ? 0 : Dataconst::PumpoutTableFixDeltaMm;
+
+        waterLevelTableRef.push_back(std::make_pair(previosLevelHeight + effectiveDeltaMin,
+            currentLevelHeight - effectiveDeltaMax));
+        previosLevelHeight = currentLevelHeight;
+    }
 }
 
 unsigned HardwareServiceImplementation::CalculateWorkTimeForSpecifiedPump(EPUMPIDENTIFIER pumpId, unsigned waterAmountMl)
@@ -1154,6 +1309,20 @@ unsigned HardwareServiceImplementation::CalculateWorkTimeForSpecifiedPump(EPUMPI
     const auto pumpPerformanceMillilitersPerHour = GetPumpPerformance(pumpId);
     const unsigned workTimeSec = (unsigned)(((double)waterAmountMl / (double)pumpPerformanceMillilitersPerHour) * 3600.0);
     return workTimeSec;
+}
+
+void HardwareServiceImplementation::ScheduleWaterInputTask(unsigned amount)
+{
+    ScopedLock locked(GetDefferedInputListLock());
+    auto &inputList = GetDefferedInputList();
+    inputList.push_back(DefferedWaterInputItem(amount));
+}
+
+unsigned HardwareServiceImplementation::GetWaterInputPendingTasksCount() const
+{
+    ScopedLock locked(GetDefferedInputListLock());
+    const auto &defferedTasksList = GetDefferedInputList();
+    return defferedTasksList.size();
 }
 
 
@@ -1202,3 +1371,4 @@ const HardwareServiceImplementation::TableEntry HardwareServiceImplementation::m
     { &HardwareServiceImplementation::InputPumpControlTask, Dataconst::InputPipeTaskPeriodMs },     // TI_INPUTPUMPTASK
     { &HardwareServiceImplementation::OutputPumpControlTask, Dataconst::OutputPipeTaskPeriodMs }    // TI_OUTPUTPUMTASK
 };
+

@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9269FE24-4827-4A79-BB6B-033F68149E33}</ProjectGuid>
     <RootNamespace>PillsHardware</RootNamespace>
-    <ProjectName>PillsHardware_Tests</ProjectName>
+    <ProjectName>Tabletochki.Firmware.Tests</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

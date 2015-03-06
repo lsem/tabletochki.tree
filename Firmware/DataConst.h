@@ -13,15 +13,16 @@ namespace Dataconst
     static const int CommandSendReceiveTimeout = 500;
 
     static const int HearBeatCommandPeriodMs = 500;
-    static const int QueryInputTaskPeriodMs = 1000;
-    static const int InputPipeTaskPeriodMs = 100;
-    static const int OutputPipeTaskPeriodMs = 100;
+    static const int QueryInputTaskPeriodMs = 100;
+    static const int InputPipeTaskPeriodMs = 500;
+    static const int OutputPipeTaskPeriodMs = 500;
     static const int DeviceStatusTaskPeriodMs = 1000;
-    static const int LevelManagerTaskPeriodMs = 1000;
+    static const int LevelManagerTaskPeriodMs = 150;
     static const int InputProcessingTaskPeriodMs = 1000;
 
     static const int TimerThreadPoolSize = 1;
     static const char ServiceConfigurationFilePath[] = "ServiceConfiguration.json";
+    static const char PumpoutTableFixDeltaMm = 3;
 
 #if defined(_WIN32) && !defined(TESTS)
     static const auto PumpOutActivationPeriod = boost::chrono::minutes(60);

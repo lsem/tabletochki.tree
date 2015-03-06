@@ -48,7 +48,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{426ECAD6-AF76-4900-BEC2-217B0C4F420A}</ProjectGuid>
     <RootNamespace>PillsHardware_HTTPController</RootNamespace>
-    <ProjectName>PillsHardware_Brain</ProjectName>
+    <ProjectName>Tabletochki.HardwareService</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -87,14 +87,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\boost157\include;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Firmware;..\Vendor\json-parser-1.1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Vendor\serialib;..\Vendor\easylogging;..\Vendor\thrift-0.9.2\lib\cpp\src;..\HardwareService\gen-cpp;..\HardwareService;..\Firmware;..\Vendor\json-parser-1.1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;__BRAIN;_DEBUG;_ELPP_THREAD_SAFE;_ELPP_DISABLE_DEBUG_LOGS;_ELPP_DISABLE_DEFAULT_CRASH_HANDLING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Projects\tabletochki\hard\PillsController\vendor\thrift-0.9.2\lib\cpp\Debug;D:\Projects\tabletochki\hard\PillsController\vendor\boost_1_57_0\boost_1_57_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libthrift-runtime-static-debug-win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Projects\tabletochki\hard\PillsController\vendor\thrift-0.9.2\lib\cpp\Debug;D:\Projects\tabletochki\hard\PillsController\vendor\boost_1_57_0\boost_1_57_0\stage\lib;D:\Libraries\thrift-0.9.2\stage;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -26,6 +26,7 @@ enum ESERVICESTATE
 
     SS_READY = SS__BEGIN,
     SS_SERVICENOTCONFIGURED,
+    SS_EMERGENCYSTOPPED,
     SS_FAILED,
 
     SS__END,
@@ -105,7 +106,7 @@ struct PumpStateDescriptor
     void SetStartTimeNow() { m_startTime = boost::chrono::steady_clock::now(); }
     const steady_time_point &GetStartTime() const { return m_startTime; }
 
-    unsigned CalcWorkTimeDurationSeconds() const { ASSERT(m_state == PS_ENABLED); return boost::chrono::duration_cast<boost::chrono::seconds>(boost::chrono::steady_clock::now() - m_startTime).count(); }
+    unsigned CalcWorkTimeDurationSeconds() const { ASSERT(m_state == PS_ENABLED); return static_cast<unsigned>(boost::chrono::duration_cast<boost::chrono::seconds>(boost::chrono::steady_clock::now() - m_startTime).count()); }
     
     const steady_time_point &GetScheduledStopTime() const { return m_scheduledStopTime; }
     void SetScheduledStopTime(const steady_time_point &value) { m_scheduledStopTime = value; }
@@ -122,16 +123,16 @@ struct PumpStateDescriptor
 struct DeviceInputValues
 {
     DeviceInputValues() {}
-    DeviceInputValues(void*) : m_proximitySensorValue(~((unsigned)0)), m_magicButtonPressed(false), m_visibleContainerWaterLevelMillimeters(0) {}
+    DeviceInputValues(void*) : m_visibleWaterLevelSensorRaw(~((unsigned)0)), m_magicButtonPressed(false), m_visibleContainerWaterLevelMillimeters(0) {}
     
-    void Assign(unsigned proximitySensorValue, bool magicButtonPressed, unsigned visibleContainerWaterLevelMillimeters)
+    void Assign(unsigned visibleWaterLevelSensor, bool magicButtonPressed, unsigned visibleContainerWaterLevelMillimeters)
     {
-        m_proximitySensorValue = proximitySensorValue;
+        m_visibleWaterLevelSensorRaw = visibleWaterLevelSensor;
         m_magicButtonPressed = magicButtonPressed;
         m_visibleContainerWaterLevelMillimeters = visibleContainerWaterLevelMillimeters;
     }
 
-    unsigned m_proximitySensorValue;
+    unsigned m_visibleWaterLevelSensorRaw;
     bool     m_magicButtonPressed;
     unsigned m_visibleContainerWaterLevelMillimeters;
 };
@@ -157,29 +158,17 @@ struct LevelPumpOutStateData
     static const unsigned InvalidIndexValue = ~((unsigned)0);
 
     LevelPumpOutStateData() {}
-    LevelPumpOutStateData(void *) : m_state(LPS__DEFAULT), m_activationTime(), m_lastDiscreteLevelIndex(InvalidIndexValue) {}
+    LevelPumpOutStateData(void *) : m_state(LPS__DEFAULT), m_activationTime()  {}
 
     void SetState(ELEVELPUMPOUTSTATE state)  { m_state = state; }
     ELEVELPUMPOUTSTATE GetState() const { return m_state; }
 
-    void SetActivationTimeNow() 
-    {
-
-
-
-
-        m_activationTime = boost::chrono::steady_clock::now();
-
-    }
+    void SetActivationTimeNow() { m_activationTime = boost::chrono::steady_clock::now(); }
     void SetActivationTime(const steady_time_point  &value){ m_activationTime = value; }
     steady_time_point GetActivationTime() const { return m_activationTime; }
 
-    unsigned GetLastDiscreteLevelIndex() const { return m_lastDiscreteLevelIndex; }
-    void SetLastDiscreteLevelIndex(unsigned value) { m_lastDiscreteLevelIndex = value; }
-
     ELEVELPUMPOUTSTATE      m_state;
     steady_time_point       m_activationTime;
-    unsigned                m_lastDiscreteLevelIndex;
 };
 
 struct DefferedWaterInputItem
@@ -222,6 +211,7 @@ private:
     void DestroyTasksTimers();
     void RestartTask(ESERVICETASKID timerId);
     void RestartTaskTimeSpecified(ESERVICETASKID timerId, unsigned timeFromNowMilliseconds);
+    void PreparePeripheral();
 
 private:
     void HeartBeatTask();
@@ -230,20 +220,31 @@ private:
     void OutputPumpControlTask();
     void WaterLevelManagerTask();
     void ProcessWaterLevelManagerTaskActions();
+    void DoProcessWaterLevelManagerTaskActions();
+    void ProcessLevelIndexChangeIfNecessary();
+    void ActivateOutomatedOutputPumpingIfNecessary();
+    void ShceduleNextPlannedPumpOutActivation();
+    void ShceduleFirstPlannedPumpOutActivation();
+    void PerformPlannedPumpOutActivation();
+    void ActivateOutomatedOutputPumping();
     void InputWaterPorcessManagerTask();
-
+    
 private:
-    void OnPumpEndWorking();
-    void OnPumpStartedWorking();
+    void OnOutputPumpEndedWorking();
+    void OnOutputPumpStartedWorking();
 
 private:
     void EnablePumpForSpecifiedTime(EPUMPIDENTIFIER pumpId, unsigned timeMilliseconds);
     void EnsurePumpReadyForWork_RaiseExceptionIfNot(EPUMPIDENTIFIER pumpId);
+    void EnsureOutputPumpIsAvailableForFork_RaiseIfNot();
     void ProcessPumpControlActions(EPUMPIDENTIFIER pumpId);
     void ProcessPumpControlActions_ManagePumpControl(EPUMPIDENTIFIER pumpId);
     void ProcessPumpControlActions_SimulatedSensors(EPUMPIDENTIFIER pumpId);
     void EmergencyStop();
+    void EmergencyStopMsg(const string &message) { m_emergencyStopMessage = message; }
     bool StopPumpIfNecessary(EPUMPIDENTIFIER pumpId, bool &out_stopped);
+    bool StopPumpIfNecessary(EPUMPIDENTIFIER pumpId);
+
     bool StartPumpingMilliliters(EPUMPIDENTIFIER pumpId, unsigned millilitersToPump, bool &out_result);
 
 private:
@@ -276,15 +277,22 @@ private:
     void ResetUnframerState();
 
 private:
+    static const unsigned ItemNotFoundIndex = (~(unsigned)0);
+    static const unsigned InvalidIndex = ItemNotFoundIndex;
+
     unsigned GetCurrentWaterLevelMillimiters() const;
     unsigned DecodeDiscreteWaterLevelIndex(unsigned waterLevelMillimiters) const;
-    static const unsigned ItemNotFoundIndex = (~(unsigned)0);
+    unsigned DecodeFixedWaterLevelIndex(unsigned waterLevelMillimiters) const;
     const LevelConfiguration &GetLevelConfiguration(unsigned index) const;
     unsigned GetPumpingOutvelocityAtLevel(unsigned index);
     unsigned GetPumpPerformance(EPUMPIDENTIFIER pumpId);
-    unsigned GetCurrentWaterLevelIndex() const { return DecodeDiscreteWaterLevelIndex(GetCurrentWaterLevelMillimiters()); }
-    bool IsTimeToProcessLevel(unsigned waterLevel) const;
+    unsigned GetCurrentWaterLevelIndex();
+    void BuildFixedWaterLevelHeightsTable();
     unsigned CalculateWorkTimeForSpecifiedPump(EPUMPIDENTIFIER pumpId, unsigned waterAmountMl);
+
+private:
+    void ScheduleWaterInputTask(unsigned amount);
+    unsigned GetWaterInputPendingTasksCount() const;
 
 private:
     static steady_time_point GetNowSteadyClockTime() { return boost::chrono::steady_clock::now(); }
@@ -307,6 +315,7 @@ private:
         unsigned timeout;
     };
     typedef list<DefferedWaterInputItem> DeferedInputsList;
+    typedef vector<pair<unsigned, unsigned>> PumpoutLevelHeightsMinMaxTable;
 
 private:
     void SetServiceState(ESERVICESTATE state) { m_serviceState = state; }
@@ -329,8 +338,13 @@ private:
     ContainerStateData &GetHiddenContainerStateDataRef() { return m_hiddenContainerStateData; }
     const LevelPumpOutStateData &GetLevelPumpOutStateData() const { return m_levelPumpOutState; }
     LevelPumpOutStateData &GetLevelPumpOutStateDataRef() { return m_levelPumpOutState; }
+    const DeferedInputsList &GetDefferedInputList() const { return m_defferedInputList; }
     DeferedInputsList &GetDefferedInputList() { return m_defferedInputList; }
-    mutex &GetDefferedInputListLock() { return m_defferedInputListLock; }
+    mutex &GetDefferedInputListLock() const { return m_defferedInputListLock; }
+    const PumpoutLevelHeightsMinMaxTable &GetLevelHeightsMinMaxTable() const { return m_levelHeighsMinMaxTable; }
+    PumpoutLevelHeightsMinMaxTable &GetLevelHeightsMinMaxTable()  { return m_levelHeighsMinMaxTable; }
+    unsigned GetPreviousWaterLevelIndex() const { return m_previousWaterLevelIndex; }
+    void SetPreviousWaterLevelIndex(unsigned value) { m_previousWaterLevelIndex = value; }
 
 private:
     mutex                               m_communicationLock;
@@ -352,7 +366,10 @@ private:
     ContainerStateData                  m_hiddenContainerStateData;
     LevelPumpOutStateData               m_levelPumpOutState;
     DeferedInputsList                   m_defferedInputList;
-    mutex                               m_defferedInputListLock;
+    mutable mutex                       m_defferedInputListLock;
+    PumpoutLevelHeightsMinMaxTable      m_levelHeighsMinMaxTable;
+    unsigned                            m_previousWaterLevelIndex;
+    string                              m_emergencyStopMessage;
 };
 
 
