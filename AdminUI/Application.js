@@ -395,8 +395,8 @@
                     completedCallback: function() {
                         _this.steps.step1.completed = true;
 
-                        var pump1PerformanceMlPerHr = Math.round(pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000)) * 3600;
-                        var pump2PerformanceMlPerHr = Math.round(pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000)) * 3600;
+                        var pump1PerformanceMlPerHr = Math.round(pumpData.select(1).waterPumpedAmount / (pumpData.select(1).workingTime / 1000) * 3600);
+                        var pump2PerformanceMlPerHr = Math.round(pumpData.select(2).waterPumpedAmount / (pumpData.select(2).workingTime / 1000) * 3600);
                         _this.configurationJsonDocument.pumps.inputPump.performance = pump1PerformanceMlPerHr;
                         _this.configurationJsonDocument.pumps.outputPump.performance = pump2PerformanceMlPerHr;
                         _this.configurationJsonDocument.pumpOutMap.levels[_this.configurationJsonDocument.pumpOutMap.levels.length - 1].velocityLitresPerHour = pump1PerformanceMlPerHr / 1000;
