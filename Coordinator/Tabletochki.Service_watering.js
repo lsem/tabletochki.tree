@@ -2,10 +2,10 @@ var thrift = require('thrift');
 var ThriftTransports = require('thrift/lib/thrift/transport');
 var ThriftProtocols = require('thrift/lib/thrift/protocol');
 var HardwareService = require('./gen-nodejs/HardwareService');
-var types = require('./types');
-var coordinator = require('./svcutils').coordinator(types.Services.Watering);
-var logger = require('./log_manager.js').loggerFor(types.Services.Watering);
-var siteConfiguration = require('./configuration');
+var types = require('./Private/types');
+var coordinator = require('./Private/svcutils').coordinator(types.Services.Watering);
+var logger = require('./Private/log_manager.js').loggerFor(types.Services.Watering);
+var siteConfiguration = require('./Configuration');
 
 var transport = ThriftTransports.TFramedTransport();
 var protocol = ThriftProtocols.TBinaryProtocol();

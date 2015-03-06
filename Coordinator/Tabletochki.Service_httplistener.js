@@ -1,7 +1,7 @@
 var http = require('http');
-var types  = require('./types');
-var logger = require('./log_manager.js').loggerFor(types.Services.HttpListener);
-var coordinator = require('./svcutils').coordinator(types.Services.HttpListener);
+var types  = require('./Private/types');
+var logger = require('./Private/log_manager.js').loggerFor(types.Services.HttpListener);
+var coordinator = require('./Private/svcutils').coordinator(types.Services.HttpListener);
 var siteConfiguration = require('./configuration');
 
 var thisJsUnitServiceState = {

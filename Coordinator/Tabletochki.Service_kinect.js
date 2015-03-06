@@ -4,9 +4,9 @@ var util = require('util');
 var exec = require('child_process').exec;
 var path = require('path');
 var FormData = require('form-data');
-var types = require('./types');
-var logger = require('./log_manager.js').loggerFor(types.Services.Kinect);
-var coordinator = require('./svcutils').coordinator(types.Services.Kinect);
+var types = require('./Private/types');
+var logger = require('./Private/log_manager.js').loggerFor(types.Services.Kinect);
+var coordinator = require('./Private/svcutils').coordinator(types.Services.Kinect);
 var siteConfiguration = require('./configuration');
 
 var thisJsUnitServiceState = {

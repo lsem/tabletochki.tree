@@ -5,11 +5,11 @@
 var _ = require('underscore');
 
 (function() {
-    var logger = require('./log_manager').loggerFor('Coordinator');
-    var svcutils = require('./svcutils');
+    var logger = require('./Private/log_manager').loggerFor('Coordinator');
+    var svcutils = require('./Private/svcutils');
     var servicesController = svcutils.serviceController(__dirname);
-    var types = require('./types');
-    var siteConfiguration = require('./configuration');
+    var types = require('./Private/types');
+    var siteConfiguration = require('./Configuration');
     var Services = types.Services;
 
     var controllerImpl = function() {
@@ -102,10 +102,10 @@ var _ = require('underscore');
 
     var controller = controllerImpl();
     servicesController.setDefaultHandler(controller.default);
-    servicesController.registerService(Services.Watering, 'Service_watering.js', controller.watering);
-    servicesController.registerService(Services.Kinect, 'Service_kinect.js', controller.kinect);
-    servicesController.registerService(Services.HttpListener, 'Service_httplistener.js', controller.httplistener);
-    servicesController.registerService(Services.AdminUI, 'Service_AdminUIHttp.js', controller.adminui);
+    servicesController.registerService(Services.Watering, 'Tabletochki.Service_watering.js', controller.watering);
+    servicesController.registerService(Services.Kinect, 'Tabletochki.Service_kinect.js', controller.kinect);
+    servicesController.registerService(Services.HttpListener, 'Tabletochki.Service_httplistener.js', controller.httplistener);
+    servicesController.registerService(Services.AdminUI, 'Tabletochki.Service_AdminUIHttp.js', controller.adminui);
     servicesController.startAllServices();
 
     process.addListener('SIGINT', function () {

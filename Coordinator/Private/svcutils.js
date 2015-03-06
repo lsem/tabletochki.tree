@@ -3,7 +3,7 @@ var fork = require('child_process').fork;
 var logger = require('./log_manager').loggerFor('SVCUtils');
 var types = require('./types');
 var assert = require('assert');
-var siteConfiguration = require('./configuration');
+var siteConfiguration = require('../Configuration');
 
 
 exports.coordinator = function(ownerSvc) {
