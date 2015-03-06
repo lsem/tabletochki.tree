@@ -94,7 +94,7 @@ process.on('message', function(m) {
         }
 
         if (message === 'dbg.setvsbl') {
-            serviceApiClient.DbgSetContainerWaterLevel(data.amount, function (err, data) {
+            serviceApiClient.DbgSetContainerWaterLevel(data, function (err, data) {
                 if (err) {
                     log.error('cannot handle dbg.donation command: thrift returend error: ' + err);
                 } else if (data) {

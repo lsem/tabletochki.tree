@@ -106,6 +106,7 @@ app.get('/stop_result/:id', function(request, response) {
 });
 
 app.post('/debug_cmds/:action', function(request, response){
+    logger.debug('request.body: ' + util.inspect(request.body));
     if (request.params.action === 'setVisible') {
         coordinator.raiseMessage('dbg.setvsbl', request.body.amount);
     } else if (request.params.action === 'donation') {

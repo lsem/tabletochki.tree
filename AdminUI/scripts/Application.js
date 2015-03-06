@@ -15,16 +15,18 @@
                         '<div class="row">' +
                             '<div class="col-lg-4">' +
                                 '<div class="input-group  input-group-sm inputGroup">'+
-                                '<span class="input-group-addon" id="basic-addon1">Manual level control (cm)</span>'+
+                                '<span class="input-group-addon" id="basic-addon1">Amount (ml)</span>'+
                                 '<input  name="input" type="number" min="0" max="10000" required class="form-control waterAmountInput" ng-model="manualVisibleLevel"/>' +
                                 '<span class="error" ng-show="AmountInputForm.input.$error.number"> Not valid number!</span>'  +
                                 '</div>'+
-                        '<div style="height: 80px;" class="progress progress-striped  progress-vertical-hack">' +
-                        '<div class="progress-bar progress-bar-info active" role="progressbar" aria-valuenow="{{getPercentage()}}" aria-valuemin="0" aria-valuemax="100" ' +
-                            'ng-style="{width : ( getPercentage() + \'%\' ) }">' +
-                        '<span class="sr-only">45% Complete</span>' +
-                        '</div>' +
-                        '</div>' +
+                            '<p><a class="btn btn-default btn-sm" ng-click="onClickInput()" >Input</a></p>'+
+
+                        //'<div style="height: 80px;" class="progress progress-striped  progress-vertical-hack">' +
+                        //'<div class="progress-bar progress-bar-info active" role="progressbar" aria-valuenow="{{getPercentage()}}" aria-valuemin="0" aria-valuemax="100" ' +
+                        //    'ng-style="{width : ( getPercentage() + \'%\' ) }">' +
+                        //'<span class="sr-only">45% Complete</span>' +
+                        //'</div>' +
+                        //'</div>' +
 
                             '</div>' +
                             '<div class="col-lg-8">' +
@@ -567,7 +569,7 @@
 
         var _public = {
             dbgSetVisibleWaterLevel: function(value) {
-                return debugInterfaceResource.setVisibleLevel({level: value}).$promise;
+                return debugInterfaceResource.setVisibleLevel({amount: value}).$promise;
             },
             uploadConfiguration: function(configJsonText) {
                 return configurationResource.uploadConfig({configJsonText: configJsonText}).$promise;
@@ -639,39 +641,42 @@
             scope: { service: '=service' },
             templateUrl: 'pill-services/watering.tmpl.html',
             controller: function($scope) {
-
-
-                $scope.$watch("service.status.details.input.visibleLevel", function(newValue, oldValue) {
-                    //console.log('oldvalue: ' + oldValue + ', newValue: ' + newValue);
-                    if (angular.isDefined(newValue )) {
-                        $scope.visibleActualLevel = newValue;
-
-
-                        if ($scope.manualVisibleLevel === undefined)
-                            $scope.manualVisibleLevel = $scope.visibleActualLevel;
-                    }
-                    else {
-                        $scope.visibleActualLevel = 0;
-                        //$scope.visibleActualLevel
-                    }
-
-                });
-
-                var levelMax = 65;
-
-                $scope.getPercentage = function () {
-                    var result = (($scope.visibleActualLevel / levelMax) * 100).toFixed(2);
-                    return result;
+                
+                $scope.onClickInput = function () {
+                    CalibrationService.dbgSetVisibleWaterLevel($scope.manualVisibleLevel);
                 };
+                
 
-                $scope.$watch("manualVisibleLevel", function(newValue, oldValue) {
-                    if (newValue == undefined) {
-                        console.log('undefined !!!');
-                    }
-                    console.log('oldvalue: ' + oldValue + ', newValue: ' + newValue);
-                    if (newValue !== undefined)
-                        CalibrationService.dbgSetVisibleWaterLevel(newValue);
-                });
+                //$scope.$watch("service.status.details.input.visibleLevel", function(newValue, oldValue) {
+                //    console.log('oldvalue: ' + oldValue + ', newValue: ' + newValue);
+                //    if (angular.isDefined(newValue )) {
+                //        $scope.visibleActualLevel = newValue;
+                //
+                //        if ($scope.manualVisibleLevel === undefined)
+                //            $scope.manualVisibleLevel = $scope.visibleActualLevel;
+                //    }
+                //    else {
+                //        $scope.visibleActualLevel = 0;
+                //        //$scope.visibleActualLevel
+                //    }
+                //
+                //});
+
+                // var levelMax = 65;
+                //
+                //$scope.getPercentage = function () {
+                //    var result = (($scope.visibleActualLevel / levelMax) * 100).toFixed(2);
+                //    return result;
+                //};
+                //
+                //$scope.$watch("manualVisibleLevel", function(newValue, oldValue) {
+                //    if (newValue == undefined) {
+                //        console.log('undefined !!!');
+                //    }
+                //    console.log('oldvalue: ' + oldValue + ', newValue: ' + newValue);
+                //    if (newValue !== undefined)
+                //        CalibrationService.dbgSetVisibleWaterLevel(newValue);
+                //});
             }
         }
     }]);

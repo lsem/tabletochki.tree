@@ -123,18 +123,18 @@ struct PumpStateDescriptor
 struct DeviceInputValues
 {
     DeviceInputValues() {}
-    DeviceInputValues(void*) : m_visibleWaterLevelSensorRaw(~((unsigned)0)), m_magicButtonPressed(false), m_visibleContainerWaterLevelMillimeters(0) {}
+    DeviceInputValues(void*) : m_visibleWaterLevelSensorRaw(~((unsigned)0)), m_magicButtonPressed(false), m_visibleContainerWaterLevelCm(0) {}
     
-    void Assign(unsigned visibleWaterLevelSensor, bool magicButtonPressed, unsigned visibleContainerWaterLevelMillimeters)
+    void Assign(unsigned visibleWaterLevelSensor, bool magicButtonPressed, unsigned visibleContainerWaterLevelCm)
     {
         m_visibleWaterLevelSensorRaw = visibleWaterLevelSensor;
         m_magicButtonPressed = magicButtonPressed;
-        m_visibleContainerWaterLevelMillimeters = visibleContainerWaterLevelMillimeters;
+        m_visibleContainerWaterLevelCm = visibleContainerWaterLevelCm;
     }
 
     unsigned m_visibleWaterLevelSensorRaw;
     bool     m_magicButtonPressed;
-    unsigned m_visibleContainerWaterLevelMillimeters;
+    unsigned m_visibleContainerWaterLevelCm;
 };
 
 struct ContainerStateData
@@ -424,4 +424,10 @@ STATIC_MAP(PumpsPinsNumbers, EPUMPIDENTIFIER, unsigned, PI__BEGIN, PI__END)
 {
     INPUTPUMP_PINNUMBER,       // PI_INPUTPUMP
     OUTPUTPUMP_PINNUMBER        // PI_OUTPUTPUMP,
+};
+
+struct Range
+{
+    unsigned Min;
+    unsigned Max;
 };

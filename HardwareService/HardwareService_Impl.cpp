@@ -168,7 +168,7 @@ void HardwareServiceImplementation::GetServiceStateJson(string &jsonDocumentRece
         j << "{ ";
         j << "\"m_visibleWaterLevelSensorRaw\": " << inputValues.m_visibleWaterLevelSensorRaw << ",";
             j << "\"magicButton\": " << inputValues.m_magicButtonPressed << ", ";
-            j << "\"visibleLevel\": " << inputValues.m_visibleContainerWaterLevelMillimeters<< ", ";
+            j << "\"visibleLevel\": " << inputValues.m_visibleContainerWaterLevelCm<< ", ";
             j << "\"visibleLevelIndex\": " << GetCurrentWaterLevelIndex() << ", ";
             j << "\"nextPumpOutTimeLeft\": " << nextPumpOutTimeLeftSec << "";
         j << "} "; // input
@@ -195,8 +195,15 @@ void HardwareServiceImplementation::EmptyVisiableContainerMillilitres(const int3
 
 void HardwareServiceImplementation::DbgSetContainerWaterLevel(const int32_t amount)
 {
-    ScheduleWaterInputTask(1000);
-    LOG(INFO) << "Scheduled task for processing";
+    if (!Utils::InRange(amount, 1, 100000))
+    {
+        RaiseInvalidOperationException(Tabletochki::ErrorCode::INVALID_CONFIGURATION, "Invlaid amount. Should be in range 1..100000");
+    }
+    else
+    {
+        ScheduleWaterInputTask(amount);
+        LOG(DEBUG) << "Scheduled task for processing: " << amount;
+    }
 }
 
 
@@ -631,9 +638,9 @@ void HardwareServiceImplementation::ProcessPumpControlActions_SimulatedSensors(E
             const auto increaseValue = levelDecraseml * multiplier;
             
             static const auto MaximumValue = GetServiceConfiguration().PumpOutLevelsConfiguration.m_levelData[GetServiceConfiguration().PumpOutLevelsConfiguration.m_levelData.size()-1].m_levelHeight - 1;
-            if ((inputValuesReference.m_visibleContainerWaterLevelMillimeters + increaseValue) <= MaximumValue)
+            if ((inputValuesReference.m_visibleContainerWaterLevelCm + increaseValue) <= MaximumValue)
             {
-                inputValuesReference.m_visibleContainerWaterLevelMillimeters += increaseValue;
+                inputValuesReference.m_visibleContainerWaterLevelCm += increaseValue;
             }
 
             lastWorkingTimePointRef = nowTime;
@@ -816,11 +823,11 @@ void HardwareServiceImplementation::DoQueryInputTask()
         if (ExecuteReadIOCommand(deviceInput))
         {
             const unsigned levelSensorRaw = deviceInput.m_visibleWaterLevelSensorRaw;
-            double levelSensorValue = (levelSensorRaw / 107.0);
+            double levelSensorValue = (levelSensorRaw / (double) WATERLEVEL_SENSOR_MAX);
 
             if (levelSensorValue > 1.0)
             {
-                if (levelSensorValue > 1.15)
+                if (levelSensorValue > WATERLEVEL_SENSOR_MAX_THRESHOLD_KOEF)
                 {
                     EmergencyStopMsg("Level sensor invalid value");
                     LOG(ERROR) << "Level sensor invalid value!!";
@@ -831,10 +838,7 @@ void HardwareServiceImplementation::DoQueryInputTask()
                 }
             }
 
-            const unsigned containerHeight = GetServiceConfiguration().VisibleContainerConfiguration.m_depth;
-            const unsigned levelContainerMm = levelSensorValue * (containerHeight - 1);
-
-            deviceInput.m_visibleContainerWaterLevelMillimeters = levelContainerMm;
+            deviceInput.m_visibleContainerWaterLevelCm = levelSensorValue * WATERLEVEL_SENSOR_HEIGHT_CM;
             SetDeviceInputValues(deviceInput);
         }
     }
@@ -1189,7 +1193,7 @@ void HardwareServiceImplementation::ResetUnframerState()
 
 unsigned HardwareServiceImplementation::GetCurrentWaterLevelMillimiters() const
 {
-    return GetDeviceInputValues().m_visibleContainerWaterLevelMillimeters;
+    return GetDeviceInputValues().m_visibleContainerWaterLevelCm;
 }
 
 unsigned HardwareServiceImplementation::DecodeDiscreteWaterLevelIndex(unsigned waterLevelMm) const
