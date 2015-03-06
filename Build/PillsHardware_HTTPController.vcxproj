@@ -48,7 +48,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{426ECAD6-AF76-4900-BEC2-217B0C4F420A}</ProjectGuid>
     <RootNamespace>PillsHardware_HTTPController</RootNamespace>
-    <ProjectName>Tabletochki.HardwareService</ProjectName>
+    <ProjectName>Tabletochki.HardwareController</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

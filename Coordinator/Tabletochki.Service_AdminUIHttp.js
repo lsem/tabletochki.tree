@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var util = require('util');
 var assert = require('assert');
 var httpStatus = require('http-status-codes');
-var siteConfiguration = require('./configuration');
+var siteConfiguration = require('./Configuration');
 
 
 var currentStatus = {status: 0, hardStatus: -1};
