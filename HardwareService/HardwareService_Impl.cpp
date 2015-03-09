@@ -7,6 +7,7 @@
 #include "PacketParserTypes.h"
 #include "PacketFramer.h"
 #include "DataConst.h"
+#include "ProblemReportingService.h"
 #include "ServiceConfiguration.h"
 #include "ThriftHelpers.h"
 #include <easylogging++.h>
@@ -36,8 +37,8 @@ HardwareServiceImplementation::HardwareServiceImplementation() :
     m_defferedInputListLock(),
     m_levelHeighsMinMaxTable(),
     m_previousWaterLevelIndex(InvalidIndex),
-    m_emergencyStopMessage(),
-    m_deviceComportId()
+    m_deviceComportId(),
+    m_reportingService(new EmailProblemReportingService())
 {
     CreateTasksTimers();
     InitializeServiceState();
@@ -307,6 +308,11 @@ void HardwareServiceImplementation::RestartTaskTimeSpecified(ESERVICETASKID time
     timerObject.async_wait(std::bind(actionMethod, this));
 }
 
+void HardwareServiceImplementation::CancelTask(ESERVICETASKID timerId)
+{
+    GetTimerObjectById(timerId).cancel();
+}
+
 void HardwareServiceImplementation::PreparePeripheral()
 {
     SetPreviousWaterLevelIndex(InvalidIndex);
@@ -339,14 +345,14 @@ bool HardwareServiceImplementation::DiscoverDevicePort()
 
         if (found)
         {
-            SetDeviceomportId(comportId);
+            SetDeviceComportId(comportId);
             
             unsigned deviceStatus;
             if (ExecuteHeartbeatCommand(deviceStatus))
             {
                 LOG(INFO) << "Found device at: " << comportId;
 
-                SetDeviceomportId(comportId);
+                SetDeviceComportId(comportId);
                 
                 result = true;
                 break;
@@ -368,8 +374,6 @@ bool HardwareServiceImplementation::DiscoverDevicePort()
 
     return result;
 }
-
-
 
 
 void HardwareServiceImplementation::HeartBeatTask()
@@ -722,15 +726,16 @@ void HardwareServiceImplementation::ProcessPumpControlActions_SimulatedSensors(E
 
 void HardwareServiceImplementation::EmergencyStop()
 {
-    // By setting this state, heartbeat task should be suppressed which in turn should 
-    // activate fault tolerance in Arduino which should stop all hardware
-    //SetServiceState(SS_EMERGENCYSTOPPED);
+    EmergencyStopWithMessage("N/A");
+}
 
-    //// Reset all states to failed
-    //GetLevelPumpOutStateDataRef().SetState(LPS_IDLE);
-    //GetPumpStateDescriptorRef(PI_INPUTPUMP).SetState(PS_FAILED);
-    //GetPumpStateDescriptorRef(PI_OUTPUTPUMP).SetState(PS_FAILED);
-    //SetDeviceState(DS_DISCONNECTED);
+void HardwareServiceImplementation::EmergencyStopWithMessage(const string &message)
+{
+    // Just stop sending heartbeat command, which should make Device's software watchdog expired
+    SetServiceState(SS_EMERGENCYSTOPPED);
+    CancelTask(TI_HEARTBEATTASK);
+    RestartTaskTimeSpecified(TI_HEARTBEATTASK, Dataconst::EmergencyStopHartbeatTaskPauseSec);
+    ReportEmergencyStop(message);
 }
 
 
@@ -806,7 +811,7 @@ bool HardwareServiceImplementation::StartPumpingMilliliters(EPUMPIDENTIFIER pump
             }
             else
             {
-                EmergencyStopMsg("Failed start pump");
+                EmergencyStopWithMessage("Failed start pump");
             }
         }
         else
@@ -896,7 +901,7 @@ void HardwareServiceImplementation::DoQueryInputTask()
             {
                 if (levelSensorValue > WATERLEVEL_SENSOR_MAX_THRESHOLD_KOEF)
                 {
-                    EmergencyStopMsg("Level sensor invalid value");
+                    EmergencyStopWithMessage("Level sensor invalid value");
                     LOG(ERROR) << "Level sensor invalid value!!";
                 }
                 else
@@ -1146,9 +1151,9 @@ bool HardwareServiceImplementation::DoSendPacketData(const void *packetData, siz
 
     do
     {
-        LOG(DEBUG) << "Opening communication channel on COM4";
+        LOG(DEBUG) << "Opening communication channel on " << GetDeviceComportId();
 
-        if (!communicationChannel->Open(GetDeviceomportId().c_str()))
+        if (!communicationChannel->Open(GetDeviceComportId().c_str()))
         {
             LOG(ERROR) << "Failed opening device port. Error: '" << Utils::GetLastSystemErrorMessage() << "'";
             break;
@@ -1359,18 +1364,18 @@ void HardwareServiceImplementation::BuildFixedWaterLevelHeightsTable()
     const unsigned levelDataVectorSize = levelsDataVector.size();
     waterLevelTableRef.reserve(levelDataVectorSize);
 
-    unsigned previosLevelHeight = 0;
+    unsigned previousLevelHeight = 0;
     for (unsigned index = 0; index != levelDataVectorSize; ++index)
     {        
         const auto &levelData = levelsDataVector[index];
         const unsigned currentLevelHeight = levelData.m_levelHeight;
 
-        const unsigned effectiveDeltaMin = index == 0 ? 0 : Dataconst::PumpoutTableFixDeltaMm;
-        const unsigned effectiveDeltaMax = index == (levelDataVectorSize- 1) ? 0 : Dataconst::PumpoutTableFixDeltaMm;
+        const unsigned effectiveDeltaMin = index == 0 ? 0 : Dataconst::PumpoutTableFixDeltaCm;
+        const unsigned effectiveDeltaMax = index == (levelDataVectorSize- 1) ? 0 : Dataconst::PumpoutTableFixDeltaCm;
 
-        waterLevelTableRef.push_back(std::make_pair(previosLevelHeight + effectiveDeltaMin,
+        waterLevelTableRef.push_back(std::make_pair(previousLevelHeight + effectiveDeltaMin,
             currentLevelHeight - effectiveDeltaMax));
-        previosLevelHeight = currentLevelHeight;
+        previousLevelHeight = currentLevelHeight;
     }
 }
 
@@ -1379,6 +1384,15 @@ unsigned HardwareServiceImplementation::CalculateWorkTimeForSpecifiedPump(EPUMPI
     const auto pumpPerformanceMillilitersPerHour = GetPumpPerformance(pumpId);
     const unsigned workTimeSec = (unsigned)(((double)waterAmountMl / (double)pumpPerformanceMillilitersPerHour) * 3600.0);
     return workTimeSec;
+}
+
+void HardwareServiceImplementation::ReportEmergencyStop(const string &message)
+{
+    auto &reportingService = GetProblemReportingService();
+    if (!reportingService.ProblemsReportingService_ReportProblem(PST_ERROR, "Emergency stop", message))
+    {
+        LOG(ERROR) << "Failed reporting emergency stop problem. The problem message was: " << message;
+    }
 }
 
 void HardwareServiceImplementation::ScheduleWaterInputTask(unsigned amount)

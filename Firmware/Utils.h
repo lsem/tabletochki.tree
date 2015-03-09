@@ -144,6 +144,22 @@ namespace Utils
 
         return std::string();
     }
+
+    inline string GetExecutablePath()
+    {
+        const auto moduleHandle = GetModuleHandle(NULL);
+
+        char nameBuffer[_MAX_PATH];
+        const auto moduleFileName = GetModuleFileNameA(moduleHandle, nameBuffer, _MAX_PATH);
+        if (moduleFileName != 0)
+        {
+            return string(nameBuffer);
+        }
+        else
+        {
+            return string();
+        }
+    }
     #endif // _WIN32
 }
 

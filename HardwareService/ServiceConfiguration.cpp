@@ -2,8 +2,7 @@
 #include "CoreDefs.h"
 #include "Utils.h"
 #include "ServiceConfiguration.h"
-
-#include <fstream>
+#include "FileUtils.h"
 #include <streambuf>
 
 #include <easylogging++.h>
@@ -478,36 +477,12 @@ bool ServiceConfigurationManager::ValidateLevelsConfiguration(const ServiceConfi
 /*static */
 bool ServiceConfigurationManager::LoadFileToString(const string &fileName, string &out_fileContent)
 {
-    std::ifstream fileStream(fileName);
-
-    if (!fileStream.fail())
-    {
-        fileStream.seekg(0, std::ios::end);
-        out_fileContent.reserve((unsigned) fileStream.tellg());
-        fileStream.seekg(0, std::ios::beg);
-
-        out_fileContent.assign((std::istreambuf_iterator<char>(fileStream)),
-            std::istreambuf_iterator<char>());
-    }
-    else
-    {
-        LOG(ERROR) << "Failed opening file: '" << fileName << "'; last error: " << Utils::GetLastSystemErrorMessage();
-    }
-
-    return true;
+    return FileUtils::LoadFileToString(fileName, out_fileContent);
 }
 
 /*static */
 bool ServiceConfigurationManager::SaveStringToFile(const string &fileName, const string &fileContent)
 {
-    std::ofstream fileStream(fileName);
-
-    if (!fileStream.fail())
-    {
-        fileStream << fileContent;
-        fileStream.close();
-    }
-
-    return true;
+    return FileUtils::SaveStringToFile(fileName, fileContent);
 }
 

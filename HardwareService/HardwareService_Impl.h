@@ -18,6 +18,7 @@ using Tabletochki::PumpIdentifier;
 typedef boost::chrono::steady_clock::time_point steady_time_point;
 
 class ICommunicationChannel;
+class IProblemReportingService;
 
 
 enum ESERVICESTATE
@@ -211,6 +212,7 @@ private:
     void DestroyTasksTimers();
     void RestartTask(ESERVICETASKID timerId);
     void RestartTaskTimeSpecified(ESERVICETASKID timerId, unsigned timeFromNowMilliseconds);
+    void CancelTask(ESERVICETASKID timerId);
     void PreparePeripheral();
     bool DiscoverDevicePort();
 
@@ -242,7 +244,7 @@ private:
     void ProcessPumpControlActions_ManagePumpControl(EPUMPIDENTIFIER pumpId);
     void ProcessPumpControlActions_SimulatedSensors(EPUMPIDENTIFIER pumpId);
     void EmergencyStop();
-    void EmergencyStopMsg(const string &message) { m_emergencyStopMessage = message; }
+    void EmergencyStopWithMessage(const string &message);
     bool StopPumpIfNecessary(EPUMPIDENTIFIER pumpId, bool &out_stopped);
     bool StopPumpIfNecessary(EPUMPIDENTIFIER pumpId);
 
@@ -290,6 +292,9 @@ private:
     unsigned GetCurrentWaterLevelIndex();
     void BuildFixedWaterLevelHeightsTable();
     unsigned CalculateWorkTimeForSpecifiedPump(EPUMPIDENTIFIER pumpId, unsigned waterAmountMl);
+
+private:
+    void ReportEmergencyStop(const string &message);
 
 private:
     void ScheduleWaterInputTask(unsigned amount);
@@ -346,8 +351,9 @@ private:
     PumpoutLevelHeightsMinMaxTable &GetLevelHeightsMinMaxTable()  { return m_levelHeighsMinMaxTable; }
     unsigned GetPreviousWaterLevelIndex() const { return m_previousWaterLevelIndex; }
     void SetPreviousWaterLevelIndex(unsigned value) { m_previousWaterLevelIndex = value; }
-    void SetDeviceomportId(const string &value) { m_deviceComportId = value; }
-    const string &GetDeviceomportId() const { return m_deviceComportId; }
+    void SetDeviceComportId(const string &value) { m_deviceComportId = value; }
+    const string &GetDeviceComportId() const { return m_deviceComportId; }
+    IProblemReportingService &GetProblemReportingService() const { return *m_reportingService; }
 
 private:
     mutex                               m_communicationLock;
@@ -372,8 +378,8 @@ private:
     mutable mutex                       m_defferedInputListLock;
     PumpoutLevelHeightsMinMaxTable      m_levelHeighsMinMaxTable;
     unsigned                            m_previousWaterLevelIndex;
-    string                              m_emergencyStopMessage;
     string                              m_deviceComportId;
+    unique_ptr<IProblemReportingService> m_reportingService;
 };
 
 

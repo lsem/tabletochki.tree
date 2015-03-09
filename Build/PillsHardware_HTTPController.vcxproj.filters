@@ -59,6 +59,12 @@
     <ClCompile Include="..\Firmware\PacketUnFramer.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\HardwareService\ProblemReportingService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HardwareService\FileUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService.h">
@@ -116,6 +122,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\HardwareService\ThriftHelpers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HardwareService\ProblemReportingService.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HardwareService\FileUtils.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

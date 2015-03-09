@@ -22,10 +22,11 @@ namespace Dataconst
 
     static const int TimerThreadPoolSize = 1;
     static const char ServiceConfigurationFilePath[] = "ServiceConfiguration.json";
-    static const char PumpoutTableFixDeltaMm = 3;
+    static const char PumpoutTableFixDeltaCm = 3;
 
 #if defined(_WIN32) && !defined(TESTS)
     static const auto PumpOutActivationPeriod = boost::chrono::minutes(60);
+    static const auto EmergencyStopHartbeatTaskPauseSec = 10;
 #endif // _WIN32 && TESTS
 }
 

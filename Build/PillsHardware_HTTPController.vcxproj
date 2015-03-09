@@ -15,11 +15,13 @@
     <ClCompile Include="..\Firmware\PacketsParser.cpp" />
     <ClCompile Include="..\Firmware\PacketUnFramer.cpp" />
     <ClCompile Include="..\HardwareService\CommunicationChannel.cpp" />
+    <ClCompile Include="..\HardwareService\FileUtils.cpp" />
     <ClCompile Include="..\HardwareService\gen-cpp\HardwareService.cpp" />
     <ClCompile Include="..\HardwareService\gen-cpp\HardwareService_constants.cpp" />
     <ClCompile Include="..\HardwareService\gen-cpp\HardwareService_types.cpp" />
     <ClCompile Include="..\HardwareService\HardwareService_Host.cpp" />
     <ClCompile Include="..\HardwareService\HardwareService_Impl.cpp" />
+    <ClCompile Include="..\HardwareService\ProblemReportingService.cpp" />
     <ClCompile Include="..\HardwareService\ServiceConfiguration.cpp" />
     <ClCompile Include="..\Vendor\json-parser-1.1.0\json.c" />
     <ClCompile Include="..\Vendor\serialib\serialib.cpp" />
@@ -35,10 +37,12 @@
     <ClInclude Include="..\Firmware\PacketUnFramer.h" />
     <ClInclude Include="..\HardwareService\CommunicationChannel.h" />
     <ClInclude Include="..\HardwareService\DeviceIOMapping.h" />
+    <ClInclude Include="..\HardwareService\FileUtils.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_constants.h" />
     <ClInclude Include="..\HardwareService\gen-cpp\HardwareService_types.h" />
     <ClInclude Include="..\HardwareService\HardwareService_Impl.h" />
+    <ClInclude Include="..\HardwareService\ProblemReportingService.h" />
     <ClInclude Include="..\HardwareService\PumpTypes.h" />
     <ClInclude Include="..\HardwareService\ServiceConfiguration.h" />
     <ClInclude Include="..\HardwareService\ThriftHelpers.h" />
