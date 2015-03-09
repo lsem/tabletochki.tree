@@ -271,7 +271,7 @@ private:
     bool DoSendPacketData(const void *packetData, size_t packetDataSize, void *buffer, size_t packetSize);
 
 protected:
-    virtual void PacketUnFramerListener_OnCommandParsed(const uint8_t* packetBuffer, size_t packetSize);
+    virtual void PacketUnFramerListener_OnCommandParsed(const uint8_t* packetBuffer, size_t packetSize) override;
 
 private:
     bool UnsafeReceivePacket(uint8_t *buffer, const size_t size, size_t &out_size, unsigned timeoutMilliseconds);

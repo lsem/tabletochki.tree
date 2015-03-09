@@ -23,7 +23,7 @@ public:
 class EmailProblemReportingService : public IProblemReportingService
 {
 public:
-    virtual bool ProblemsReportingService_ReportProblem(EPROBLEMSEVERITY severity, const string &title, const string &text);
+    virtual bool ProblemsReportingService_ReportProblem(EPROBLEMSEVERITY severity, const string &title, const string &text) override;
 
 private:
     string GetReportFilePath();

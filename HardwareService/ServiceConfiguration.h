@@ -76,6 +76,10 @@ struct ServiceConfiguration
 class ServiceConfigurationManager
 {
 public:
+    ServiceConfigurationManager(const ServiceConfigurationManager &) = delete;
+    ServiceConfigurationManager& operator=(const ServiceConfigurationManager &) = delete;
+
+public:
     static bool LoadFromJsonString(const string &documentContent, ServiceConfiguration &out_configuration);
     static bool LoadFromJsonFile(const string &fileName, ServiceConfiguration &out_configuration);
     static bool SaveToJsonFile(const string &fileName, const string &documentContent);

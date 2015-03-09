@@ -42,7 +42,7 @@ string EmailProblemReportingService::GetReportFilePath()
     ss.imbue(std::locale(ss.getloc(), facet));
     ss << second_clock::local_time();
 
-    const auto result = ".\\Reports\\" + ss.str();
+    const auto result = R"(.\Reports\)" + ss.str();
     return result;
 }
 
