@@ -10,7 +10,8 @@
     "thrift": "*",
     "underscore": "*",
     "formidable": "*",
-    "form-data": "*"
+    "form-data": "*",
+    "nodemailer": "*"
   },
   "description": "Coordinator service for Tabletochki project"
 }
