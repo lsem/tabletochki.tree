@@ -27,4 +27,33 @@ process.on('message', function(m) {
     }
 });
 
+
+var scanForReportsToProcess = function(reportsDirPath, cb) {
+    var dirContent = fs.readdir(reportsDirPath, function (err, result) {
+        if (result) {
+            _.forEach(result, function (entry) {
+                logger.debug('entry: ' + entry);
+                // ...
+            }); // forEach
+        } else {
+            logger.error('Failed getting reports list: ' + err);
+        }
+
+        cb();
+    });
+};
+
+
+var startWatcher;
+startWatcher = function () {
+    logger.info('Scanning reports to upload');
+    scanForReportsToProcess(siteConfiguration.infrastructureHelperReportsPath, function () {
+        setTimeout(startWatcher, siteConfiguration.infrastructureHelperReportsScanPeriodMsec);
+    });
+};
+
+startWatcher();
+
 coordinator.raiseMessage('connected');
+
+

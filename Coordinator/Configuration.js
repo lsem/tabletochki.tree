@@ -27,3 +27,7 @@ exports.kinectModelsBasePath = 'd:/modelsRoot';
 exports.kinectModelsScanPeriodMsec = 1000;
 exports.kinectModelsUploadUrl = 'http://localhost:3000/treeUpload';
 exports.kinectZipUtilPath =  '../Tools/zip95.exe';
+
+// infrastructure helper
+exports.infrastructureHelperReportsPath = './Reports';
+exports.infrastructureHelperReportsScanPeriodMsec = 1000;
