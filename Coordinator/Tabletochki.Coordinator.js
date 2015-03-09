@@ -96,6 +96,9 @@ var _ = require('underscore');
                         all[Services.Watering].send('stopPump', data);
                     }
                 }
+            },
+            infrastructureHelper: {
+
             }
         };
     };
@@ -106,6 +109,7 @@ var _ = require('underscore');
     servicesController.registerService(Services.Kinect, 'Tabletochki.Service_kinect.js', controller.kinect);
     servicesController.registerService(Services.HttpListener, 'Tabletochki.Service_httplistener.js', controller.httplistener);
     servicesController.registerService(Services.AdminUI, 'Tabletochki.Service_AdminUIHttp.js', controller.adminui);
+    servicesController.registerService(Services.InfrastructureHelper, 'Tabletochki.Service_InfrastructureHelper.js', controller.infrastructureHelper);
     servicesController.startAllServices();
 
     process.addListener('SIGINT', function () {
