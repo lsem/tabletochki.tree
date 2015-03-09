@@ -212,7 +212,7 @@ void HardwareServiceImplementation::StartService()
 {
     LoadConfiguration();
     
-    while (!FindDevicePort())
+    while (!DiscoverDevicePort())
     {
         LOG(ERROR) << "Device disconnected";
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -312,10 +312,9 @@ void HardwareServiceImplementation::PreparePeripheral()
     SetPreviousWaterLevelIndex(InvalidIndex);
 }
 
-bool HardwareServiceImplementation::FindDevicePort()
+bool HardwareServiceImplementation::DiscoverDevicePort()
 {
     bool result = false;
-
 
     string comportId;
     unsigned comportNumberToTry = 0;

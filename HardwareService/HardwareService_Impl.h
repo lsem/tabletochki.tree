@@ -212,7 +212,7 @@ private:
     void RestartTask(ESERVICETASKID timerId);
     void RestartTaskTimeSpecified(ESERVICETASKID timerId, unsigned timeFromNowMilliseconds);
     void PreparePeripheral();
-    bool FindDevicePort();
+    bool DiscoverDevicePort();
 
 private:
     void HeartBeatTask();
