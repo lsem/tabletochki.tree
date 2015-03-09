@@ -82,7 +82,7 @@ var isValidModel = function(modelDirName) {
     return true;
 };
 
-var scanForModelsToUpload = function(modelsRootPath, cb) {
+var scanForModelsToUpload = function(modelsRootPath, cb, allDoneCb) {
     var dirContent = fs.readdir(modelsRootPath, function (err, result) {
         if (result) {
             _.forEach(result, function (entry) {
@@ -94,7 +94,7 @@ var scanForModelsToUpload = function(modelsRootPath, cb) {
                         if (err) {
                             logger.error('Failed to upload model. Details: ' + err);
                         } else {
-                            cb();
+                            cb(nextModelDirPath);
                         }
                     });
                 }
@@ -102,14 +102,17 @@ var scanForModelsToUpload = function(modelsRootPath, cb) {
         } else {
             logger.error('Failed getting models list: ' + err);
         }
+        allDoneCb();
     });
 };
 
 var startWatcher;
 startWatcher = function () {
     logger.info('Scanning models to upload');
-    scanForModelsToUpload(siteConfiguration.kinectModelsBasePath, function () {
-        //setTimeout(startWatcher, siteConfiguration.kinectModelsScanPeriodMsec);
+    scanForModelsToUpload(siteConfiguration.kinectModelsBasePath, function (modelName) {
+        logger.info('Model uploaded: ' + modelName);
+    }, function(/*allDone*/) {
+        setTimeout(startWatcher, siteConfiguration.kinectModelsScanPeriodMsec);
     });
 };
 
