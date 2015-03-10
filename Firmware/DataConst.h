@@ -26,7 +26,7 @@ namespace Dataconst
 
 #if defined(_WIN32) && !defined(TESTS)
     static const auto PumpOutActivationPeriod = boost::chrono::minutes(60);
-    static const auto EmergencyStopHartbeatTaskPauseSec = 10;
+    static const auto EmergencyStopHartbeatTaskPauseMsec = 10000;
 #endif // _WIN32 && TESTS
 }
 

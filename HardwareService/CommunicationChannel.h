@@ -16,9 +16,9 @@ class serialib;
 
 class SerialLibCommunicationChannel : public ICommunicationChannel
 {
-private:
-    SerialLibCommunicationChannel(const SerialLibCommunicationChannel &);
-    void operator=(const SerialLibCommunicationChannel &);
+public:
+    SerialLibCommunicationChannel(const SerialLibCommunicationChannel &) =delete;
+    void operator=(const SerialLibCommunicationChannel &) = delete;
 
 public:
     SerialLibCommunicationChannel();
@@ -26,8 +26,8 @@ public:
     void Close();
 
 public:
-    virtual bool CommunicationChannel_SerialWrite(const void *data, size_t dataSize);
-    virtual bool CommunicationChannel_SerialRead(void *dataBuffer, size_t dataBufferSize, unsigned timeout);
+    virtual bool CommunicationChannel_SerialWrite(const void *data, size_t dataSize) override;
+    virtual bool CommunicationChannel_SerialRead(void *dataBuffer, size_t dataBufferSize, unsigned timeout) override;
 
 private:
     bool DoSerialWrite(const void *data, size_t dataSize);

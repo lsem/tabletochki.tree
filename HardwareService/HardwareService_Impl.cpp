@@ -75,16 +75,38 @@ void HardwareServiceImplementation::ApplyConfiguration(const string &jsonDocumen
     }
 }
 
+void HardwareServiceImplementation::EnterCalibrationMode()
+{
+    SetServiceState(SS_SERVICENOTCONFIGURED);
+}
+
+void  HardwareServiceImplementation::ExitCalibrationMode()
+{
+}
+
+void  HardwareServiceImplementation::GetCurrentConfiguration(std::string& out_result)
+{
+    ServiceConfiguration loadedConfiguration;
+    string configurationJsonDocumentText;
+    if (ServiceConfigurationManager::LoadFromJsonFile(Dataconst::ServiceConfigurationFilePath, 
+                /*out*/loadedConfiguration, /*out*/configurationJsonDocumentText))
+    {
+        out_result = configurationJsonDocumentText;
+    }
+}
+
+
 void HardwareServiceImplementation::StartPump(const PumpIdentifier::type pumpId)
 {
-    LOG(INFO) << "Start pump: " << pumpId;
+    LOG(DEBUG) << "Start pump: " << pumpId;
 
     auto &pumpDescriptor = GetPumpStateDescriptorRef((EPUMPIDENTIFIER)pumpId);
     pumpDescriptor.m_startTime = boost::chrono::steady_clock::now();
 
     if (ExecuteEnablePumpHardwareCommand((EPUMPIDENTIFIER)pumpId))
     {
-        LOG(INFO) << "EnablePump command executed";
+        LOG(DEBUG) << "EnablePump command executed";
+        pumpDescriptor.SetState(PS_ENABLED);
     }
     else
     {
@@ -94,16 +116,17 @@ void HardwareServiceImplementation::StartPump(const PumpIdentifier::type pumpId)
 
 void HardwareServiceImplementation::StopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId)
 {
-    LOG(INFO) << "Stop pump: " << pumpId;
+    LOG(DEBUG) << "Stop pump: " << pumpId;
 
-    const auto &pumpDescriptor = GetPumpStateDescriptorRef((EPUMPIDENTIFIER)pumpId);
+    auto &pumpDescriptor = GetPumpStateDescriptorRef((EPUMPIDENTIFIER)pumpId);
     const boost::chrono::duration<double> pumpWorkTime = boost::chrono::steady_clock::now() - pumpDescriptor.m_startTime;
 
     _return.workingTimeSecond = (uint32_t)(pumpWorkTime.count() * 1000);
 
     if (ExecuteDisablePumpHardwareCommand((EPUMPIDENTIFIER)pumpId))
     {
-        LOG(INFO) << "DisablePump command executed";
+        LOG(DEBUG) << "DisablePump command executed";
+        pumpDescriptor.SetState(PS_DISABLED);
     }
     else
     {
@@ -305,7 +328,7 @@ void HardwareServiceImplementation::RestartTaskTimeSpecified(ESERVICETASKID time
     auto actionMethod = m_tasksDescriptors[timerId].action;
     auto &timerObject = GetTimerObjectById(timerId);
     timerObject.expires_from_now(boost::posix_time::milliseconds(timeFromNowMilliseconds));
-    timerObject.async_wait(std::bind(actionMethod, this));
+    timerObject.async_wait(boost::bind(actionMethod, this, _1));
 }
 
 void HardwareServiceImplementation::CancelTask(ESERVICETASKID timerId)
@@ -376,42 +399,65 @@ bool HardwareServiceImplementation::DiscoverDevicePort()
 }
 
 
-void HardwareServiceImplementation::HeartBeatTask()
+void HardwareServiceImplementation::HeartBeatTask(const boost::system::error_code& e)
 {
-    LOG(DEBUG) << "[HEARTBEAT] Activated";
-
-    DoHeartBeatTask();
-
-    RestartTask(TI_HEARTBEATTASK);
+    if (e != boost::asio::error::operation_aborted)
+    {
+        DoHeartBeatTask();
+        RestartTask(TI_HEARTBEATTASK);
+    }
 }
 
-void HardwareServiceImplementation::QueryInputTask()
+void HardwareServiceImplementation::QueryInputTask(const boost::system::error_code& e)
 {
-    LOG(DEBUG) << "[STATUS] Activated";
-
-    DoQueryInputTask();
-
-    RestartTask(TI_STATUSTASK);
+    if (e != boost::asio::error::operation_aborted)
+    {
+        if (GetServiceState() == SS_READY)
+        {
+            DoQueryInputTask();
+        }
+        
+        RestartTask(TI_STATUSTASK);
+    }
 }
 
-void HardwareServiceImplementation::InputPumpControlTask()
+void HardwareServiceImplementation::InputPumpControlTask(const boost::system::error_code& e)
 {
-    ProcessPumpControlActions(PI_INPUTPUMP);
+    if (e != boost::asio::error::operation_aborted)
+    {
+        if (GetServiceState() == SS_READY)
+        {
+            ProcessPumpControlActions(PI_INPUTPUMP);
+        }
 
-    RestartTask(TI_INPUTPUMPTASK);
+        RestartTask(TI_INPUTPUMPTASK);
+    }
+    else
+    {
+        // ...
+    }
 }
 
-void HardwareServiceImplementation::OutputPumpControlTask()
+void HardwareServiceImplementation::OutputPumpControlTask(const boost::system::error_code& e)
 {
-    ProcessPumpControlActions(PI_OUTPUTPUMP);
+    if (e != boost::asio::error::operation_aborted)
+    {
+        if (GetServiceState() == SS_READY)
+        {
+            ProcessPumpControlActions(PI_OUTPUTPUMP);
+        }
+        
+        RestartTask(TI_OUTPUTPUMTASK);
+    }
+    else
+    {
+        // ...
+    }
 
-    RestartTask(TI_OUTPUTPUMTASK);
 }
 
-void HardwareServiceImplementation::WaterLevelManagerTask()
+void HardwareServiceImplementation::WaterLevelManagerTask(const boost::system::error_code& e)
 {
-    LOG(DEBUG) << "[WATER LEVEL MANAGER] Activated";
-
     // This task responsible for automatic pumping out the water from visible container.
     // There is also manual triggering pumping out, but for the sake of simplicity water is 
     // pumped out automatically without making business logic worry about it.
@@ -428,10 +474,63 @@ void HardwareServiceImplementation::WaterLevelManagerTask()
     /// 10-20               0.1
     //  0-10                0.00001                               (pump will ignore so small amount of work)
     //
-
-    ProcessWaterLevelManagerTaskActions();
-    RestartTask(TI_LEVELMANAGERTASK);
+    if (e != boost::asio::error::operation_aborted)
+    {
+        if (GetServiceState() == SS_READY)
+        {
+            ProcessWaterLevelManagerTaskActions();
+        }
+        
+        RestartTask(TI_LEVELMANAGERTASK);
+    }
+    else
+    {
+        // ...
+    }
 }
+
+
+void HardwareServiceImplementation::InputWaterPorcessManagerTask(const boost::system::error_code& e)
+{
+    if (e != boost::asio::error::operation_aborted)
+    {
+        if (GetServiceState() == SS_READY)
+        {
+            DoInputWaterPorcessManagerTask();
+        }
+
+        RestartTask(TI_INPUTWATERPROCESSINGTASK);
+    }
+    else
+    {
+        // ...
+    }
+}
+
+void HardwareServiceImplementation::DoInputWaterPorcessManagerTask()
+{
+    const auto &inputPumpState = GetPumpStateDescriptorRef(PI_INPUTPUMP);
+
+    if (inputPumpState.GetState() == PS_DISABLED)
+    {
+        ScopedLock locked(GetDefferedInputListLock());
+
+        auto &defferedTasksList = GetDefferedInputList();
+        if (defferedTasksList.size() > 0)
+        {
+            const auto &nextTask = defferedTasksList.front();
+
+            bool started;
+            if (StartPumpingMilliliters(PI_INPUTPUMP, nextTask.m_amount, started))
+            {
+                defferedTasksList.pop_front();
+
+                LOG(INFO) << "Processing task";
+            }
+        }
+    }
+}
+
 
 void HardwareServiceImplementation::ProcessWaterLevelManagerTaskActions()
 {
@@ -448,7 +547,7 @@ void HardwareServiceImplementation::ProcessWaterLevelManagerTaskActions()
         LOG(ERROR) << "Output pumping maintenance activity is not possible due to invalid water level. "
                         "Check the configuration or hardware";
 
-        EmergencyStop();
+        EmergencyStopWithMessage("Invalid water level returned");
         return;
     }
 
@@ -542,33 +641,6 @@ void HardwareServiceImplementation::ActivateOutomatedOutputPumping()
     {
         LOG(ERROR) << "Failed to stop output pump that needed for starting planned water output";
     }
-}
-
-
-void HardwareServiceImplementation::InputWaterPorcessManagerTask()
-{
-    const auto &inputPumpState = GetPumpStateDescriptorRef(PI_INPUTPUMP);
-    
-    if (inputPumpState.GetState() == PS_DISABLED)
-    {
-        ScopedLock locked(GetDefferedInputListLock());
-
-        auto &defferedTasksList = GetDefferedInputList();
-        if (defferedTasksList.size() > 0)
-        {
-            const auto &nextTask = defferedTasksList.front();
-
-            bool started;
-            if (StartPumpingMilliliters(PI_INPUTPUMP, nextTask.m_amount, started))
-            {
-                defferedTasksList.pop_front();
-
-                LOG(INFO) << "Processing task";
-            }
-        }
-    }
-
-    RestartTask(TI_INPUTWATERPROCESSINGTASK);
 }
 
 
@@ -666,7 +738,7 @@ void HardwareServiceImplementation::ProcessPumpControlActions_ManagePumpControl(
             else
             {
                 LOG(ERROR) << "Failed disabling pump: " << DecodePumpIdentifierName(pumpId);
-                EmergencyStop();
+                EmergencyStopWithMessage("Failed disabling pump during pump control maintenance. Pump: " + DecodePumpIdentifierName(pumpId));
             }
         }
     }
@@ -733,8 +805,9 @@ void HardwareServiceImplementation::EmergencyStopWithMessage(const string &messa
 {
     // Just stop sending heartbeat command, which should make Device's software watchdog expired
     SetServiceState(SS_EMERGENCYSTOPPED);
+    SetDeviceState(DS_DISCONNECTED);
     CancelTask(TI_HEARTBEATTASK);
-    RestartTaskTimeSpecified(TI_HEARTBEATTASK, Dataconst::EmergencyStopHartbeatTaskPauseSec);
+    RestartTaskTimeSpecified(TI_HEARTBEATTASK, Dataconst::EmergencyStopHartbeatTaskPauseMsec);
     ReportEmergencyStop(message);
 }
 
@@ -763,7 +836,7 @@ bool HardwareServiceImplementation::StopPumpIfNecessary(EPUMPIDENTIFIER pumpId, 
         }
         else
         {
-            EmergencyStop();
+            EmergencyStopWithMessage("Failed to stop pump" + DecodePumpIdentifierName(pumpId));
         }
     }
     else
@@ -832,10 +905,18 @@ bool HardwareServiceImplementation::StartPumpingMilliliters(EPUMPIDENTIFIER pump
 void HardwareServiceImplementation::DoHeartBeatTask()
 {
     uint32_t deviceStatus;
-
-    if (GetServiceState() != SS_READY)
-        return;
-
+    
+    const auto serviceState = GetServiceState();
+    if (serviceState != SS_READY)
+    {
+        if (serviceState == SS_EMERGENCYSTOPPED)
+        {
+            // EmergencyStopped status serves only for informational purposes so that after emergency stop
+            // can be transitioned to its initial state (which assumed to be ready)
+            SetServiceState(SS_READY);
+        }
+    }
+        
     const auto currentState = GetDeviceState();
 
     if (ExecuteHeartbeatCommand(deviceStatus))
@@ -859,8 +940,6 @@ void HardwareServiceImplementation::DoHeartBeatTask()
             {
                 SetDeviceState(DS_READY);
                 InitializePumpsState(PS_DISABLED);
-
-                LOG(INFO) << "Device changed state to ready";
             }
         }
         else if (currentState == DS_DISCONNECTED)
@@ -868,8 +947,6 @@ void HardwareServiceImplementation::DoHeartBeatTask()
             if (IsDeviceConnected())
             {
                 SetDeviceState(DS_CONNECTED);
-
-                LOG(INFO) << "Device changed state to connected";
             }
         }
     }
@@ -1096,7 +1173,7 @@ bool HardwareServiceImplementation::ExecuteConfigureDeviceCommand()
     {
         if (configureResponse.Status.OperationResultCode == EC_OK)
         {
-            LOG(INFO) << "'configure device' command sent. New device status is: " << (unsigned) configureResponse.Status.DeviceStatus;
+            LOG(DEBUG) << "'configure device' command sent. New device status is: " << (unsigned) configureResponse.Status.DeviceStatus;
             result = true;
         }
         else
@@ -1443,6 +1520,20 @@ ESERVICETASKID HardwareServiceImplementation::DecodePumpTaskId(EPUMPIDENTIFIER c
 {
     const auto result = PumpsTasksIdentifiers.GetMappedValue(code);
     return result;
+}
+
+
+
+void HardwareServiceImplementation::SetServiceState(ESERVICESTATE value)
+{
+    LOG(INFO) << "Service has changed state to: " << DecodeServiceState(value);
+    m_serviceState = value;
+}
+
+void HardwareServiceImplementation::SetDeviceState(ECONNECTIONSTATE value) 
+{
+    LOG(INFO) << "Device has changed state to: " << DecodeDeviceConnectionState(value);
+    m_deviceState = value;
 }
 
 

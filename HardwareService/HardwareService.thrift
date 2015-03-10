@@ -1,6 +1,4 @@
-
 namespace cpp Tabletochki
-
 
 enum ErrorCode
 {
@@ -33,6 +31,10 @@ struct ServiceStatus {
 service HardwareService {
     void applyConfiguration(1: string jsonDocumentText) throws (1:InvalidOperation ouch);
 
+    void enterCalibrationMode()  throws (1:InvalidOperation ouch);
+    void exitCalibrationMode() throws  (1:InvalidOperation ouch);
+    string getCurrentConfiguration()  throws (1:InvalidOperation ouch);
+
     void startPump(1: PumpIdentifier  pumpId) throws (1:InvalidOperation ouch);
     StopPumpResult stopPump(1: PumpIdentifier pumpId) throws (1:InvalidOperation ouch);
 
@@ -40,7 +42,7 @@ service HardwareService {
     string getServiceStateJson();
 
     void fillVisibleContainerMillilitres(1: i32 amount) throws (1:InvalidOperation ouch);
-    void emptyVisiableContainerMillilitres(1: i32 amount) throws (1:InvalidOperation ouch);   
+    void emptyVisiableContainerMillilitres(1: i32 amount) throws (1:InvalidOperation ouch);
 
     void DbgSetContainerWaterLevel(1: i32 amount);
 }

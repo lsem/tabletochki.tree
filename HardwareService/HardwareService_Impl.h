@@ -190,6 +190,9 @@ public:
 
 public:
     void ApplyConfiguration(const string &jsonDocumentText);
+    void EnterCalibrationMode();
+    void ExitCalibrationMode();
+    void GetCurrentConfiguration(std::string& out_result);
     void StartPump(const PumpIdentifier::type);
     void StopPump(StopPumpResult& _return, const PumpIdentifier::type);
     void GetServiceStatus(ServiceStatus& _return);
@@ -217,11 +220,14 @@ private:
     bool DiscoverDevicePort();
 
 private:
-    void HeartBeatTask();
-    void QueryInputTask();
-    void InputPumpControlTask();
-    void OutputPumpControlTask();
-    void WaterLevelManagerTask();
+    void HeartBeatTask(const boost::system::error_code& /*e*/);
+    void QueryInputTask(const boost::system::error_code& /*e*/);
+    void InputPumpControlTask(const boost::system::error_code& /*e*/);
+    void OutputPumpControlTask(const boost::system::error_code& /*e*/);
+    void WaterLevelManagerTask(const boost::system::error_code& /*e*/);
+    void InputWaterPorcessManagerTask(const boost::system::error_code& /*e*/);
+
+    void DoInputWaterPorcessManagerTask();
     void ProcessWaterLevelManagerTaskActions();
     void DoProcessWaterLevelManagerTaskActions();
     void ProcessLevelIndexChangeIfNecessary();
@@ -230,7 +236,6 @@ private:
     void ShceduleFirstPlannedPumpOutActivation();
     void PerformPlannedPumpOutActivation();
     void ActivateOutomatedOutputPumping();
-    void InputWaterPorcessManagerTask();
     
 private:
     void OnOutputPumpEndedWorking();
@@ -314,7 +319,7 @@ private:
     typedef lock_guard<mutex> ScopedLock;
     typedef boost::asio::deadline_timer    DeadlineTimer;
     typedef std::shared_ptr<DeadlineTimer> DeadlineTimerPtr;
-    typedef void(HardwareServiceImplementation::*TimerExpiredActionType)();
+    typedef void(HardwareServiceImplementation::*TimerExpiredActionType)(const boost::system::error_code& /*e*/);
     struct TableEntry
     {
         HardwareServiceImplementation::TimerExpiredActionType action;
@@ -324,9 +329,9 @@ private:
     typedef vector<pair<unsigned, unsigned>> PumpoutLevelHeightsMinMaxTable;
 
 private:
-    void SetServiceState(ESERVICESTATE state) { m_serviceState = state; }
+    void SetServiceState(ESERVICESTATE value);
     ESERVICESTATE GetServiceState() { return m_serviceState; }
-    void SetDeviceState(ECONNECTIONSTATE value) { m_deviceState = value; }
+    void SetDeviceState(ECONNECTIONSTATE value);
     ECONNECTIONSTATE GetDeviceState() const { return m_deviceState; }
     void SetServiceConfiguration(const ServiceConfiguration  &value) { m_configuration = value; }
     const ServiceConfiguration  &GetServiceConfiguration() const { return m_configuration; }
@@ -380,6 +385,7 @@ private:
     unsigned                            m_previousWaterLevelIndex;
     string                              m_deviceComportId;
     unique_ptr<IProblemReportingService> m_reportingService;
+    ESERVICESTATE                       m_savedServiceState;
 };
 
 
@@ -389,6 +395,7 @@ STATIC_MAP(ServiceStateNames, ESERVICESTATE, string, SS__BEGIN, SS__END)
 {
     "READY",            // SS_READY
     "NOT_CONFIGURED",   // SS_SERVICENOTCONFIGURED
+    "EMERGENCYSTOPPED", // SS_EMERGENCYSTOPPED
     "FAILED",           // SS_FAILED
 };
 
@@ -434,11 +441,5 @@ STATIC_MAP(PumpsPinsNumbers, EPUMPIDENTIFIER, unsigned, PI__BEGIN, PI__END)
 {
     INPUTPUMP_PINNUMBER,       // PI_INPUTPUMP
     OUTPUTPUMP_PINNUMBER        // PI_OUTPUTPUMP,
-};
-
-struct Range
-{
-    unsigned Min;
-    unsigned Max;
 };
 

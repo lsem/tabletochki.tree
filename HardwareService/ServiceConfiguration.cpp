@@ -48,18 +48,29 @@ bool ServiceConfigurationManager::LoadFromJsonString(const string &documentConte
 
 bool ServiceConfigurationManager::LoadFromJsonFile(const string &fileName, ServiceConfiguration &out_configuration)
 {
+    string fileContent;
+    return LoadFromJsonFile(fileName, out_configuration, fileContent);
+}
+
+/*static */
+bool ServiceConfigurationManager::LoadFromJsonFile(const string &fileName, ServiceConfiguration &out_configuration, string &out_configurationRaw)
+{
     bool result = false;
 
     string fileContent;
     if (ServiceConfigurationManager::LoadFileToString(fileName, fileContent))
     {
-        result = LoadFromJsonString(fileContent, out_configuration);
+        if (LoadFromJsonString(fileContent, out_configuration))
+        {
+            out_configurationRaw = fileContent;
+            result = true;
+        }
     }
     else
     {
         LOG(ERROR) << "Failed loading file content";
     }
-    
+
     return result;
 }
 

@@ -82,6 +82,7 @@ public:
 public:
     static bool LoadFromJsonString(const string &documentContent, ServiceConfiguration &out_configuration);
     static bool LoadFromJsonFile(const string &fileName, ServiceConfiguration &out_configuration);
+    static bool LoadFromJsonFile(const string &fileName, ServiceConfiguration &out_configuration, string &out_configurationRaw);
     static bool SaveToJsonFile(const string &fileName, const string &documentContent);
     static bool ParseConfiguration(const string &documentContent, ServiceConfiguration &out_configuration);
 

@@ -42,58 +42,89 @@ public:
         m_implementation = implementation;
     }
 
-    virtual void applyConfiguration(const std::string& jsonDocumentText)
+    virtual void applyConfiguration(const std::string& jsonDocumentText) override
     {
         LOG(INFO) << "API: applyConfiguration";
         
         m_implementation->ApplyConfiguration(jsonDocumentText);
     }
     
-    virtual void startPump(const PumpIdentifier::type pumpId)
+    virtual void enterCalibrationMode() override
+    {
+        LOG(INFO) << "API: enterCalibrationMode";
+
+        m_implementation->EnterCalibrationMode();
+    }
+
+    virtual void exitCalibrationMode() override
+    {
+        LOG(INFO) << "API: exitCalibrationMode";
+
+        m_implementation->ExitCalibrationMode();
+    }
+
+    virtual void getCurrentConfiguration(std::string& _return) override
+    {
+        LOG(INFO) << "API: getCurrentConfiguration";
+
+        m_implementation->GetCurrentConfiguration(_return);
+    }
+
+    virtual void startPump(const PumpIdentifier::type pumpId) override
     {
         LOG(INFO) << "API: startPump";
         
         m_implementation->StartPump(pumpId);
     }
 
-    virtual void stopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId)
+    virtual void stopPump(StopPumpResult& _return, const PumpIdentifier::type pumpId) override
     {
         LOG(INFO) << "API: stopPump";
         
         m_implementation->StopPump(_return, pumpId);
     }
 
-    virtual void getServiceStatus(ServiceStatus& _return)
+    virtual void getServiceStatus(ServiceStatus& _return) override
     {
         //LOG(INFO) << "API: getServiceStatus";
 
         m_implementation->GetServiceStatus(_return);
     }
 
-    virtual void getServiceStateJson(std::string& _return)
+    virtual void getServiceStateJson(std::string& _return) override
     {
         //LOG(INFO) << "API: getServiceStateJson";
 
         m_implementation->GetServiceStateJson(_return);
     }
 
-    virtual void fillVisibleContainerMillilitres(const int32_t amount)
+    virtual void fillVisibleContainerMillilitres(const int32_t amount) override
     {
         LOG(INFO) << "API: fillVisibleContainerMillilitres";
 
         m_implementation->FillVisibleContainerMillilitres(amount);
     }
     
-    virtual void emptyVisiableContainerMillilitres(const int32_t amount)
+    virtual void emptyVisiableContainerMillilitres(const int32_t amount) override
     {
         LOG(INFO) << "API: emptyVisiableContainerMillilitres";
 
         m_implementation->EmptyVisiableContainerMillilitres(amount);
     }
 
-    virtual void DbgSetContainerWaterLevel(const int32_t amount)
+    virtual void DbgSetContainerWaterLevel(const int32_t amount) override
     {
         m_implementation->DbgSetContainerWaterLevel(amount);
+    }
+
+private:
+    
+    void RaiseInvalidOperationException(Tabletochki::ErrorCode::type what, const string &why)
+    {
+        auto exception = Tabletochki::InvalidOperation();
+        exception.what = what;
+        exception.why = why;
+        throw exception;
     }
 
 private:
@@ -145,16 +176,17 @@ private:
     TThreadedServer                                  server;
 };
 
-ServiceApi g_serviceApiInstance;
+unique_ptr<ServiceApi> g_serviceApiInstance;
 
 void StartAPIService() 
 {
-    g_serviceApiInstance.Serve();
+    g_serviceApiInstance = std::make_unique<ServiceApi>();
+    g_serviceApiInstance->Serve();
 }
 
 void ShutdownAPIService() 
 {
-    g_serviceApiInstance.Shutdown();
+    g_serviceApiInstance->Shutdown();
 }
 
 
