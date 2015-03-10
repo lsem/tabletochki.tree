@@ -36,13 +36,16 @@ bool EmailProblemReportingService::ProblemsReportingService_ReportProblem(EPROBL
 
 string EmailProblemReportingService::GetReportFilePath()
 {
-    // (Got this from StackOverflow)
-    static time_facet *facet = new time_facet("%d_%b_%Y__%H_%M_%S");
-    std::stringstream ss;
-    ss.imbue(std::locale(ss.getloc(), facet));
-    ss << second_clock::local_time();
+    time_t timer;
+    char buffer[26];
+    struct tm* tm_info;
 
-    const auto result = R"(.\Reports\)" + ss.str();
+    time(&timer);
+    tm_info = localtime(&timer);
+
+    strftime(buffer, 26, "%Y_%m_%d__%H_%M_%S", tm_info);
+
+    const auto result = string(R"(.\Reports\)") + buffer;
     return result;
 }
 
